@@ -21,12 +21,12 @@ import {
   VolumeX,
   Zap
 } from 'lucide-react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useSoundEngine } from '@/utils/sound';
 import { NavItem } from '@/types';
 import { cn } from '@/utils/cn';
 import Button from '@/components/ui/Button';
-import HypePrice from '@/components/ui/HypePrice';
+import HypePrice from '../ui/HypePrice';
+import HypeConnectButton from '../wallet/HypeConnectButton';
 
 const Navigation: React.FC = () => {
   const pathname = usePathname();
@@ -180,7 +180,7 @@ const Navigation: React.FC = () => {
 
             {/* Wallet Connect */}
             <div className="connect-button-wrapper">
-              <ConnectButton />
+              <HypeConnectButton />
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@ const Navigation: React.FC = () => {
 
             {/* Wallet Connect - Smaller on mobile */}
             <div className="connect-button-wrapper scale-90 origin-right">
-              <ConnectButton />
+              <HypeConnectButton />
             </div>
 
             {/* Mobile Menu Toggle */}
