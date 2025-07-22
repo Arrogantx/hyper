@@ -2,12 +2,16 @@
   "name": "hypercatz",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "export": "next build",
-    "netlify-build": "next build",
+    "netlify-build": "npm install && next build",
     "lint": "next lint"
   },
   "dependencies": {
@@ -15,11 +19,9 @@
     "@rainbow-me/rainbowkit": "^2.2.8",
     "@supabase/supabase-js": "^2.52.0",
     "@tanstack/react-query": "^5.83.0",
-    "@types/howler": "^2.2.12",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.6",
     "howler": "^2.2.4",
-    "howler.js": "^2.1.2",
     "lucide-react": "^0.525.0",
     "next": "15.4.2",
     "react": "19.1.0",
@@ -30,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/howler": "^2.2.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
