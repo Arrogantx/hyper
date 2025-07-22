@@ -130,12 +130,12 @@ const Navigation: React.FC = () => {
     <>
       {/* Desktop Navigation */}
       <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 glass-card border-b border-dark-700/50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
+        <div className="w-full max-w-none px-4 xl:max-w-7xl xl:mx-auto xl:px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 flex-shrink-0"
           >
             <div className="relative">
               <div className="w-10 h-10 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-xl flex items-center justify-center shadow-lg shadow-hyperliquid-500/25">
@@ -150,14 +150,14 @@ const Navigation: React.FC = () => {
           </motion.div>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-1 justify-center max-w-2xl mx-8">
             {navItems.slice(0, -1).map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {/* HYPE Price Display */}
             <HypePrice variant="navbar" />
 
@@ -188,9 +188,9 @@ const Navigation: React.FC = () => {
 
       {/* Mobile Navigation */}
       <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-card border-b border-dark-700/50">
-        <div className="px-4 py-3 flex items-center justify-between">
+        <div className="w-full px-3 py-3 flex items-center justify-between">
           {/* Mobile Logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-lg flex items-center justify-center shadow-lg shadow-hyperliquid-500/25">
               <Zap className="h-4 w-4 text-white" />
             </div>
@@ -198,9 +198,9 @@ const Navigation: React.FC = () => {
           </div>
 
           {/* Mobile Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 flex-shrink-0">
             {/* HYPE Price Display - Mobile */}
-            <div className="scale-75 origin-right">
+            <div className="hidden sm:block scale-75 origin-right">
               <HypePrice variant="navbar" />
             </div>
 
@@ -218,9 +218,14 @@ const Navigation: React.FC = () => {
               )}
             </Button>
 
-            {/* Wallet Connect - Smaller on mobile */}
-            <div className="connect-button-wrapper scale-90 origin-right">
-              <HypeConnectButton />
+            {/* Wallet Connect - Responsive sizing */}
+            <div className="connect-button-wrapper">
+              <HypeConnectButton
+                accountStatus={{
+                  smallScreen: 'avatar',
+                  largeScreen: 'full'
+                }}
+              />
             </div>
 
             {/* Mobile Menu Toggle */}
