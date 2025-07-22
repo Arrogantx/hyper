@@ -26,6 +26,7 @@ import { useSoundEngine } from '@/utils/sound';
 import { NavItem } from '@/types';
 import { cn } from '@/utils/cn';
 import Button from '@/components/ui/Button';
+import HypePrice from '@/components/ui/HypePrice';
 
 const Navigation: React.FC = () => {
   const pathname = usePathname();
@@ -157,6 +158,9 @@ const Navigation: React.FC = () => {
 
           {/* Right Side Controls */}
           <div className="flex items-center gap-3">
+            {/* HYPE Price Display */}
+            <HypePrice variant="navbar" />
+
             {/* Sound Toggle */}
             <Button
               variant="ghost"
@@ -195,6 +199,11 @@ const Navigation: React.FC = () => {
 
           {/* Mobile Controls */}
           <div className="flex items-center gap-2">
+            {/* HYPE Price Display - Mobile */}
+            <div className="scale-75 origin-right">
+              <HypePrice variant="navbar" />
+            </div>
+
             {/* Sound Toggle */}
             <Button
               variant="ghost"

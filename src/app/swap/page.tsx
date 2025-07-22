@@ -17,6 +17,7 @@ import { LoadingOverlay, LoadingButton } from '@/components/ui/LoadingStates';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useToast, useSuccessToast, useErrorToast } from '@/components/ui/Toast';
+import { HypePriceCard } from '@/components/ui/HypePrice';
 
 interface Token {
   id: string;
@@ -328,6 +329,16 @@ export default function SwapPage() {
             <p className="text-base sm:text-lg md:text-xl text-dark-300 max-w-3xl mx-auto px-2">
               Trade tokens instantly with the best rates and lowest fees in the Hypercatz ecosystem
             </p>
+          </motion.div>
+
+          {/* HYPE Token Price */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-6 sm:mb-8"
+          >
+            <HypePriceCard className="max-w-md mx-auto" />
           </motion.div>
 
         <div className="max-w-lg mx-auto">

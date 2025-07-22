@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { StakingPoolSkeleton, LoadingOverlay } from '@/components/ui/LoadingStates';
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useSuccessToast, useErrorToast } from '@/components/ui/Toast';
+import { HypePriceCard } from '@/components/ui/HypePrice';
 import {
   TrendingUp,
   Zap,
@@ -352,6 +353,16 @@ export default function StakePage() {
               <div className="stat-value">{userStats.nextReward}</div>
               <div className="stat-label">Next Reward</div>
             </div>
+          </motion.div>
+
+          {/* HYPE Token Price */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mb-16"
+          >
+            <HypePriceCard className="max-w-md mx-auto" />
           </motion.div>
 
           {/* Staking Pools */}
