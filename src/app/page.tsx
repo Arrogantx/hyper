@@ -11,8 +11,10 @@ import {
   Gift,
   ArrowRight,
   Play,
-  Volume2,
-  Star
+  Star,
+  BarChart3,
+  Shield,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
@@ -36,79 +38,103 @@ const HomePage: React.FC = () => {
     {
       icon: Coins,
       title: 'Mint NFTs',
-      description: 'Mint unique Hypercatz NFTs with multiple phases and whitelist access',
+      description: 'Mint unique Hypercatz NFTs with exclusive whitelist access and multiple phases',
       href: '/mint',
-      color: 'from-neon-pink to-neon-purple'
+      gradient: 'from-hyperliquid-400 to-hyperliquid-600',
+      iconBg: 'bg-hyperliquid-500/20'
     },
     {
       icon: TrendingUp,
       title: 'Stake & Earn',
-      description: 'Stake your NFTs and HYPE tokens to earn rewards and boost your power',
+      description: 'Stake your NFTs and tokens to earn rewards and boost your collection power',
       href: '/stake',
-      color: 'from-neon-cyan to-neon-blue'
+      gradient: 'from-accent-blue to-hyperliquid-500',
+      iconBg: 'bg-accent-blue/20'
     },
     {
       icon: Gamepad2,
       title: 'Play Games',
-      description: 'Compete in on-chain games and wager HYPE for epic rewards',
+      description: 'Compete in skill-based games and tournaments for exclusive rewards',
       href: '/games',
-      color: 'from-neon-green to-neon-yellow'
+      gradient: 'from-accent-purple to-accent-pink',
+      iconBg: 'bg-accent-purple/20'
     },
     {
       icon: Gift,
       title: 'Reward Store',
-      description: 'Redeem points for exclusive rewards, merch, and special privileges',
-      href: '/store',
-      color: 'from-neon-orange to-neon-pink'
+      description: 'Redeem points for exclusive merchandise, NFTs, and special privileges',
+      href: '/rewards',
+      gradient: 'from-accent-orange to-accent-yellow',
+      iconBg: 'bg-accent-orange/20'
     },
     {
       icon: Users,
-      title: 'Community',
-      description: 'Join the community, refer friends, and climb the leaderboards',
+      title: 'Community Hub',
+      description: 'Connect with holders, refer friends, and climb the leaderboards',
       href: '/community',
-      color: 'from-neon-purple to-neon-cyan'
+      gradient: 'from-hyperliquid-500 to-accent-blue',
+      iconBg: 'bg-hyperliquid-500/20'
+    },
+    {
+      icon: BarChart3,
+      title: 'Analytics',
+      description: 'Track your portfolio performance and collection statistics',
+      href: '/profile',
+      gradient: 'from-accent-pink to-accent-purple',
+      iconBg: 'bg-accent-pink/20'
     },
   ];
 
   const stats = [
-    { label: 'Total NFTs', value: '10,000', suffix: '' },
-    { label: 'Holders', value: '2.5', suffix: 'K+' },
-    { label: 'Total Staked', value: '1.2', suffix: 'M HYPE' },
-    { label: 'Games Played', value: '50', suffix: 'K+' },
+    { label: 'Total Supply', value: '4,444', suffix: '', icon: Sparkles },
+    { label: 'Active Holders', value: '2.8', suffix: 'K+', icon: Users },
+    { label: 'Total Volume', value: '1.2', suffix: 'M ETH', icon: TrendingUp },
+    { label: 'Staking APY', value: '125', suffix: '%', icon: Shield },
   ];
 
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="cyber-spinner" />
+      <div className="min-h-screen flex items-center justify-center bg-dark-950">
+        <div className="loading-skeleton w-32 h-32 rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6">
         <motion.div
           style={{ y: y1, opacity }}
-          className="text-center z-10 max-w-4xl mx-auto"
+          className="text-center z-10 max-w-5xl mx-auto"
         >
+          {/* Hero Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-hyperliquid-500/30 mb-8"
+          >
+            <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
+            <span className="text-sm font-medium text-hyperliquid-400">Live on HyperEVM</span>
+          </motion.div>
+
           {/* Hero Title */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-6 sm:mb-8"
+            className="mb-8"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-cyber font-bold mb-4 sm:mb-6 leading-tight">
-              <span className="cyber-text glitch-text" data-text="HYPERCATZ">
-                HYPERCATZ
-              </span>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+              <span className="hyperliquid-gradient-text">HYPERCATZ</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 leading-relaxed">
-              The premier minting + utility hub for the{' '}
-              <span className="text-neon-cyan font-bold">Hypercatz NFT collection</span>{' '}
-              on HyperEVM. Mint, stake, play, and earn.
+            <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              The premier NFT collection and utility ecosystem on{' '}
+              <span className="text-hyperliquid-400 font-semibold">Hyperliquid</span>
+            </p>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+              Mint exclusive NFTs, stake for rewards, play games, and join a thriving community of collectors and traders.
             </p>
           </motion.div>
 
@@ -117,26 +143,26 @@ const HomePage: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-12 px-4"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
           >
-            <Link href="/mint" className="w-full sm:w-auto">
+            <Link href="/mint">
               <Button
                 size="lg"
-                className="group w-full sm:w-auto"
+                className="group min-w-[200px]"
                 onClick={() => {
                   playClick();
                   playLightning();
                 }}
               >
-                <Zap className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
+                <Zap className="h-5 w-5 mr-2 group-hover:animate-pulse" />
                 Start Minting
-                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             
-            <Link href="/whitelist" className="w-full sm:w-auto">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                <Star className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Link href="/whitelist">
+              <Button variant="secondary" size="lg" className="min-w-[200px]">
+                <Star className="h-5 w-5 mr-2" />
                 Check Whitelist
               </Button>
             </Link>
@@ -144,14 +170,14 @@ const HomePage: React.FC = () => {
             <Button
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto"
+              className="min-w-[200px]"
               onClick={() => {
                 playClick();
                 // Add trailer/demo functionality
               }}
             >
-              <Play className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Watch Trailer
+              <Play className="h-5 w-5 mr-2" />
+              Watch Demo
             </Button>
           </motion.div>
 
@@ -160,7 +186,7 @@ const HomePage: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-2"
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -168,13 +194,16 @@ const HomePage: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                className="cyber-card p-3 sm:p-4 text-center"
+                className="stat-card group hover:scale-105 transition-transform"
               >
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold cyber-text mb-1">
-                  {stat.value}
-                  <span className="text-xs sm:text-sm">{stat.suffix}</span>
+                <div className="flex items-center justify-center mb-3">
+                  <stat.icon className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400">{stat.label}</div>
+                <div className="stat-value">
+                  {stat.value}
+                  <span className="text-lg">{stat.suffix}</span>
+                </div>
+                <div className="stat-label">{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -183,27 +212,26 @@ const HomePage: React.FC = () => {
         {/* Animated Background Elements */}
         <motion.div
           style={{ y: y2 }}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 overflow-hidden"
         >
-          {/* Lightning bolts */}
-          {Array.from({ length: 5 }).map((_, i) => (
+          {/* Floating orbs */}
+          {Array.from({ length: 6 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 bg-gradient-to-b from-neon-cyan to-transparent"
+              className="absolute w-32 h-32 rounded-full bg-gradient-to-r from-hyperliquid-500/10 to-accent-blue/10 blur-xl"
               style={{
-                left: `${20 + i * 20}%`,
-                height: '200px',
-                top: `${10 + i * 10}%`,
+                left: `${10 + i * 15}%`,
+                top: `${20 + (i % 3) * 25}%`,
               }}
               animate={{
-                opacity: [0, 1, 0],
-                scaleY: [0, 1, 0],
+                y: [0, -30, 0],
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.1, 1],
               }}
               transition={{
-                duration: 0.5,
+                duration: 4 + i,
                 repeat: Infinity,
-                delay: i * 0.3,
-                repeatDelay: 3,
+                delay: i * 0.5,
               }}
             />
           ))}
@@ -211,24 +239,24 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-20 px-4 sm:px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-cyber font-bold mb-4 sm:mb-6 cyber-text">
-              Next-Gen Utility
+            <h2 className="section-title hyperliquid-gradient-text">
+              Comprehensive Utility Ecosystem
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-2">
-              Experience the future of NFT utility with our comprehensive DApp ecosystem
+            <p className="section-subtitle">
+              Experience next-generation NFT utility with our integrated platform designed for collectors, traders, and gamers
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -236,26 +264,25 @@ const HomePage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02 }}
                 className="group"
               >
                 <Link href={feature.href}>
-                  <div className="cyber-card p-6 sm:p-8 h-full cursor-pointer transition-all duration-300 hover:shadow-neon-lg">
-                    <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-r ${feature.color} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform`}>
-                      <feature.icon className="h-6 w-6 sm:h-8 sm:w-8 text-black" />
+                  <div className="feature-card h-full">
+                    <div className={`w-16 h-16 rounded-2xl ${feature.iconBg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                      <feature.icon className="h-8 w-8 text-hyperliquid-500" />
                     </div>
                     
-                    <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 group-hover:text-neon-cyan transition-colors">
+                    <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-hyperliquid-400 transition-colors">
                       {feature.title}
                     </h3>
                     
-                    <p className="text-gray-300 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
+                    <p className="text-gray-400 mb-6 leading-relaxed">
                       {feature.description}
                     </p>
                     
-                    <div className="flex items-center text-neon-cyan group-hover:translate-x-2 transition-transform">
-                      <span className="font-medium text-sm sm:text-base">Explore</span>
-                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
+                    <div className="flex items-center text-hyperliquid-400 group-hover:translate-x-2 transition-transform">
+                      <span className="font-medium">Learn More</span>
+                      <ArrowRight className="h-4 w-4 ml-2" />
                     </div>
                   </div>
                 </Link>
@@ -266,7 +293,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10">
+      <section className="py-20 px-4 sm:px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -274,26 +301,31 @@ const HomePage: React.FC = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto text-center"
         >
-          <div className="cyber-card p-6 sm:p-8 md:p-12 bg-gradient-to-r from-neon-pink/10 to-neon-cyan/10 border-neon-cyan/30">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-cyber font-bold mb-4 sm:mb-6 cyber-text">
+          <div className="glass-card p-12 border-hyperliquid-500/20 glow-green">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-hyperliquid-500/10 border border-hyperliquid-500/30 mb-8">
+              <Sparkles className="w-4 h-4 text-hyperliquid-400" />
+              <span className="text-sm font-medium text-hyperliquid-400">Mint Goes Live July 25th, 2025</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 hyperliquid-gradient-text">
               Ready to Join the Pack?
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
+            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
               Connect your wallet and dive into the Hypercatz ecosystem.
               Mint your NFT, start earning rewards, and become part of the community.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-2">
-              <Link href="/mint" className="w-full sm:w-auto">
-                <Button size="lg" className="group w-full sm:w-auto">
-                  <Zap className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/mint">
+                <Button size="lg" className="group min-w-[200px]">
+                  <Zap className="h-5 w-5 mr-2 group-hover:animate-pulse" />
                   Mint Now
                 </Button>
               </Link>
               
-              <Link href="/community" className="w-full sm:w-auto">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                  <Users className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+              <Link href="/community">
+                <Button variant="secondary" size="lg" className="min-w-[200px]">
+                  <Users className="h-5 w-5 mr-2" />
                   Join Community
                 </Button>
               </Link>

@@ -8,13 +8,17 @@ import { StakingPoolSkeleton, LoadingOverlay } from '@/components/ui/LoadingStat
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useSuccessToast, useErrorToast } from '@/components/ui/Toast';
 import {
-  ChartBarIcon,
-  FireIcon,
-  CurrencyDollarIcon,
-  ClockIcon,
-  StarIcon,
-  BoltIcon
-} from '@heroicons/react/24/outline';
+  TrendingUp,
+  Zap,
+  Coins,
+  Clock,
+  Star,
+  Shield,
+  Target,
+  Award,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 
 interface StakingPool {
   id: string;
@@ -26,6 +30,7 @@ interface StakingPool {
   lockPeriod: string;
   multiplier: number;
   isActive: boolean;
+  tier: 'bronze' | 'silver' | 'gold' | 'diamond';
 }
 
 interface UserStats {
@@ -76,7 +81,8 @@ export default function StakePage() {
             rewards: 1250.75,
             lockPeriod: '90 days',
             multiplier: 3.0,
-            isActive: true
+            isActive: true,
+            tier: 'diamond'
           },
           {
             id: 'gold',
@@ -87,7 +93,8 @@ export default function StakePage() {
             rewards: 892.25,
             lockPeriod: '60 days',
             multiplier: 2.0,
-            isActive: true
+            isActive: true,
+            tier: 'gold'
           },
           {
             id: 'silver',
@@ -98,7 +105,8 @@ export default function StakePage() {
             rewards: 704.5,
             lockPeriod: '30 days',
             multiplier: 1.5,
-            isActive: true
+            isActive: true,
+            tier: 'silver'
           },
           {
             id: 'bronze',
@@ -109,7 +117,8 @@ export default function StakePage() {
             rewards: 0,
             lockPeriod: '7 days',
             multiplier: 1.0,
-            isActive: true
+            isActive: true,
+            tier: 'bronze'
           }
         ]);
         
@@ -215,13 +224,38 @@ export default function StakePage() {
     }
   };
 
-  const getPoolGradient = (poolId: string) => {
-    switch (poolId) {
-      case 'diamond': return 'from-purple-400 via-pink-400 to-purple-400';
-      case 'gold': return 'from-yellow-400 via-orange-400 to-yellow-400';
-      case 'silver': return 'from-gray-300 via-gray-400 to-gray-300';
-      case 'bronze': return 'from-orange-600 via-yellow-600 to-orange-600';
-      default: return 'from-cyan-400 via-green-400 to-cyan-400';
+  const getTierConfig = (tier: string) => {
+    switch (tier) {
+      case 'diamond':
+        return {
+          gradient: 'from-accent-purple to-accent-pink',
+          iconBg: 'bg-accent-purple/20',
+          borderColor: 'border-accent-purple/30'
+        };
+      case 'gold':
+        return {
+          gradient: 'from-accent-yellow to-accent-orange',
+          iconBg: 'bg-accent-yellow/20',
+          borderColor: 'border-accent-yellow/30'
+        };
+      case 'silver':
+        return {
+          gradient: 'from-gray-400 to-gray-300',
+          iconBg: 'bg-gray-400/20',
+          borderColor: 'border-gray-400/30'
+        };
+      case 'bronze':
+        return {
+          gradient: 'from-accent-orange to-accent-yellow',
+          iconBg: 'bg-accent-orange/20',
+          borderColor: 'border-accent-orange/30'
+        };
+      default:
+        return {
+          gradient: 'from-hyperliquid-500 to-hyperliquid-400',
+          iconBg: 'bg-hyperliquid-500/20',
+          borderColor: 'border-hyperliquid-500/30'
+        };
     }
   };
 
@@ -233,13 +267,11 @@ export default function StakePage() {
   // Show error state if data failed to load
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 pt-20 sm:pt-24 pb-8 sm:pb-12">
-        <div className="container mx-auto px-3 sm:px-4 flex items-center justify-center">
-          <ErrorDisplay
-            error={error}
-            onRetry={() => window.location.reload()}
-          />
-        </div>
+      <div className="min-h-screen px-6 py-12 flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800">
+        <ErrorDisplay
+          error={error}
+          onRetry={() => window.location.reload()}
+        />
       </div>
     );
   }
@@ -250,17 +282,22 @@ export default function StakePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 pt-20 sm:pt-24 pb-8 sm:pb-12">
-      <div className="container mx-auto px-3 sm:px-4">
+    <div className="min-h-screen px-6 py-12 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           {/* Header */}
-          <div className="text-center mb-8 sm:mb-12">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-hyperliquid-500/30 mb-8">
+              <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-hyperliquid-400">Earn Passive Rewards</span>
+            </div>
+            
             <motion.h1
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-cyan-400 via-green-400 to-cyan-400 bg-clip-text text-transparent"
+              className="text-5xl md:text-6xl font-bold mb-6 hyperliquid-gradient-text"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -268,12 +305,12 @@ export default function StakePage() {
               HYPERCATZ STAKING
             </motion.h1>
             <motion.p
-              className="text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto px-4"
+              className="text-xl text-gray-300 leading-relaxed max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Stake your Hypercatz NFTs to earn $HYPE tokens and unlock exclusive utilities
+              Stake your Hypercatz NFTs to earn $HYPE tokens and unlock exclusive utilities in our ecosystem
             </motion.p>
           </div>
 
@@ -282,42 +319,38 @@ export default function StakePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8 sm:mb-12"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
           >
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mb-2">
-                <ChartBarIcon className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
-                <span className="text-gray-400 text-xs sm:text-sm">Total Staked</span>
+            <div className="stat-card group hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center mb-3">
+                <TrendingUp className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">{userStats.totalStaked}</div>
-              <div className="text-xs sm:text-sm text-gray-400">NFTs</div>
+              <div className="stat-value">{userStats.totalStaked}</div>
+              <div className="stat-label">NFTs Staked</div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mb-2">
-                <CurrencyDollarIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
-                <span className="text-gray-400 text-xs sm:text-sm">Total Rewards</span>
+            <div className="stat-card group hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center mb-3">
+                <Coins className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">{userStats.totalRewards.toLocaleString()}</div>
-              <div className="text-xs sm:text-sm text-gray-400">$HYPE</div>
+              <div className="stat-value">{userStats.totalRewards.toLocaleString()}</div>
+              <div className="stat-label">Total Rewards</div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mb-2">
-                <FireIcon className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
-                <span className="text-gray-400 text-xs sm:text-sm">Active Pools</span>
+            <div className="stat-card group hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center mb-3">
+                <Target className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">{userStats.activePools}</div>
-              <div className="text-xs sm:text-sm text-gray-400">Pools</div>
+              <div className="stat-value">{userStats.activePools}</div>
+              <div className="stat-label">Active Pools</div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mb-2">
-                <ClockIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
-                <span className="text-gray-400 text-xs sm:text-sm">Next Reward</span>
+            <div className="stat-card group hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center mb-3">
+                <Clock className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">{userStats.nextReward}</div>
-              <div className="text-xs sm:text-sm text-gray-400">Remaining</div>
+              <div className="stat-value">{userStats.nextReward}</div>
+              <div className="stat-label">Next Reward</div>
             </div>
           </motion.div>
 
@@ -326,73 +359,81 @@ export default function StakePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="space-y-4 sm:space-y-6"
+            className="space-y-8"
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Staking Pools</h2>
+            <h2 className="section-title hyperliquid-gradient-text">Staking Pools</h2>
             
-            {stakingPools.map((pool, index) => (
-              <motion.div
-                key={pool.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                className={`bg-gradient-to-r p-[1px] rounded-xl sm:rounded-2xl ${getPoolGradient(pool.id)}`}
-              >
-                <div className="bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
-                  <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            {stakingPools.map((pool, index) => {
+              const tierConfig = getTierConfig(pool.tier);
+              const isExpanded = selectedPool === pool.id;
+              
+              return (
+                <motion.div
+                  key={pool.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
+                  className={`feature-card border ${tierConfig.borderColor} ${pool.userStaked > 0 ? 'glow-green' : ''}`}
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     {/* Pool Info */}
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
-                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r ${getPoolGradient(pool.id)} flex items-center justify-center`}>
-                          <StarIcon className="h-5 w-5 sm:h-6 sm:w-6 text-black" />
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${tierConfig.gradient} flex items-center justify-center shadow-lg`}>
+                          <Star className="h-8 w-8 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">{pool.name}</h3>
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs sm:text-sm text-gray-400">
-                            <span>Lock: {pool.lockPeriod}</span>
-                            <span className="hidden sm:inline">•</span>
-                            <span>{pool.multiplier}x Multiplier</span>
+                          <h3 className="text-2xl font-bold text-white mb-1">{pool.name}</h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <span className="flex items-center gap-1">
+                              <Shield className="w-4 h-4" />
+                              {pool.lockPeriod}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Zap className="w-4 h-4" />
+                              {pool.multiplier}x Multiplier
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
-                          <div className="text-xs sm:text-sm text-gray-400">APY</div>
-                          <div className="text-lg sm:text-xl font-bold text-green-400">{pool.apy}%</div>
+                          <div className="text-sm text-gray-400 mb-1">APY</div>
+                          <div className="text-2xl font-bold text-hyperliquid-400">{pool.apy}%</div>
                         </div>
                         <div>
-                          <div className="text-xs sm:text-sm text-gray-400">Total Staked</div>
-                          <div className="text-lg sm:text-xl font-bold text-white">{pool.totalStaked.toLocaleString()}</div>
+                          <div className="text-sm text-gray-400 mb-1">Total Staked</div>
+                          <div className="text-2xl font-bold text-white">{pool.totalStaked.toLocaleString()}</div>
                         </div>
                         <div>
-                          <div className="text-xs sm:text-sm text-gray-400">Your Staked</div>
-                          <div className="text-lg sm:text-xl font-bold text-cyan-400">{pool.userStaked}</div>
+                          <div className="text-sm text-gray-400 mb-1">Your Staked</div>
+                          <div className="text-2xl font-bold text-hyperliquid-400">{pool.userStaked}</div>
                         </div>
                         <div>
-                          <div className="text-xs sm:text-sm text-gray-400">Your Rewards</div>
-                          <div className="text-lg sm:text-xl font-bold text-yellow-400">{pool.rewards.toLocaleString()}</div>
+                          <div className="text-sm text-gray-400 mb-1">Your Rewards</div>
+                          <div className="text-2xl font-bold text-accent-yellow">{pool.rewards.toLocaleString()}</div>
                         </div>
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-col sm:flex-row lg:flex-col space-y-2 sm:space-y-0 sm:space-x-3 lg:space-x-0 lg:space-y-3 lg:ml-8">
+                    <div className="flex flex-col gap-3 lg:ml-8 min-w-[200px]">
                       {pool.userStaked > 0 && (
                         <Button
                           onClick={() => handleClaimRewards(pool.id)}
                           disabled={isClaiming || pool.rewards === 0}
-                          className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+                          className="w-full"
                           variant="primary"
                         >
                           {isClaiming ? (
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center gap-2">
                               <LoadingSpinner size="sm" />
                               <span>Claiming...</span>
                             </div>
                           ) : (
                             <>
-                              <BoltIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                              <Award className="h-4 w-4 mr-2" />
                               Claim Rewards
                             </>
                           )}
@@ -400,46 +441,57 @@ export default function StakePage() {
                       )}
                       
                       <Button
-                        onClick={() => setSelectedPool(selectedPool === pool.id ? null : pool.id)}
-                        className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+                        onClick={() => setSelectedPool(isExpanded ? null : pool.id)}
+                        className="w-full"
                         variant="secondary"
                       >
-                        {selectedPool === pool.id ? 'Cancel' : 'Stake NFTs'}
+                        {isExpanded ? (
+                          <>
+                            <ChevronUp className="h-4 w-4 mr-2" />
+                            Cancel
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="h-4 w-4 mr-2" />
+                            Stake NFTs
+                          </>
+                        )}
                       </Button>
                     </div>
                   </div>
 
                   {/* Staking Interface */}
-                  {selectedPool === pool.id && (
+                  {isExpanded && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-700"
+                      className="mt-8 pt-8 border-t border-dark-700"
                     >
-                      <div className="flex flex-col space-y-3 sm:space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+                      <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-1">
-                          <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 mb-3">
                             Number of NFTs to Stake
                           </label>
                           <input
                             type="number"
                             value={stakeAmount}
                             onChange={(e) => setStakeAmount(e.target.value)}
-                            placeholder="Enter amount"
+                            placeholder="Enter amount (1-10)"
                             min="1"
-                            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-800/50 border border-gray-600 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm sm:text-base"
+                            max="10"
+                            className="input-modern w-full"
                           />
                         </div>
                         <div className="flex items-end">
                           <Button
                             onClick={() => handleStake(pool.id)}
                             disabled={isStaking || !stakeAmount || parseFloat(stakeAmount) <= 0}
-                            className="w-full md:w-auto px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
+                            className="w-full md:w-auto min-w-[140px]"
                             variant="primary"
                           >
                             {isStaking ? (
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center gap-2">
                                 <LoadingSpinner size="sm" />
                                 <span>Staking...</span>
                               </div>
@@ -450,45 +502,86 @@ export default function StakePage() {
                         </div>
                       </div>
                       
-                      <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gray-800/30 rounded-lg sm:rounded-xl">
-                        <div className="text-xs sm:text-sm text-gray-400 space-y-1">
-                          <div>• Lock period: {pool.lockPeriod}</div>
-                          <div>• Reward multiplier: {pool.multiplier}x</div>
-                          <div>• Estimated daily rewards: ~{((parseFloat(stakeAmount) || 0) * pool.apy / 365).toFixed(2)} $HYPE</div>
+                      <div className="mt-6 glass-card p-4 border-dark-700/50">
+                        <div className="text-sm text-gray-300 space-y-2">
+                          <div className="flex justify-between">
+                            <span>Lock Period:</span>
+                            <span className="text-hyperliquid-400">{pool.lockPeriod}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Reward Multiplier:</span>
+                            <span className="text-hyperliquid-400">{pool.multiplier}x</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Est. Daily Rewards:</span>
+                            <span className="text-accent-yellow">
+                              ~{((parseFloat(stakeAmount) || 0) * pool.apy / 365).toFixed(2)} $HYPE
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
                   )}
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </motion.div>
 
-          {/* Info Section */}
+          {/* Benefits Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2 }}
-            className="mt-8 sm:mt-12 bg-gray-800/30 backdrop-blur-sm border border-gray-700/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8"
+            className="mt-16 feature-card"
           >
-            <h3 className="text-xl sm:text-2xl font-bold text-cyan-400 mb-4 sm:mb-6">Staking Benefits</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <h3 className="text-2xl font-bold text-hyperliquid-400 mb-8">Staking Benefits</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Earn $HYPE Tokens</h4>
-                <ul className="text-gray-300 space-y-1 sm:space-y-2 text-sm sm:text-base">
-                  <li>• Passive income from staked NFTs</li>
-                  <li>• Higher APY for longer lock periods</li>
-                  <li>• Compound rewards automatically</li>
-                  <li>• No impermanent loss risk</li>
+                <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Coins className="w-5 h-5 text-hyperliquid-500" />
+                  Earn $HYPE Tokens
+                </h4>
+                <ul className="text-gray-300 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Passive income from staked NFTs
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Higher APY for longer lock periods
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Compound rewards automatically
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    No impermanent loss risk
+                  </li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Exclusive Utilities</h4>
-                <ul className="text-gray-300 space-y-1 sm:space-y-2 text-sm sm:text-base">
-                  <li>• Access to premium games</li>
-                  <li>• Discounted marketplace fees</li>
-                  <li>• Priority in new drops</li>
-                  <li>• Governance voting rights</li>
+                <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Star className="w-5 h-5 text-hyperliquid-500" />
+                  Exclusive Utilities
+                </h4>
+                <ul className="text-gray-300 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Access to premium games
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Discounted marketplace fees
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Priority in new drops
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-hyperliquid-500 rounded-full mt-2 flex-shrink-0" />
+                    Governance voting rights
+                  </li>
                 </ul>
               </div>
             </div>

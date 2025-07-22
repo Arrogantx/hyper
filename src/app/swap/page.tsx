@@ -247,21 +247,21 @@ export default function SwapPage() {
     <div className="relative">
       <button
         onClick={onToggle}
-        className="flex items-center space-x-2 sm:space-x-3 bg-gray-700/50 hover:bg-gray-600/50 rounded-xl p-2 sm:p-3 transition-all duration-200 border border-gray-600/30 hover:border-cyan-500/30 min-w-0"
+        className="flex items-center space-x-2 sm:space-x-3 bg-dark-700/50 hover:bg-dark-600/50 rounded-xl p-2 sm:p-3 transition-all duration-200 border border-dark-600/30 hover:border-hyperliquid-500/30 min-w-0"
       >
         <span className="text-xl sm:text-2xl">{token.icon}</span>
         <div className="text-left min-w-0 flex-1">
           <div className="font-semibold text-white text-sm sm:text-base truncate">{token.symbol}</div>
-          <div className="text-xs text-gray-400 truncate hidden sm:block">{token.name}</div>
+          <div className="text-xs text-dark-400 truncate hidden sm:block">{token.name}</div>
         </div>
-        <ChevronDownIcon className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon className={`w-4 h-4 sm:w-5 sm:h-5 text-dark-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-xl border border-cyan-500/20 shadow-xl z-50 max-h-60 sm:max-h-80 overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-2 bg-dark-800 rounded-xl border border-hyperliquid-500/20 shadow-xl z-50 max-h-60 sm:max-h-80 overflow-y-auto"
         >
           {tokens
             .filter(t => t.id !== excludeToken?.id)
@@ -272,13 +272,13 @@ export default function SwapPage() {
                   onSelect(t);
                   onToggle();
                 }}
-                className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-700/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-dark-700/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
               >
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                   <span className="text-xl sm:text-2xl flex-shrink-0">{t.icon}</span>
                   <div className="text-left min-w-0 flex-1">
                     <div className="font-semibold text-white text-sm sm:text-base truncate">{t.symbol}</div>
-                    <div className="text-xs text-gray-400 truncate">{t.name}</div>
+                    <div className="text-xs text-dark-400 truncate">{t.name}</div>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
@@ -296,7 +296,7 @@ export default function SwapPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
         <div className="container mx-auto px-4 py-4 sm:py-8">
           <ErrorDisplay error={error} onRetry={retryLoadData} />
         </div>
@@ -305,7 +305,7 @@ export default function SwapPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
       <LoadingOverlay isLoading={isLoading}>
         <div className="container mx-auto px-4 py-4 sm:py-8">
           {/* Header */}
@@ -314,10 +314,18 @@ export default function SwapPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-6 sm:mb-12"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2 sm:mb-4">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="px-3 py-1 bg-hyperliquid-500/10 border border-hyperliquid-500/20 rounded-full">
+                <span className="text-hyperliquid-400 text-sm font-medium">DEX Aggregator</span>
+              </div>
+              <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full">
+                <span className="text-blue-400 text-sm font-medium">Best Rates</span>
+              </div>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold hyperliquid-gradient-text mb-2 sm:mb-4">
               Hypercatz Swap
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2">
+            <p className="text-base sm:text-lg md:text-xl text-dark-300 max-w-3xl mx-auto px-2">
               Trade tokens instantly with the best rates and lowest fees in the Hypercatz ecosystem
             </p>
           </motion.div>
@@ -327,16 +335,16 @@ export default function SwapPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-cyan-500/20 p-4 sm:p-6 mb-4 sm:mb-6"
+            className="glass-card p-4 sm:p-6 mb-4 sm:mb-6"
           >
             {/* Settings Button */}
             <div className="flex justify-between items-center mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-white">Swap Tokens</h2>
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors"
+                className="p-2 rounded-lg bg-dark-700/50 hover:bg-dark-600/50 transition-colors"
               >
-                <CogIcon className="w-5 h-5 text-gray-400" />
+                <CogIcon className="w-5 h-5 text-dark-400" />
               </button>
             </div>
 
@@ -345,10 +353,10 @@ export default function SwapPage() {
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-700/30 rounded-xl border border-gray-600/30"
+                className="mb-4 sm:mb-6 p-3 sm:p-4 bg-dark-700/30 rounded-xl border border-dark-600/30"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
-                  <span className="text-gray-300 text-sm sm:text-base">Slippage Tolerance</span>
+                  <span className="text-dark-300 text-sm sm:text-base">Slippage Tolerance</span>
                   <div className="flex space-x-2">
                     {[0.1, 0.5, 1.0].map((value) => (
                       <button
@@ -356,8 +364,8 @@ export default function SwapPage() {
                         onClick={() => setSlippage(value)}
                         className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                           slippage === value
-                            ? 'bg-cyan-500 text-white'
-                            : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                            ? 'bg-hyperliquid-500 text-white'
+                            : 'bg-dark-600 text-dark-300 hover:bg-dark-500'
                         }`}
                       >
                         {value}%
@@ -365,7 +373,7 @@ export default function SwapPage() {
                     ))}
                   </div>
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-dark-400">
                   Your transaction will revert if the price changes unfavorably by more than this percentage.
                 </div>
               </motion.div>
@@ -374,24 +382,24 @@ export default function SwapPage() {
             {/* From Token */}
             <div className="mb-4">
               <div className="flex justify-between items-center mb-2">
-                <label className="text-sm text-gray-400">From</label>
-                <span className="text-xs text-gray-400">
+                <label className="text-sm text-dark-400">From</label>
+                <span className="text-xs text-dark-400">
                   Balance: {fromToken.balance.toFixed(4)} {fromToken.symbol}
                 </span>
               </div>
-              <div className="bg-gray-700/30 rounded-xl p-3 sm:p-4 border border-gray-600/30">
+              <div className="bg-dark-700/30 rounded-xl p-3 sm:p-4 border border-dark-600/30">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <input
                     type="number"
                     value={fromAmount}
                     onChange={(e) => handleFromAmountChange(e.target.value)}
                     placeholder="0.0"
-                    className="bg-transparent text-xl sm:text-2xl font-semibold text-white placeholder-gray-500 outline-none flex-1 sm:mr-4"
+                    className="bg-transparent text-xl sm:text-2xl font-semibold text-white placeholder-dark-500 outline-none flex-1 sm:mr-4"
                   />
                   <div className="flex items-center justify-between sm:justify-end space-x-2">
                     <button
                       onClick={handleMaxClick}
-                      className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-md hover:bg-cyan-500/30 transition-colors"
+                      className="px-2 py-1 bg-hyperliquid-500/20 text-hyperliquid-400 text-xs rounded-md hover:bg-hyperliquid-500/30 transition-colors"
                     >
                       MAX
                     </button>
@@ -405,7 +413,7 @@ export default function SwapPage() {
                   </div>
                 </div>
                 {fromAmount && (
-                  <div className="text-sm text-gray-400 mt-2">
+                  <div className="text-sm text-dark-400 mt-2">
                     ≈ ${(Number(fromAmount) * fromToken.price).toFixed(2)} USD
                   </div>
                 )}
@@ -416,28 +424,28 @@ export default function SwapPage() {
             <div className="flex justify-center my-4">
               <button
                 onClick={handleSwapTokens}
-                className="p-3 bg-gray-700/50 hover:bg-gray-600/50 rounded-xl transition-all duration-200 border border-gray-600/30 hover:border-cyan-500/30"
+                className="p-3 bg-dark-700/50 hover:bg-dark-600/50 rounded-xl transition-all duration-200 border border-dark-600/30 hover:border-hyperliquid-500/30"
               >
-                <ArrowsUpDownIcon className="w-6 h-6 text-cyan-400" />
+                <ArrowsUpDownIcon className="w-6 h-6 text-hyperliquid-400" />
               </button>
             </div>
 
             {/* To Token */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <label className="text-sm text-gray-400">To</label>
-                <span className="text-xs text-gray-400">
+                <label className="text-sm text-dark-400">To</label>
+                <span className="text-xs text-dark-400">
                   Balance: {toToken.balance.toFixed(4)} {toToken.symbol}
                 </span>
               </div>
-              <div className="bg-gray-700/30 rounded-xl p-3 sm:p-4 border border-gray-600/30">
+              <div className="bg-dark-700/30 rounded-xl p-3 sm:p-4 border border-dark-600/30">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <input
                     type="number"
                     value={toAmount}
                     readOnly
                     placeholder="0.0"
-                    className="bg-transparent text-xl sm:text-2xl font-semibold text-white placeholder-gray-500 outline-none flex-1 sm:mr-4"
+                    className="bg-transparent text-xl sm:text-2xl font-semibold text-white placeholder-dark-500 outline-none flex-1 sm:mr-4"
                   />
                   <div className="flex justify-end">
                     <TokenSelector
@@ -450,7 +458,7 @@ export default function SwapPage() {
                   </div>
                 </div>
                 {toAmount && (
-                  <div className="text-sm text-gray-400 mt-2">
+                  <div className="text-sm text-dark-400 mt-2">
                     ≈ ${(Number(toAmount) * toToken.price).toFixed(2)} USD
                   </div>
                 )}
@@ -462,42 +470,42 @@ export default function SwapPage() {
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-700/30 rounded-xl border border-gray-600/30"
+                className="mb-4 sm:mb-6 p-3 sm:p-4 bg-dark-700/30 rounded-xl border border-dark-600/30"
               >
                 {isLoadingRoutes ? (
                   <div className="flex items-center justify-center py-4">
                     <LoadingSpinner size="sm" />
-                    <span className="ml-2 text-gray-400 text-sm">Calculating best route...</span>
+                    <span className="ml-2 text-dark-400 text-sm">Calculating best route...</span>
                   </div>
                 ) : (
                   <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                     <div className="flex justify-between items-start">
-                      <span className="text-gray-400">Exchange Rate</span>
+                      <span className="text-dark-400">Exchange Rate</span>
                       <span className="text-white text-right">
                         1 {fromToken.symbol} = {selectedRoute.exchangeRate.toFixed(6)} {toToken.symbol}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Price Impact</span>
+                      <span className="text-dark-400">Price Impact</span>
                       <span className={getPriceImpactColor(selectedRoute.priceImpact)}>
                         {selectedRoute.priceImpact.toFixed(2)}%
                       </span>
                     </div>
                     <div className="flex justify-between items-start">
-                      <span className="text-gray-400">Minimum Received</span>
+                      <span className="text-dark-400">Minimum Received</span>
                       <span className="text-white text-right">
                         {selectedRoute.minimumReceived.toFixed(6)} {toToken.symbol}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Network Fee</span>
+                      <span className="text-dark-400">Network Fee</span>
                       <span className="text-white">
                         ~{selectedRoute.gasEstimate.toFixed(4)} ETH
                       </span>
                     </div>
                     <div className="flex justify-between items-start">
-                      <span className="text-gray-400">Route</span>
-                      <span className="text-cyan-400 text-right">
+                      <span className="text-dark-400">Route</span>
+                      <span className="text-hyperliquid-400 text-right">
                         {selectedRoute.path.join(' → ')}
                       </span>
                     </div>
@@ -511,7 +519,7 @@ export default function SwapPage() {
               onClick={handleSwap}
               isLoading={isSwapping}
               disabled={!fromAmount || !toAmount || Number(fromAmount) > fromToken.balance}
-              className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-sm sm:text-base py-3 sm:py-4"
+              className="w-full bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-600 hover:from-hyperliquid-400 hover:to-hyperliquid-500 disabled:from-dark-600 disabled:to-dark-600 disabled:cursor-not-allowed text-sm sm:text-base py-3 sm:py-4"
             >
               {!fromAmount || !toAmount ? (
                 'Enter Amount'
@@ -541,7 +549,7 @@ export default function SwapPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-cyan-500/20 p-4 sm:p-6"
+              className="glass-card p-4 sm:p-6"
             >
               <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Available Routes</h3>
               <div className="space-y-2 sm:space-y-3">
@@ -551,8 +559,8 @@ export default function SwapPage() {
                     onClick={() => setSelectedRoute(route)}
                     className={`w-full p-3 sm:p-4 rounded-xl border transition-all duration-200 ${
                       selectedRoute.id === route.id
-                        ? 'border-cyan-500/50 bg-cyan-500/10'
-                        : 'border-gray-600/30 bg-gray-700/30 hover:border-gray-500/50'
+                        ? 'border-hyperliquid-500/50 bg-hyperliquid-500/10'
+                        : 'border-dark-600/30 bg-dark-700/30 hover:border-dark-500/50'
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
@@ -560,7 +568,7 @@ export default function SwapPage() {
                         <div className="text-white font-medium text-sm sm:text-base">
                           {route.path.join(' → ')}
                         </div>
-                        <div className="text-xs sm:text-sm text-gray-400">
+                        <div className="text-xs sm:text-sm text-dark-400">
                           Gas: ~{route.gasEstimate.toFixed(4)} ETH
                         </div>
                       </div>
@@ -586,13 +594,13 @@ export default function SwapPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-cyan-500/20 p-4 sm:p-6"
+            className="feature-card p-4 sm:p-6"
           >
             <div className="flex items-center space-x-3 mb-3 sm:mb-4">
               <FireIcon className="w-6 h-6 sm:w-8 sm:h-8 text-orange-400 flex-shrink-0" />
               <h3 className="text-lg sm:text-xl font-bold text-white">Best Rates</h3>
             </div>
-            <p className="text-gray-300 text-sm sm:text-base">
+            <p className="text-dark-300 text-sm sm:text-base">
               Our smart routing algorithm finds the best exchange rates across multiple DEXs to maximize your returns.
             </p>
           </motion.div>
@@ -601,13 +609,13 @@ export default function SwapPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-cyan-500/20 p-4 sm:p-6"
+            className="feature-card p-4 sm:p-6"
           >
             <div className="flex items-center space-x-3 mb-3 sm:mb-4">
               <CheckCircleIcon className="w-6 h-6 sm:w-8 sm:h-8 text-green-400 flex-shrink-0" />
               <h3 className="text-lg sm:text-xl font-bold text-white">Secure Trading</h3>
             </div>
-            <p className="text-gray-300 text-sm sm:text-base">
+            <p className="text-dark-300 text-sm sm:text-base">
               All swaps are executed through audited smart contracts with built-in slippage protection and MEV resistance.
             </p>
           </motion.div>
@@ -616,13 +624,13 @@ export default function SwapPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-cyan-500/20 p-4 sm:p-6 sm:col-span-2 md:col-span-1"
+            className="feature-card p-4 sm:p-6 sm:col-span-2 md:col-span-1"
           >
             <div className="flex items-center space-x-3 mb-3 sm:mb-4">
               <InformationCircleIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 flex-shrink-0" />
               <h3 className="text-lg sm:text-xl font-bold text-white">Low Fees</h3>
             </div>
-            <p className="text-gray-300 text-sm sm:text-base">
+            <p className="text-dark-300 text-sm sm:text-base">
               Enjoy competitive trading fees with additional discounts for HYPE token holders and staked NFT owners.
             </p>
           </motion.div>

@@ -438,38 +438,46 @@ export default function RewardsPage() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-gradient-to-br from-purple-900/90 to-blue-900/90 backdrop-blur-sm border border-cyan-500/30 rounded-2xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="glass-card p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-center mb-4 sm:mb-6">
-                <GiftIcon className="h-12 w-12 sm:h-16 sm:w-16 text-cyan-400 mx-auto mb-3 sm:mb-4" />
+                <div className="p-3 bg-hyperliquid-500/10 rounded-full w-fit mx-auto mb-3 sm:mb-4">
+                  <GiftIcon className="h-12 w-12 sm:h-16 sm:w-16 text-hyperliquid-400" />
+                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Confirm Purchase</h3>
-                <p className="text-gray-300 text-sm sm:text-base">
-                  Are you sure you want to purchase <span className="text-cyan-400 font-bold">{purchaseModal.name}</span>?
+                <p className="text-dark-300 text-sm sm:text-base">
+                  Are you sure you want to purchase <span className="text-hyperliquid-400 font-bold">{purchaseModal.name}</span>?
                 </p>
               </div>
 
-              <div className="bg-black/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="glass p-3 sm:p-4 mb-4 sm:mb-6 rounded-lg">
                 <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                  <span className="text-gray-400">Item Cost:</span>
+                  <span className="text-dark-400 font-medium">Item Cost:</span>
                   <div className="flex items-center space-x-1">
-                    <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
-                    <span className="text-yellow-400 font-bold">{purchaseModal.cost.toLocaleString()}</span>
+                    <div className="p-1 bg-hyperliquid-500/10 rounded">
+                      <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-hyperliquid-400" />
+                    </div>
+                    <span className="text-hyperliquid-400 font-bold">{purchaseModal.cost.toLocaleString()}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                  <span className="text-gray-400">Your Points:</span>
+                  <span className="text-dark-400 font-medium">Your Points:</span>
                   <div className="flex items-center space-x-1">
-                    <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
-                    <span className="text-yellow-400 font-bold">{userPoints.toLocaleString()}</span>
+                    <div className="p-1 bg-hyperliquid-500/10 rounded">
+                      <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-hyperliquid-400" />
+                    </div>
+                    <span className="text-hyperliquid-400 font-bold">{userPoints.toLocaleString()}</span>
                   </div>
                 </div>
-                <hr className="border-gray-600 my-2" />
+                <hr className="border-dark-600 my-2" />
                 <div className="flex justify-between items-center text-sm sm:text-base">
-                  <span className="text-gray-400">Remaining:</span>
+                  <span className="text-dark-400 font-medium">Remaining:</span>
                   <div className="flex items-center space-x-1">
-                    <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-green-400" />
-                    <span className="text-green-400 font-bold">{(userPoints - purchaseModal.cost).toLocaleString()}</span>
+                    <div className="p-1 bg-hyperliquid-500/10 rounded">
+                      <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-hyperliquid-400" />
+                    </div>
+                    <span className="text-hyperliquid-400 font-bold">{(userPoints - purchaseModal.cost).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -478,14 +486,15 @@ export default function RewardsPage() {
                 <Button
                   onClick={() => setPurchaseModal(null)}
                   disabled={isPurchasing}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-sm sm:text-base py-2 sm:py-3"
+                  variant="outline"
+                  className="flex-1 text-sm sm:text-base py-2 sm:py-3"
                 >
                   Cancel
                 </Button>
                 <LoadingButton
                   onClick={confirmPurchase}
                   isLoading={isPurchasing}
-                  className="flex-1 text-sm sm:text-base py-2 sm:py-3"
+                  className="flex-1 text-sm sm:text-base py-2 sm:py-3 btn-primary"
                 >
                   Confirm Purchase
                 </LoadingButton>

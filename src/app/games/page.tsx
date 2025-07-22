@@ -245,7 +245,7 @@ export default function GamesPage() {
       case 'Medium': return 'text-yellow-400';
       case 'Hard': return 'text-orange-400';
       case 'Expert': return 'text-red-400';
-      default: return 'text-gray-400';
+      default: return 'text-dark-400';
     }
   };
 
@@ -255,7 +255,7 @@ export default function GamesPage() {
       case 'full': return 'text-red-400';
       case 'starting': return 'text-yellow-400';
       case 'in-progress': return 'text-blue-400';
-      default: return 'text-gray-400';
+      default: return 'text-dark-400';
     }
   };
 
@@ -270,7 +270,7 @@ export default function GamesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
         <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
           <ErrorDisplay
             error={error}
@@ -282,7 +282,7 @@ export default function GamesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
       <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 relative">
         <LoadingOverlay isLoading={isLoading} message="Loading games...">
           <div></div>
@@ -294,23 +294,31 @@ export default function GamesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8 sm:mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-3 sm:mb-4">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="px-3 py-1 bg-hyperliquid-500/10 border border-hyperliquid-500/20 rounded-full">
+              <span className="text-hyperliquid-400 text-sm font-medium">Gaming Hub</span>
+            </div>
+            <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
+              <span className="text-green-400 text-sm font-medium">Live</span>
+            </div>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold hyperliquid-gradient-text mb-3 sm:mb-4">
             Hypercatz Gaming Arena
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-4">
+          <p className="text-base sm:text-lg md:text-xl text-dark-300 max-w-3xl mx-auto px-4">
             Enter the ultimate gaming experience where your NFTs become powerful warriors, racers, and adventurers
           </p>
         </motion.div>
 
         {/* Tab Navigation */}
         <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-1 sm:p-2 border border-cyan-500/20">
+          <div className="glass-card p-1 sm:p-2">
             <button
               onClick={() => setActiveTab('games')}
               className={`px-3 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
                 activeTab === 'games'
-                  ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg shadow-cyan-500/25'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-600 text-white shadow-lg glow-green'
+                  : 'text-dark-400 hover:text-white hover:bg-dark-700/50'
               }`}
             >
               <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
@@ -320,8 +328,8 @@ export default function GamesPage() {
               onClick={() => setActiveTab('lobbies')}
               className={`px-3 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
                 activeTab === 'lobbies'
-                  ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg shadow-cyan-500/25'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-600 text-white shadow-lg glow-green'
+                  : 'text-dark-400 hover:text-white hover:bg-dark-700/50'
               }`}
             >
               <UserGroupIcon className="w-4 h-4 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
@@ -339,22 +347,22 @@ export default function GamesPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl border border-cyan-500/20 overflow-hidden hover:border-cyan-400/40 transition-all duration-300 group"
+                className="feature-card group overflow-hidden"
               >
                 {/* Game Image Placeholder */}
-                <div className="h-36 sm:h-40 md:h-48 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <div className="text-4xl sm:text-5xl md:text-6xl opacity-20">
+                <div className="h-36 sm:h-40 md:h-48 bg-gradient-to-br from-hyperliquid-500/20 to-hyperliquid-600/20 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-dark-900/40 flex items-center justify-center">
+                    <div className="text-4xl sm:text-5xl md:text-6xl text-hyperliquid-400/30">
                       {getTypeIcon(game.type)}
                     </div>
                   </div>
                   <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(game.status)} bg-black/50`}>
+                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(game.status)} bg-dark-900/70 backdrop-blur-sm border border-dark-600/30`}>
                       {game.status.toUpperCase()}
                     </span>
                   </div>
                   <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-black/50 text-white">
+                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-dark-900/70 backdrop-blur-sm border border-dark-600/30 text-white">
                       {game.playersOnline} online
                     </span>
                   </div>
@@ -362,36 +370,36 @@ export default function GamesPage() {
 
                 <div className="p-4 sm:p-5 md:p-6">
                   <div className="flex items-start justify-between mb-2 sm:mb-3">
-                    <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-cyan-400 transition-colors leading-tight">
+                    <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-hyperliquid-400 transition-colors leading-tight">
                       {game.name}
                     </h3>
                     <div className="flex items-center space-x-1 ml-2">
-                      <div className="w-4 h-4 sm:w-5 sm:h-5">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 text-hyperliquid-400">
                         {getTypeIcon(game.type)}
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-400 capitalize hidden sm:inline">{game.type}</span>
+                      <span className="text-xs sm:text-sm text-dark-400 capitalize hidden sm:inline">{game.type}</span>
                     </div>
                   </div>
 
-                  <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
+                  <p className="text-dark-300 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
                     {game.description}
                   </p>
 
                   <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm">
                     <div>
-                      <span className="text-gray-400">Players:</span>
+                      <span className="text-dark-400">Players:</span>
                       <span className="text-white ml-1 sm:ml-2">{game.minPlayers}-{game.maxPlayers}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400">Duration:</span>
+                      <span className="text-dark-400">Duration:</span>
                       <span className="text-white ml-1 sm:ml-2">{game.duration}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400">Entry Fee:</span>
-                      <span className="text-cyan-400 ml-1 sm:ml-2">{game.entryFee} $HYPE</span>
+                      <span className="text-dark-400">Entry Fee:</span>
+                      <span className="text-hyperliquid-400 ml-1 sm:ml-2">{game.entryFee} $HYPE</span>
                     </div>
                     <div>
-                      <span className="text-gray-400">Difficulty:</span>
+                      <span className="text-dark-400">Difficulty:</span>
                       <span className={`ml-1 sm:ml-2 ${getDifficultyColor(game.difficulty)}`}>
                         {game.difficulty}
                       </span>
@@ -400,10 +408,10 @@ export default function GamesPage() {
 
                   <div className="mb-3 sm:mb-4">
                     <div className="flex items-center justify-between mb-1 sm:mb-2">
-                      <span className="text-gray-400 text-xs sm:text-sm">Prize Pool</span>
+                      <span className="text-dark-400 text-xs sm:text-sm">Prize Pool</span>
                       <span className="text-yellow-400 font-bold text-sm sm:text-base">{game.prizePool} $HYPE</span>
                     </div>
-                    <div className="bg-gray-700 rounded-full h-1.5 sm:h-2">
+                    <div className="bg-dark-700 rounded-full h-1.5 sm:h-2">
                       <div
                         className="bg-gradient-to-r from-yellow-400 to-orange-400 h-1.5 sm:h-2 rounded-full"
                         style={{ width: `${Math.min((game.prizePool / 1000) * 100, 100)}%` }}
@@ -415,13 +423,13 @@ export default function GamesPage() {
                     {game.features.slice(0, 2).map((feature, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-full border border-cyan-500/30"
+                        className="px-2 py-1 bg-hyperliquid-500/20 text-hyperliquid-400 text-xs rounded-full border border-hyperliquid-500/30"
                       >
                         {feature}
                       </span>
                     ))}
                     {game.features.length > 2 && (
-                      <span className="px-2 py-1 bg-gray-700 text-gray-400 text-xs rounded-full">
+                      <span className="px-2 py-1 bg-dark-700 text-dark-400 text-xs rounded-full">
                         +{game.features.length - 2} more
                       </span>
                     )}
@@ -429,7 +437,8 @@ export default function GamesPage() {
 
                   <Button
                     onClick={() => setSelectedGame(game)}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-sm sm:text-base py-2 sm:py-3"
+                    variant="primary"
+                    className="w-full text-sm sm:text-base py-2 sm:py-3"
                     disabled={game.status === 'full' || game.status === 'in-progress'}
                   >
                     <PlayIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -452,16 +461,16 @@ export default function GamesPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl border border-cyan-500/20 p-4 sm:p-5 md:p-6 hover:border-cyan-400/40 transition-all duration-300"
+                className="glass-card p-4 sm:p-5 md:p-6 hover:border-hyperliquid-400/40 transition-all duration-300"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-2 sm:mb-2">
                       <h3 className="text-lg sm:text-xl font-bold text-white">{lobby.name}</h3>
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold self-start sm:self-auto mt-1 sm:mt-0 ${
-                        lobby.status === 'waiting' ? 'bg-green-500/20 text-green-400' :
-                        lobby.status === 'starting' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-red-500/20 text-red-400'
+                        lobby.status === 'waiting' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                        lobby.status === 'starting' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                        'bg-red-500/20 text-red-400 border border-red-500/30'
                       }`}>
                         {lobby.status.toUpperCase()}
                       </span>
@@ -469,19 +478,19 @@ export default function GamesPage() {
                     
                     <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm">
                       <div>
-                        <span className="text-gray-400">Host:</span>
-                        <span className="text-cyan-400 ml-1 sm:ml-2 break-all">{lobby.host}</span>
+                        <span className="text-dark-400">Host:</span>
+                        <span className="text-hyperliquid-400 ml-1 sm:ml-2 break-all">{lobby.host}</span>
                       </div>
                       <div>
-                        <span className="text-gray-400">Players:</span>
+                        <span className="text-dark-400">Players:</span>
                         <span className="text-white ml-1 sm:ml-2">{lobby.players}/{lobby.maxPlayers}</span>
                       </div>
                       <div>
-                        <span className="text-gray-400">Entry:</span>
-                        <span className="text-cyan-400 ml-1 sm:ml-2">{lobby.entryFee} $HYPE</span>
+                        <span className="text-dark-400">Entry:</span>
+                        <span className="text-hyperliquid-400 ml-1 sm:ml-2">{lobby.entryFee} $HYPE</span>
                       </div>
                       <div>
-                        <span className="text-gray-400">Prize:</span>
+                        <span className="text-dark-400">Prize:</span>
                         <span className="text-yellow-400 ml-1 sm:ml-2">{lobby.prizePool} $HYPE</span>
                       </div>
                     </div>
@@ -490,12 +499,13 @@ export default function GamesPage() {
                   <div className="flex items-center justify-between lg:justify-end lg:space-x-4">
                     <div className="text-center">
                       <div className="text-xl sm:text-2xl font-bold text-white">{lobby.timeLeft}</div>
-                      <div className="text-xs text-gray-400">Time Left</div>
+                      <div className="text-xs text-dark-400">Time Left</div>
                     </div>
                     
                     <Button
                       onClick={() => setSelectedLobby(lobby)}
-                      className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
+                      variant="primary"
+                      className="text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
                       disabled={lobby.status === 'full' || lobby.status === 'starting'}
                     >
                       {lobby.status === 'waiting' ? 'Join Lobby' :
@@ -506,13 +516,13 @@ export default function GamesPage() {
 
                 {/* Player Progress Bar */}
                 <div className="mt-3 sm:mt-4">
-                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <div className="flex justify-between text-xs text-dark-400 mb-1">
                     <span>Players</span>
                     <span>{lobby.players}/{lobby.maxPlayers}</span>
                   </div>
-                  <div className="bg-gray-700 rounded-full h-1.5 sm:h-2">
+                  <div className="bg-dark-700 rounded-full h-1.5 sm:h-2">
                     <div
-                      className="bg-gradient-to-r from-cyan-400 to-purple-400 h-1.5 sm:h-2 rounded-full transition-all duration-300"
+                      className="bg-gradient-to-r from-hyperliquid-400 to-hyperliquid-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
                       style={{ width: `${(lobby.players / lobby.maxPlayers) * 100}%` }}
                     />
                   </div>
@@ -533,37 +543,37 @@ export default function GamesPage() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-gray-800 rounded-lg sm:rounded-xl border border-cyan-500/30 p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="glass-card p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white pr-4">{selectedGame.name}</h2>
                 <button
                   onClick={() => setSelectedGame(null)}
-                  className="text-gray-400 hover:text-white text-xl sm:text-2xl p-1"
+                  className="text-dark-400 hover:text-white text-xl sm:text-2xl p-1"
                 >
                   ×
                 </button>
               </div>
 
-              <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">{selectedGame.description}</p>
+              <p className="text-dark-300 mb-4 sm:mb-6 text-sm sm:text-base">{selectedGame.description}</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Game Type:</span>
+                    <span className="text-dark-400">Game Type:</span>
                     <span className="text-white capitalize">{selectedGame.type}</span>
                   </div>
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Players:</span>
+                    <span className="text-dark-400">Players:</span>
                     <span className="text-white">{selectedGame.minPlayers}-{selectedGame.maxPlayers}</span>
                   </div>
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Duration:</span>
+                    <span className="text-dark-400">Duration:</span>
                     <span className="text-white">{selectedGame.duration}</span>
                   </div>
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Difficulty:</span>
+                    <span className="text-dark-400">Difficulty:</span>
                     <span className={getDifficultyColor(selectedGame.difficulty)}>
                       {selectedGame.difficulty}
                     </span>
@@ -572,19 +582,19 @@ export default function GamesPage() {
                 
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Entry Fee:</span>
-                    <span className="text-cyan-400">{selectedGame.entryFee} $HYPE</span>
+                    <span className="text-dark-400">Entry Fee:</span>
+                    <span className="text-hyperliquid-400">{selectedGame.entryFee} $HYPE</span>
                   </div>
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Prize Pool:</span>
+                    <span className="text-dark-400">Prize Pool:</span>
                     <span className="text-yellow-400">{selectedGame.prizePool} $HYPE</span>
                   </div>
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Players Online:</span>
+                    <span className="text-dark-400">Players Online:</span>
                     <span className="text-green-400">{selectedGame.playersOnline}</span>
                   </div>
                   <div className="flex justify-between text-sm sm:text-base">
-                    <span className="text-gray-400">Status:</span>
+                    <span className="text-dark-400">Status:</span>
                     <span className={getStatusColor(selectedGame.status)}>
                       {selectedGame.status.toUpperCase()}
                     </span>
@@ -597,8 +607,8 @@ export default function GamesPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
                   {selectedGame.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center space-x-2">
-                      <StarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />
-                      <span className="text-gray-300 text-sm sm:text-base">{feature}</span>
+                      <StarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-hyperliquid-400 flex-shrink-0" />
+                      <span className="text-dark-300 text-sm sm:text-base">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -620,7 +630,7 @@ export default function GamesPage() {
                   onClick={() => handleJoinGame(selectedGame)}
                   isLoading={isJoiningGame}
                   loadingText="Joining..."
-                  className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-sm sm:text-base py-2 sm:py-3"
+                  className="flex-1 bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-600 hover:from-hyperliquid-400 hover:to-hyperliquid-500 text-white text-sm sm:text-base py-2 sm:py-3"
                   disabled={selectedGame.status === 'full' || selectedGame.status === 'in-progress'}
                 >
                   <PlayIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -642,14 +652,14 @@ export default function GamesPage() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-gray-800 rounded-lg sm:rounded-xl border border-cyan-500/30 p-4 sm:p-6 md:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              className="glass-card p-4 sm:p-6 md:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">Join Lobby</h2>
                 <button
                   onClick={() => setSelectedLobby(null)}
-                  className="text-gray-400 hover:text-white text-xl sm:text-2xl p-1"
+                  className="text-dark-400 hover:text-white text-xl sm:text-2xl p-1"
                 >
                   ×
                 </button>
@@ -657,27 +667,27 @@ export default function GamesPage() {
 
               <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-400">Lobby Name:</span>
+                  <span className="text-dark-400">Lobby Name:</span>
                   <span className="text-white text-right">{selectedLobby.name}</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-400">Host:</span>
-                  <span className="text-cyan-400 text-right break-all">{selectedLobby.host}</span>
+                  <span className="text-dark-400">Host:</span>
+                  <span className="text-hyperliquid-400 text-right break-all">{selectedLobby.host}</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-400">Players:</span>
+                  <span className="text-dark-400">Players:</span>
                   <span className="text-white">{selectedLobby.players}/{selectedLobby.maxPlayers}</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-400">Entry Fee:</span>
-                  <span className="text-cyan-400">{selectedLobby.entryFee} $HYPE</span>
+                  <span className="text-dark-400">Entry Fee:</span>
+                  <span className="text-hyperliquid-400">{selectedLobby.entryFee} $HYPE</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-400">Prize Pool:</span>
+                  <span className="text-dark-400">Prize Pool:</span>
                   <span className="text-yellow-400">{selectedLobby.prizePool} $HYPE</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base">
-                  <span className="text-gray-400">Time Left:</span>
+                  <span className="text-dark-400">Time Left:</span>
                   <span className="text-white font-mono">{selectedLobby.timeLeft}</span>
                 </div>
               </div>
@@ -704,7 +714,7 @@ export default function GamesPage() {
                   onClick={() => handleJoinLobby(selectedLobby)}
                   isLoading={isJoiningLobby}
                   loadingText="Joining..."
-                  className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-sm sm:text-base py-2 sm:py-3"
+                  className="flex-1 bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-600 hover:from-hyperliquid-400 hover:to-hyperliquid-500 text-white text-sm sm:text-base py-2 sm:py-3"
                   disabled={selectedLobby.status === 'full' || selectedLobby.status === 'starting'}
                 >
                   <CurrencyDollarIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />

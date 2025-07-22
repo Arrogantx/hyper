@@ -61,7 +61,7 @@ const tierColors = {
   Silver: 'from-gray-400 to-gray-600',
   Gold: 'from-yellow-400 to-yellow-600',
   Platinum: 'from-purple-400 to-purple-600',
-  Diamond: 'from-cyan-400 to-blue-500'
+  Diamond: 'from-hyperliquid-400 to-hyperliquid-600'
 };
 
 const tierIcons = {
@@ -138,7 +138,7 @@ export default function CommunityPage() {
 
   if (error && !referralStats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
         <div className="container mx-auto px-4 py-8">
           <ErrorDisplay error={error} onRetry={retryLoadData} />
         </div>
@@ -153,7 +153,7 @@ export default function CommunityPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
       <div className="container mx-auto px-4 py-4 sm:py-8">
         {/* Header */}
         <motion.div
@@ -161,10 +161,18 @@ export default function CommunityPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 sm:mb-8"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2 sm:mb-4">
+          <div className="flex items-center justify-center space-x-2 mb-3 sm:mb-4">
+            <span className="px-3 py-1 bg-hyperliquid-500/10 border border-hyperliquid-500/20 rounded-full text-hyperliquid-400 text-sm font-medium">
+              Active
+            </span>
+            <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-sm font-medium">
+              Community Rewards
+            </span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold hyperliquid-gradient-text mb-2 sm:mb-4">
             Community Hub
           </h1>
-          <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto px-2">
+          <p className="text-dark-300 text-base sm:text-lg max-w-2xl mx-auto px-2">
             Join the Hypercatz community, refer friends, and earn exclusive rewards together
           </p>
         </motion.div>
@@ -176,7 +184,7 @@ export default function CommunityPage() {
           transition={{ delay: 0.1 }}
           className="flex justify-center mb-6 sm:mb-8"
         >
-          <div className="bg-black/30 backdrop-blur-sm border border-gray-600 rounded-2xl p-1 sm:p-2 flex space-x-1 sm:space-x-2 overflow-x-auto">
+          <div className="glass-card p-1 sm:p-2 flex space-x-1 sm:space-x-2 overflow-x-auto">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
@@ -185,11 +193,13 @@ export default function CommunityPage() {
                   onClick={() => setSelectedTab(tab.id as any)}
                   className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all whitespace-nowrap ${
                     selectedTab === tab.id
-                      ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 text-cyan-400'
-                      : 'text-gray-400 hover:text-gray-300 hover:bg-gray-800/50'
+                      ? 'bg-hyperliquid-500/20 border border-hyperliquid-500/30 text-hyperliquid-400 shadow-lg shadow-hyperliquid-500/20'
+                      : 'text-dark-300 hover:text-white hover:bg-dark-700/50'
                   }`}
                 >
-                  <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <div className={`p-1 rounded ${selectedTab === tab.id ? 'bg-hyperliquid-500/20' : 'bg-dark-700/50'}`}>
+                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
                   <span className="font-medium text-sm sm:text-base">{tab.name}</span>
                 </button>
               );
@@ -205,33 +215,35 @@ export default function CommunityPage() {
             className="space-y-8"
           >
             {/* Referral Code Section */}
-            <div className="bg-black/40 backdrop-blur-sm border border-cyan-500/30 rounded-2xl p-4 sm:p-6">
+            <div className="glass-card p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2 sm:space-x-3">
-                  <ShareIcon className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
+                  <div className="p-2 bg-hyperliquid-500/10 rounded-lg">
+                    <ShareIcon className="h-5 w-5 sm:h-6 sm:w-6 text-hyperliquid-400" />
+                  </div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">Your Referral Code</h2>
                 </div>
                 <LoadingButton
                   onClick={refreshStats}
                   isLoading={isRefreshingStats}
-                  className="text-sm px-3 py-1.5"
+                  className="btn-secondary text-sm px-3 py-1.5"
                 >
                   Refresh Stats
                 </LoadingButton>
               </div>
               
-              <div className="bg-black/30 rounded-xl p-3 sm:p-4 mb-4">
+              <div className="glass rounded-xl p-3 sm:p-4 mb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-400 text-sm mb-1">Referral Link</p>
-                    <p className="text-cyan-400 font-mono text-sm sm:text-lg truncate">
+                    <p className="text-dark-400 text-sm mb-1 font-medium">Referral Link</p>
+                    <p className="text-hyperliquid-400 font-mono text-sm sm:text-lg truncate">
                       https://hypercatz.com/mint?ref={referralCode}
                     </p>
                   </div>
                   <LoadingButton
                     onClick={copyReferralCode}
                     isLoading={isGeneratingLink}
-                    className="flex items-center justify-center space-x-2 w-full sm:w-auto"
+                    className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto"
                   >
                     {copied ? (
                       <>
@@ -249,33 +261,41 @@ export default function CommunityPage() {
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl p-3 sm:p-4">
+                <div className="stat-card">
                   <div className="flex items-center space-x-1 sm:space-x-2 mb-2">
-                    <UsersIcon className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
-                    <span className="text-green-400 font-medium text-xs sm:text-sm">Total</span>
+                    <div className="p-1 bg-hyperliquid-500/10 rounded">
+                      <UsersIcon className="h-4 w-4 sm:h-5 sm:w-5 text-hyperliquid-400" />
+                    </div>
+                    <span className="text-hyperliquid-400 font-medium text-xs sm:text-sm">Total</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.totalReferrals || 0}</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-xl p-3 sm:p-4">
+                <div className="stat-card">
                   <div className="flex items-center space-x-1 sm:space-x-2 mb-2">
-                    <BoltIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                    <div className="p-1 bg-blue-500/10 rounded">
+                      <BoltIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                    </div>
                     <span className="text-blue-400 font-medium text-xs sm:text-sm">Active</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.activeReferrals || 0}</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-xl p-3 sm:p-4">
+                <div className="stat-card">
                   <div className="flex items-center space-x-1 sm:space-x-2 mb-2">
-                    <StarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
+                    <div className="p-1 bg-yellow-500/10 rounded">
+                      <StarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
+                    </div>
                     <span className="text-yellow-400 font-medium text-xs sm:text-sm">Points</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.totalEarned.toLocaleString() || '0'}</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl p-3 sm:p-4">
+                <div className="stat-card">
                   <div className="flex items-center space-x-1 sm:space-x-2 mb-2">
-                    <TrophyIcon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
+                    <div className="p-1 bg-purple-500/10 rounded">
+                      <TrophyIcon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
+                    </div>
                     <span className="text-purple-400 font-medium text-xs sm:text-sm">Tier</span>
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.currentTier || 'Bronze'}</p>
@@ -284,23 +304,25 @@ export default function CommunityPage() {
             </div>
 
             {/* Tier Progress */}
-            <div className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-4 sm:p-6">
+            <div className="glass-card p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-3 mb-4">
-                <TrophyIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+                <div className="p-2 bg-purple-500/10 rounded-lg">
+                  <TrophyIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+                </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white">Tier Progress</h2>
               </div>
 
               <div className="mb-4 sm:mb-6">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-400 text-sm sm:text-base">Progress to Platinum</span>
-                  <span className="text-purple-400 font-bold text-sm sm:text-base">{referralStats?.nextTierProgress || 0}%</span>
+                  <span className="text-dark-400 text-sm sm:text-base font-medium">Progress to Platinum</span>
+                  <span className="text-hyperliquid-400 font-bold text-sm sm:text-base">{referralStats?.nextTierProgress || 0}%</span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2 sm:h-3">
+                <div className="w-full bg-dark-700 rounded-full h-2 sm:h-3">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${referralStats?.nextTierProgress || 0}%` }}
                     transition={{ duration: 1, delay: 0.5 }}
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 sm:h-3 rounded-full"
+                    className="bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-400 h-2 sm:h-3 rounded-full glow-green"
                   />
                 </div>
               </div>
@@ -313,22 +335,22 @@ export default function CommunityPage() {
                   return (
                     <div
                       key={tier}
-                      className={`relative p-2 sm:p-4 rounded-xl border transition-all ${
+                      className={`relative p-2 sm:p-4 rounded-xl border transition-all hover:scale-105 ${
                         isCurrentTier
-                          ? 'border-cyan-500/50 bg-cyan-500/10'
-                          : 'border-gray-600 bg-black/20'
+                          ? 'border-hyperliquid-500/50 bg-hyperliquid-500/10 shadow-lg shadow-hyperliquid-500/20'
+                          : 'border-dark-600 bg-dark-800/50 hover:border-dark-500'
                       }`}
                     >
                       <div className="text-center">
-                        <div className={`w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-1 sm:mb-2 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center`}>
+                        <div className={`w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-1 sm:mb-2 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center shadow-lg`}>
                           <IconComponent className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                         </div>
-                        <p className={`font-bold text-xs sm:text-sm ${isCurrentTier ? 'text-cyan-400' : 'text-gray-400'}`}>
+                        <p className={`font-bold text-xs sm:text-sm ${isCurrentTier ? 'text-hyperliquid-400' : 'text-dark-400'}`}>
                           {tier}
                         </p>
                       </div>
                       {isCurrentTier && (
-                        <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-cyan-500 text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                        <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-hyperliquid-500 text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium">
                           Current
                         </div>
                       )}
@@ -339,32 +361,32 @@ export default function CommunityPage() {
             </div>
 
             {/* How It Works */}
-            <div className="bg-black/40 backdrop-blur-sm border border-gray-600 rounded-2xl p-4 sm:p-6">
+            <div className="glass-card p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">How Referrals Work</h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
+                <div className="feature-card text-center p-4 sm:p-6 hover:scale-105 transition-all duration-300">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-400 rounded-full flex items-center justify-center shadow-lg shadow-hyperliquid-500/30">
                     <ShareIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-white mb-2">1. Share Your Link</h3>
-                  <p className="text-gray-400 text-sm sm:text-base">Share your unique referral link with friends and on social media</p>
+                  <p className="text-dark-400 text-sm sm:text-base">Share your unique referral link with friends and on social media</p>
                 </div>
 
-                <div className="text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                <div className="feature-card text-center p-4 sm:p-6 hover:scale-105 transition-all duration-300">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30">
                     <UsersIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-white mb-2">2. Friends Join</h3>
-                  <p className="text-gray-400 text-sm sm:text-base">When someone uses your link to mint, they become your referral</p>
+                  <p className="text-dark-400 text-sm sm:text-base">When someone uses your link to mint, they become your referral</p>
                 </div>
 
-                <div className="text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                <div className="feature-card text-center p-4 sm:p-6 hover:scale-105 transition-all duration-300">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/30">
                     <GiftIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-white mb-2">3. Earn Rewards</h3>
-                  <p className="text-gray-400 text-sm sm:text-base">Get points for each successful referral and unlock tier bonuses</p>
+                  <p className="text-dark-400 text-sm sm:text-base">Get points for each successful referral and unlock tier bonuses</p>
                 </div>
               </div>
             </div>
@@ -376,10 +398,12 @@ export default function CommunityPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-black/40 backdrop-blur-sm border border-gray-600 rounded-2xl p-4 sm:p-6"
+            className="glass-card p-4 sm:p-6"
           >
             <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
-              <TrophyIcon className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
+              <div className="p-2 bg-yellow-500/10 rounded-lg">
+                <TrophyIcon className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
+              </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white">Top Referrers</h2>
             </div>
 
@@ -394,26 +418,26 @@ export default function CommunityPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all hover:scale-105 ${
+                    className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all hover:scale-105 group ${
                       entry.rank <= 3
-                        ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30'
-                        : 'bg-black/30 border-gray-600 hover:border-gray-500'
+                        ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30 shadow-lg shadow-yellow-500/20'
+                        : 'bg-dark-800/50 border-dark-600 hover:border-dark-500 hover:bg-dark-700/50'
                     }`}
                   >
                     <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0 ${
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0 shadow-lg ${
                         entry.rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black' :
                         entry.rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-500 text-black' :
                         entry.rank === 3 ? 'bg-gradient-to-r from-amber-600 to-amber-800 text-white' :
-                        'bg-gray-700 text-gray-300'
+                        'bg-dark-700 text-dark-300'
                       }`}>
                         {entry.rank}
                       </div>
                       
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-white text-sm sm:text-base truncate">{entry.username}</p>
+                        <p className="font-bold text-white text-sm sm:text-base truncate group-hover:text-hyperliquid-400 transition-colors">{entry.username}</p>
                         <div className="flex items-center space-x-2">
-                          <div className={`flex items-center space-x-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r ${tierGradient}`}>
+                          <div className={`flex items-center space-x-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r ${tierGradient} shadow-lg`}>
                             <TierIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                             <span className="text-xs font-bold text-white">{entry.tier}</span>
                           </div>
@@ -423,7 +447,7 @@ export default function CommunityPage() {
 
                     <div className="text-right flex-shrink-0">
                       <p className="font-bold text-white text-sm sm:text-base">{entry.referrals}</p>
-                      <p className="text-xs sm:text-sm text-gray-400">{entry.earnings.toLocaleString()}</p>
+                      <p className="text-xs sm:text-sm text-dark-400">{entry.earnings.toLocaleString()}</p>
                     </div>
                   </motion.div>
                 );
@@ -439,27 +463,29 @@ export default function CommunityPage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4 sm:space-y-6"
           >
-            <div className="bg-black/40 backdrop-blur-sm border border-gray-600 rounded-2xl p-4 sm:p-6">
+            <div className="glass-card p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
-                <GiftIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
+                <div className="p-2 bg-hyperliquid-500/10 rounded-lg">
+                  <GiftIcon className="h-5 w-5 sm:h-6 sm:w-6 text-hyperliquid-400" />
+                </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white">Referral Rewards</h2>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-3 sm:space-y-4">
-                  <h3 className="text-base sm:text-lg font-bold text-cyan-400">Per Referral Rewards</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-hyperliquid-400">Per Referral Rewards</h3>
                   
                   <div className="space-y-2 sm:space-y-3">
-                    <div className="flex justify-between items-center p-2.5 sm:p-3 bg-black/30 rounded-lg">
-                      <span className="text-gray-300 text-sm sm:text-base">Successful Mint</span>
-                      <span className="text-green-400 font-bold text-sm sm:text-base">+200 Points</span>
+                    <div className="flex justify-between items-center p-2.5 sm:p-3 glass rounded-lg">
+                      <span className="text-dark-300 text-sm sm:text-base font-medium">Successful Mint</span>
+                      <span className="text-hyperliquid-400 font-bold text-sm sm:text-base">+200 Points</span>
                     </div>
-                    <div className="flex justify-between items-center p-2.5 sm:p-3 bg-black/30 rounded-lg">
-                      <span className="text-gray-300 text-sm sm:text-base">First Stake</span>
+                    <div className="flex justify-between items-center p-2.5 sm:p-3 glass rounded-lg">
+                      <span className="text-dark-300 text-sm sm:text-base font-medium">First Stake</span>
                       <span className="text-blue-400 font-bold text-sm sm:text-base">+100 Points</span>
                     </div>
-                    <div className="flex justify-between items-center p-2.5 sm:p-3 bg-black/30 rounded-lg">
-                      <span className="text-gray-300 text-sm sm:text-base">Game Participation</span>
+                    <div className="flex justify-between items-center p-2.5 sm:p-3 glass rounded-lg">
+                      <span className="text-dark-300 text-sm sm:text-base font-medium">Game Participation</span>
                       <span className="text-purple-400 font-bold text-sm sm:text-base">+50 Points</span>
                     </div>
                   </div>
@@ -476,10 +502,10 @@ export default function CommunityPage() {
                                        tier === 'Platinum' ? '2.0x' : '3.0x';
                       
                       return (
-                        <div key={tier} className="flex justify-between items-center p-2.5 sm:p-3 bg-black/30 rounded-lg">
+                        <div key={tier} className="flex justify-between items-center p-2.5 sm:p-3 glass rounded-lg">
                           <div className="flex items-center space-x-2">
-                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-r ${gradient}`} />
-                            <span className="text-gray-300 text-sm sm:text-base">{tier}</span>
+                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gradient-to-r ${gradient} shadow-lg`} />
+                            <span className="text-dark-300 text-sm sm:text-base font-medium">{tier}</span>
                           </div>
                           <span className="text-yellow-400 font-bold text-sm sm:text-base">{multiplier}</span>
                         </div>
@@ -490,24 +516,30 @@ export default function CommunityPage() {
               </div>
             </div>
 
-            <div className="bg-black/40 backdrop-blur-sm border border-gray-600 rounded-2xl p-4 sm:p-6">
+            <div className="glass-card p-4 sm:p-6">
               <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Special Milestones</h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl p-3 sm:p-4 text-center">
-                  <HeartIcon className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 mx-auto mb-2" />
+                <div className="feature-card p-3 sm:p-4 text-center hover:scale-105 transition-all duration-300 border-hyperliquid-500/30">
+                  <div className="p-2 bg-hyperliquid-500/10 rounded-lg w-fit mx-auto mb-2">
+                    <HeartIcon className="h-6 w-6 sm:h-8 sm:w-8 text-hyperliquid-400" />
+                  </div>
                   <h4 className="font-bold text-white mb-1 text-sm sm:text-base">10 Referrals</h4>
-                  <p className="text-green-400 font-bold text-xs sm:text-sm">+1,000 Bonus Points</p>
+                  <p className="text-hyperliquid-400 font-bold text-xs sm:text-sm">+1,000 Bonus Points</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-xl p-3 sm:p-4 text-center">
-                  <StarIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 mx-auto mb-2" />
+                <div className="feature-card p-3 sm:p-4 text-center hover:scale-105 transition-all duration-300 border-blue-500/30">
+                  <div className="p-2 bg-blue-500/10 rounded-lg w-fit mx-auto mb-2">
+                    <StarIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400" />
+                  </div>
                   <h4 className="font-bold text-white mb-1 text-sm sm:text-base">25 Referrals</h4>
                   <p className="text-blue-400 font-bold text-xs sm:text-sm">Exclusive NFT Badge</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl p-3 sm:p-4 text-center">
-                  <FireIcon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 mx-auto mb-2" />
+                <div className="feature-card p-3 sm:p-4 text-center hover:scale-105 transition-all duration-300 border-purple-500/30">
+                  <div className="p-2 bg-purple-500/10 rounded-lg w-fit mx-auto mb-2">
+                    <FireIcon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400" />
+                  </div>
                   <h4 className="font-bold text-white mb-1 text-sm sm:text-base">50 Referrals</h4>
                   <p className="text-purple-400 font-bold text-xs sm:text-sm">VIP Community Access</p>
                 </div>

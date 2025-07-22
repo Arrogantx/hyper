@@ -18,7 +18,8 @@ import {
   Menu,
   X,
   Volume2,
-  VolumeX
+  VolumeX,
+  Zap
 } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useSoundEngine } from '@/utils/sound';
@@ -73,27 +74,36 @@ const Navigation: React.FC = () => {
 
     return (
       <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
         <Link
           href={item.href}
           className={cn(
-            'relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group',
+            'relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 group',
             isActive 
-              ? 'bg-gradient-to-r from-neon-pink/20 to-neon-cyan/20 text-neon-cyan border border-neon-cyan/30' 
-              : 'text-gray-300 hover:text-neon-cyan hover:bg-dark-surface',
-            isMobile && 'w-full justify-start'
+              ? 'bg-hyperliquid-500/10 text-hyperliquid-400 border border-hyperliquid-500/20 shadow-lg shadow-hyperliquid-500/10' 
+              : 'text-gray-300 hover:text-hyperliquid-400 hover:bg-dark-800/50',
+            isMobile && 'w-full justify-start py-3'
           )}
           onClick={() => {
             playClick();
             if (isMobile) setIsMobileMenuOpen(false);
           }}
         >
-          {Icon && <Icon className="h-5 w-5" />}
+          {Icon && (
+            <div className={cn(
+              'flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300',
+              isActive 
+                ? 'bg-hyperliquid-500/20 text-hyperliquid-400' 
+                : 'text-gray-400 group-hover:text-hyperliquid-400 group-hover:bg-hyperliquid-500/10'
+            )}>
+              <Icon className="h-4 w-4" />
+            </div>
+          )}
           <span className={cn(
-            'font-medium transition-colors',
-            isActive && 'text-neon-cyan'
+            'font-medium transition-colors text-sm',
+            isActive ? 'text-hyperliquid-400' : 'group-hover:text-hyperliquid-400'
           )}>
             {item.name}
           </span>
@@ -102,14 +112,14 @@ const Navigation: React.FC = () => {
           {isActive && (
             <motion.div
               layoutId="activeTab"
-              className="absolute inset-0 rounded-lg border border-neon-cyan/50 bg-gradient-to-r from-neon-pink/10 to-neon-cyan/10"
+              className="absolute inset-0 rounded-xl border border-hyperliquid-500/30 bg-hyperliquid-500/5"
               initial={false}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
 
           {/* Hover glow effect */}
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-neon-pink/5 to-neon-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 rounded-xl bg-hyperliquid-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </Link>
       </motion.div>
     );
@@ -118,7 +128,7 @@ const Navigation: React.FC = () => {
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-cyber border-b border-dark-border">
+      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 glass-card border-b border-dark-700/50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
           {/* Logo */}
           <motion.div
@@ -127,35 +137,35 @@ const Navigation: React.FC = () => {
             className="flex items-center gap-3"
           >
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-r from-neon-pink to-neon-cyan rounded-lg flex items-center justify-center">
-                <span className="text-black font-bold text-xl">H</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-xl flex items-center justify-center shadow-lg shadow-hyperliquid-500/25">
+                <Zap className="h-5 w-5 text-white" />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-neon-pink to-neon-cyan rounded-lg blur-lg opacity-50 -z-10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-xl blur-lg opacity-30 -z-10" />
             </div>
             <div>
-              <h1 className="text-xl font-cyber font-bold cyber-text">HYPERCATZ</h1>
-              <p className="text-xs text-gray-400">NFT Utility Hub</p>
+              <h1 className="text-xl font-bold hyperliquid-gradient-text">HYPERCATZ</h1>
+              <p className="text-xs text-gray-400 font-medium">NFT Utility Hub</p>
             </div>
           </motion.div>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {navItems.slice(0, -1).map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Sound Toggle */}
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleSound}
-              className="p-2"
+              className="p-2 hover:bg-dark-800/50"
             >
               {soundEnabled ? (
-                <Volume2 className="h-5 w-5 text-neon-green" />
+                <Volume2 className="h-5 w-5 text-hyperliquid-500" />
               ) : (
                 <VolumeX className="h-5 w-5 text-gray-400" />
               )}
@@ -173,34 +183,34 @@ const Navigation: React.FC = () => {
       </nav>
 
       {/* Mobile Navigation */}
-      <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-dark-bg/95 backdrop-blur-cyber border-b border-dark-border">
-        <div className="px-3 py-2.5 flex items-center justify-between">
+      <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-card border-b border-dark-700/50">
+        <div className="px-4 py-3 flex items-center justify-between">
           {/* Mobile Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-gradient-to-r from-neon-pink to-neon-cyan rounded-lg flex items-center justify-center">
-              <span className="text-black font-bold text-sm">H</span>
+            <div className="w-8 h-8 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-lg flex items-center justify-center shadow-lg shadow-hyperliquid-500/25">
+              <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="text-base font-cyber font-bold cyber-text">HYPERCATZ</span>
+            <span className="text-lg font-bold hyperliquid-gradient-text">HYPERCATZ</span>
           </div>
 
           {/* Mobile Controls */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {/* Sound Toggle */}
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleSound}
-              className="p-1.5 min-w-0"
+              className="p-2 min-w-0 hover:bg-dark-800/50"
             >
               {soundEnabled ? (
-                <Volume2 className="h-4 w-4 text-neon-green" />
+                <Volume2 className="h-4 w-4 text-hyperliquid-500" />
               ) : (
                 <VolumeX className="h-4 w-4 text-gray-400" />
               )}
             </Button>
 
             {/* Wallet Connect - Smaller on mobile */}
-            <div className="connect-button-wrapper scale-75 origin-right">
+            <div className="connect-button-wrapper scale-90 origin-right">
               <ConnectButton />
             </div>
 
@@ -209,12 +219,12 @@ const Navigation: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={toggleMobileMenu}
-              className="p-1.5 min-w-0"
+              className="p-2 min-w-0 hover:bg-dark-800/50"
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5 text-hyperliquid-400" />
               ) : (
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 w-5 text-gray-300" />
               )}
             </Button>
           </div>
@@ -227,9 +237,9 @@ const Navigation: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-dark-bg/98 backdrop-blur-cyber border-t border-dark-border max-h-[calc(100vh-60px)] overflow-y-auto"
+              className="glass-card border-t border-dark-700/50 max-h-[calc(100vh-70px)] overflow-y-auto"
             >
-              <div className="px-3 py-4 space-y-1">
+              <div className="px-4 py-4 space-y-2">
                 {navItems.map((item) => (
                   <NavLink key={item.href} item={item} isMobile />
                 ))}
@@ -240,7 +250,7 @@ const Navigation: React.FC = () => {
       </nav>
 
       {/* Spacer for fixed navigation */}
-      <div className="h-20 lg:h-24" />
+      <div className="h-[70px] lg:h-[80px]" />
     </>
   );
 };

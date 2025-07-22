@@ -213,28 +213,42 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 pt-16 sm:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
       <div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+          
+          {/* Status Badges */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-wrap gap-2 mb-6"
+          >
+            <div className="px-3 py-1 bg-hyperliquid-500/20 text-hyperliquid-400 rounded-full text-sm font-medium border border-hyperliquid-500/30">
+              Active Profile
+            </div>
+            <div className="px-3 py-1 bg-hyperliquid-500/20 text-hyperliquid-400 rounded-full text-sm font-medium border border-hyperliquid-500/30">
+              Collector Status
+            </div>
+          </motion.div>
           
           {/* Profile Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8"
+            className="glass-card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8"
           >
             <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-full flex items-center justify-center shadow-lg shadow-hyperliquid-500/25">
                 <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white" />
               </div>
               
               <div className="flex-1 w-full">
                 <div className="flex items-center gap-3 mb-1 sm:mb-2">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white">HyperCatz Collector</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold hyperliquid-gradient-text">HyperCatz Collector</h1>
                   <LoadingButton
                     isLoading={isRefreshing}
                     onClick={handleRefresh}
-                    className="p-1.5 text-gray-400 hover:text-white transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-hyperliquid-400 transition-colors"
                   >
                     <ArrowPathIcon className="w-4 h-4" />
                   </LoadingButton>
@@ -242,19 +256,19 @@ export default function ProfilePage() {
                 <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">0x1234...5678</p>
                 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                  <div className="text-center">
-                    <div className="text-xl sm:text-2xl font-bold text-purple-400">{profileStats.nftsOwned}</div>
+                  <div className="stat-card">
+                    <div className="text-xl sm:text-2xl font-bold text-hyperliquid-400">{profileStats.nftsOwned}</div>
                     <div className="text-xs sm:text-sm text-gray-400">NFTs Owned</div>
                   </div>
-                  <div className="text-center">
+                  <div className="stat-card">
                     <div className="text-xl sm:text-2xl font-bold text-blue-400">{profileStats.staked}</div>
                     <div className="text-xs sm:text-sm text-gray-400">Staked</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-xl sm:text-2xl font-bold text-green-400">{profileStats.rewards.toLocaleString()}</div>
+                  <div className="stat-card">
+                    <div className="text-xl sm:text-2xl font-bold text-hyperliquid-400">{profileStats.rewards.toLocaleString()}</div>
                     <div className="text-xs sm:text-sm text-gray-400">Rewards</div>
                   </div>
-                  <div className="text-center">
+                  <div className="stat-card">
                     <div className="text-xl sm:text-2xl font-bold text-yellow-400">{profileStats.tier}</div>
                     <div className="text-xs sm:text-sm text-gray-400">Tier</div>
                   </div>
@@ -281,26 +295,30 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex flex-wrap gap-2 mb-6 sm:mb-8"
+          className="glass-card p-2 mb-6 sm:mb-8"
         >
-          {[
-            { id: 'collection', label: 'Collection', icon: CubeIcon },
-            { id: 'activity', label: 'Activity', icon: ClockIcon },
-            { id: 'stats', label: 'Statistics', icon: ChartBarIcon }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-medium transition-all text-sm sm:text-base ${
-                activeTab === tab.id
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25'
-                  : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50'
-              }`}
-            >
-              <tab.icon className="w-4 h-4 sm:w-5 sm:h-5" />
-              {tab.label}
-            </button>
-          ))}
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'collection', label: 'Collection', icon: CubeIcon },
+              { id: 'activity', label: 'Activity', icon: ClockIcon },
+              { id: 'stats', label: 'Statistics', icon: ChartBarIcon }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-medium transition-all text-sm sm:text-base ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-hyperliquid-500 to-hyperliquid-600 text-white shadow-lg shadow-hyperliquid-500/25'
+                    : 'text-gray-400 hover:text-white hover:bg-dark-700/50'
+                }`}
+              >
+                <div className={`p-1 rounded-lg ${activeTab === tab.id ? 'bg-white/20' : 'bg-dark-700/50'}`}>
+                  <tab.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
         {/* Collection Tab */}
@@ -311,7 +329,7 @@ export default function ProfilePage() {
             transition={{ delay: 0.2 }}
           >
             {/* Filters and Controls */}
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="glass-card p-4 sm:p-6 mb-6 sm:mb-8">
               <div className="flex flex-col gap-4">
                 {/* Top Row - Search and View Toggle */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
@@ -323,7 +341,7 @@ export default function ProfilePage() {
                       placeholder="Search NFTs..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 text-sm sm:text-base"
+                      className="input-modern w-full pl-9 sm:pl-10"
                     />
                   </div>
 
@@ -332,7 +350,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => setViewMode('grid')}
                       className={`p-2 rounded-lg transition-colors ${
-                        viewMode === 'grid' ? 'bg-purple-600 text-white' : 'bg-gray-700/50 text-gray-400 hover:text-white'
+                        viewMode === 'grid' ? 'bg-hyperliquid-600 text-white' : 'bg-dark-700/50 text-gray-400 hover:text-white'
                       }`}
                     >
                       <Squares2X2Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -340,7 +358,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => setViewMode('list')}
                       className={`p-2 rounded-lg transition-colors ${
-                        viewMode === 'list' ? 'bg-purple-600 text-white' : 'bg-gray-700/50 text-gray-400 hover:text-white'
+                        viewMode === 'list' ? 'bg-hyperliquid-600 text-white' : 'bg-dark-700/50 text-gray-400 hover:text-white'
                       }`}
                     >
                       <ListBulletIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -354,7 +372,7 @@ export default function ProfilePage() {
                   <select
                     value={filterRarity}
                     onChange={(e) => setFilterRarity(e.target.value)}
-                    className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 text-sm sm:text-base"
+                    className="input-modern"
                   >
                     <option value="all">All Rarities</option>
                     <option value="Common">Common</option>
@@ -368,7 +386,7 @@ export default function ProfilePage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-700/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 text-sm sm:text-base"
+                    className="input-modern"
                   >
                     <option value="newest">Newest First</option>
                     <option value="level">Highest Level</option>
@@ -391,7 +409,7 @@ export default function ProfilePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => setSelectedNFT(nft)}
-                  className={`bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-purple-500/20 overflow-hidden cursor-pointer hover:border-purple-500/40 transition-all group ${
+                  className={`card-modern overflow-hidden cursor-pointer group ${
                     viewMode === 'list' ? 'flex items-center p-3 sm:p-4' : 'p-3 sm:p-4'
                   }`}
                 >
@@ -399,11 +417,11 @@ export default function ProfilePage() {
                     <>
                       {/* NFT Image */}
                       <div className="relative mb-3 sm:mb-4">
-                        <div className="aspect-square bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
-                          <CubeIcon className="w-12 h-12 sm:w-16 sm:h-16 text-purple-400" />
+                        <div className="aspect-square bg-gradient-to-br from-hyperliquid-500/20 to-hyperliquid-600/20 rounded-xl flex items-center justify-center">
+                          <CubeIcon className="w-12 h-12 sm:w-16 sm:h-16 text-hyperliquid-400" />
                         </div>
                         {nft.staked && (
-                          <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-green-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                          <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-hyperliquid-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                             Staked
                           </div>
                         )}
@@ -414,7 +432,7 @@ export default function ProfilePage() {
 
                       {/* NFT Info */}
                       <div>
-                        <h3 className="text-white font-semibold mb-2 group-hover:text-purple-400 transition-colors text-sm sm:text-base">
+                        <h3 className="text-white font-semibold mb-2 group-hover:text-hyperliquid-400 transition-colors text-sm sm:text-base">
                           {nft.name}
                         </h3>
                         <div className="flex items-center justify-between text-xs sm:text-sm text-gray-400 mb-2">
@@ -434,19 +452,19 @@ export default function ProfilePage() {
                   ) : (
                     <>
                       {/* List View */}
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                        <CubeIcon className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400" />
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-hyperliquid-500/20 to-hyperliquid-600/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                        <CubeIcon className="w-6 h-6 sm:w-8 sm:h-8 text-hyperliquid-400" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="text-white font-semibold group-hover:text-purple-400 transition-colors text-sm sm:text-base truncate">
+                          <h3 className="text-white font-semibold group-hover:text-hyperliquid-400 transition-colors text-sm sm:text-base truncate">
                             {nft.name}
                           </h3>
                           <div className={`bg-gradient-to-r ${rarityColors[nft.rarity as keyof typeof rarityColors]} text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0`}>
                             {nft.rarity}
                           </div>
                           {nft.staked && (
-                            <div className="bg-green-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0">
+                            <div className="bg-hyperliquid-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0">
                               Staked
                             </div>
                           )}
@@ -473,9 +491,9 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 sm:p-6"
+            className="glass-card p-4 sm:p-6"
           >
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Recent Activity</h2>
+            <h2 className="text-xl sm:text-2xl font-bold hyperliquid-gradient-text mb-4 sm:mb-6">Recent Activity</h2>
             <div className="space-y-3 sm:space-y-4">
               {activityData.map((activity, index) => (
                 <motion.div
@@ -483,10 +501,10 @@ export default function ProfilePage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-700/30 rounded-xl"
+                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-dark-700/30 rounded-xl hover:bg-dark-700/50 transition-colors"
                 >
                   <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    activity.type === 'mint' ? 'bg-green-500/20 text-green-400' :
+                    activity.type === 'mint' ? 'bg-hyperliquid-500/20 text-hyperliquid-400' :
                     activity.type === 'stake' ? 'bg-blue-500/20 text-blue-400' :
                     activity.type === 'game' ? 'bg-purple-500/20 text-purple-400' :
                     activity.type === 'trade' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -502,7 +520,7 @@ export default function ProfilePage() {
                     <div className="text-white font-medium text-sm sm:text-base truncate">{activity.item}</div>
                     <div className="text-gray-400 text-xs sm:text-sm">{activity.time}</div>
                   </div>
-                  <div className="text-green-400 font-semibold text-sm sm:text-base flex-shrink-0">{activity.value}</div>
+                  <div className="text-hyperliquid-400 font-semibold text-sm sm:text-base flex-shrink-0">{activity.value}</div>
                 </motion.div>
               ))}
             </div>
@@ -518,8 +536,8 @@ export default function ProfilePage() {
             className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8"
           >
             {/* Collection Stats */}
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 sm:p-6">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Collection Statistics</h3>
+            <div className="glass-card p-4 sm:p-6">
+              <h3 className="text-lg sm:text-xl font-bold hyperliquid-gradient-text mb-4 sm:mb-6">Collection Statistics</h3>
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400 text-sm sm:text-base">Total NFTs</span>
@@ -541,12 +559,12 @@ export default function ProfilePage() {
             </div>
 
             {/* Earning Stats */}
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 sm:p-6">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Earning Statistics</h3>
+            <div className="glass-card p-4 sm:p-6">
+              <h3 className="text-lg sm:text-xl font-bold hyperliquid-gradient-text mb-4 sm:mb-6">Earning Statistics</h3>
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400 text-sm sm:text-base">Total Staking Rewards</span>
-                  <span className="text-green-400 font-semibold text-sm sm:text-base">12,500 HCAT</span>
+                  <span className="text-hyperliquid-400 font-semibold text-sm sm:text-base">12,500 HCAT</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400 text-sm sm:text-base">Game Rewards</span>
@@ -576,11 +594,11 @@ export default function ProfilePage() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-gray-800 rounded-2xl border border-purple-500/20 p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="glass-card p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg sm:text-xl font-bold text-white pr-4">{selectedNFT.name}</h3>
+                <h3 className="text-lg sm:text-xl font-bold hyperliquid-gradient-text pr-4">{selectedNFT.name}</h3>
                 <button
                   onClick={() => setSelectedNFT(null)}
                   className="text-gray-400 hover:text-white text-xl sm:text-2xl flex-shrink-0"
@@ -589,8 +607,8 @@ export default function ProfilePage() {
                 </button>
               </div>
 
-              <div className="aspect-square bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center mb-4">
-                <CubeIcon className="w-20 h-20 sm:w-24 sm:h-24 text-purple-400" />
+              <div className="aspect-square bg-gradient-to-br from-hyperliquid-500/20 to-hyperliquid-600/20 rounded-xl flex items-center justify-center mb-4">
+                <CubeIcon className="w-20 h-20 sm:w-24 sm:h-24 text-hyperliquid-400" />
               </div>
 
               <div className="space-y-3 mb-4 sm:mb-6">
