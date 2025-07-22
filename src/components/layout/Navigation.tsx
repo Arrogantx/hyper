@@ -150,7 +150,7 @@ const Navigation: React.FC = () => {
           </motion.div>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-1 flex-1 justify-center max-w-2xl mx-8">
+          <div className="flex items-center gap-6 flex-1 justify-center max-w-4xl mx-8">
             {navItems.slice(0, -1).map((item) => (
               <NavLink key={item.href} item={item} />
             ))}

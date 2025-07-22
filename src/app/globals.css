@@ -200,7 +200,7 @@ a {
 /* Component-specific styles */
 @layer components {
   .nav-link {
-    @apply relative px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-all duration-200;
+    @apply relative px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-all duration-200 whitespace-nowrap;
   }
   
   .nav-link.active {
