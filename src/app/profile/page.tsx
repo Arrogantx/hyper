@@ -18,7 +18,7 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import Button from '@/components/ui/Button';
-import { LoadingOverlay, LoadingButton } from '@/components/ui/LoadingStates';
+import { LoadingButton } from '@/components/ui/LoadingStates';
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useSuccessToast, useErrorToast, useInfoToast } from '@/components/ui/Toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -112,13 +112,12 @@ export default function ProfilePage() {
   const [selectedNFT, setSelectedNFT] = useState<any>(null);
   
   // Loading and error states
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nftData, setNftData] = useState(mockNFTs);
   const [activityData, setActivityData] = useState(mockActivity);
   const [profileStats, setProfileStats] = useState({
-    nftsOwned: 6,
-    staked: 3,
+    nftsOwned: mockNFTs.length,
+    staked: mockNFTs.filter(nft => nft.staked).length,
     rewards: 15750,
     tier: 'Gold'
   });
@@ -129,40 +128,6 @@ export default function ProfilePage() {
   const showSuccess = useSuccessToast();
   const showError = useErrorToast();
   const showInfo = useInfoToast();
-
-  // Data loading simulation
-  useEffect(() => {
-    const loadProfileData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Reduced loading time for better UX
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Removed error simulation for production
-        
-        // Load data successfully
-        setNftData(mockNFTs);
-        setActivityData(mockActivity);
-        setProfileStats({
-          nftsOwned: mockNFTs.length,
-          staked: mockNFTs.filter(nft => nft.staked).length,
-          rewards: 15750,
-          tier: 'Gold'
-        });
-        
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load profile data';
-        setError(errorMessage);
-        showError(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadProfileData();
-  }, [showError]);
 
   // Handle refresh
   const handleRefresh = async () => {
@@ -217,7 +182,6 @@ export default function ProfilePage() {
   // Retry function for error handling
   const handleRetry = () => {
     setError(null);
-    setIsLoading(true);
     // Trigger data reload
     window.location.reload();
   };
@@ -238,7 +202,7 @@ export default function ProfilePage() {
   });
 
   // Show error state
-  if (error && !isLoading) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 pt-16 sm:pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -250,7 +214,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 pt-16 sm:pt-20">
-      <LoadingOverlay isLoading={isLoading}>
+      <div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           
           {/* Profile Header */}
@@ -681,7 +645,7 @@ export default function ProfilePage() {
           </motion.div>
         )}
         </div>
-      </LoadingOverlay>
+      </div>
     </div>
   );
 }

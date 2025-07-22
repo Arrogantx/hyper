@@ -17,7 +17,7 @@ const hyperEVM: Chain = {
 // Wagmi configuration
 export const config = getDefaultConfig({
   appName: 'Hypercatz',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'your-project-id',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2f5a2b1c8d3e4f5a6b7c8d9e0f1a2b3c',
   chains: [hyperEVM],
   ssr: true,
 });

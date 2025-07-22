@@ -15,7 +15,7 @@ import {
   HeartIcon
 } from '@heroicons/react/24/outline';
 import Button from '@/components/ui/Button';
-import { LoadingOverlay, LoadingButton } from '@/components/ui/LoadingStates';
+import { LoadingButton } from '@/components/ui/LoadingStates';
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useSuccessToast, useErrorToast } from '@/components/ui/Toast';
 
@@ -76,42 +76,14 @@ export default function CommunityPage() {
   const [referralCode] = useState('HYPER-CAT-2024');
   const [copied, setCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'leaderboard' | 'rewards'>('overview');
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [referralStats, setReferralStats] = useState<ReferralStats | null>(mockReferralStats);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(mockLeaderboard);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [isRefreshingStats, setIsRefreshingStats] = useState(false);
 
   const showSuccessToast = useSuccessToast();
   const showErrorToast = useErrorToast();
-
-  // Simulate loading data on component mount
-  useEffect(() => {
-    const loadCommunityData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Reduced loading time for better UX
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Removed error simulation for production
-        
-        setReferralStats(mockReferralStats);
-        setLeaderboard(mockLeaderboard);
-        
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load community data';
-        setError(errorMessage);
-        showErrorToast(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadCommunityData();
-  }, [showErrorToast]);
 
   const copyReferralCode = async () => {
     try {
@@ -160,7 +132,6 @@ export default function CommunityPage() {
 
   const retryLoadData = () => {
     setError(null);
-    setIsLoading(true);
     // Trigger useEffect again
     window.location.reload();
   };
@@ -183,8 +154,7 @@ export default function CommunityPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
-      <LoadingOverlay isLoading={isLoading}>
-        <div className="container mx-auto px-4 py-4 sm:py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -546,7 +516,6 @@ export default function CommunityPage() {
           </motion.div>
         )}
         </div>
-      </LoadingOverlay>
     </div>
   );
 }
