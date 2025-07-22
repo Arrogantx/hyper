@@ -228,12 +228,12 @@ const Navigation: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={toggleMobileMenu}
-              className="p-2 min-w-0 hover:bg-dark-800/50"
+              className="p-2 min-w-0 hover:bg-dark-800/50 relative z-50"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5 text-hyperliquid-400" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-300" />
+                <Menu className="h-5 w-5 text-gray-300 hover:text-hyperliquid-400" />
               )}
             </Button>
           </div>

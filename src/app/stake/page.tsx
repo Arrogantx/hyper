@@ -62,14 +62,14 @@ export default function StakePage() {
       
       try {
         // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Mock data - replace with actual data from blockchain/API
+        // Initialize with empty/zero data - replace with actual data from blockchain/API
         setUserStats({
-          totalStaked: 12,
-          totalRewards: 2847.5,
-          activePools: 3,
-          nextReward: '2h 34m'
+          totalStaked: 0,
+          totalRewards: 0,
+          activePools: 0,
+          nextReward: '--'
         });
 
         setStakingPools([
@@ -77,9 +77,9 @@ export default function StakePage() {
             id: 'diamond',
             name: 'Diamond Pool',
             apy: 150,
-            totalStaked: 2847,
-            userStaked: 5,
-            rewards: 1250.75,
+            totalStaked: 0,
+            userStaked: 0,
+            rewards: 0,
             lockPeriod: '90 days',
             multiplier: 3.0,
             isActive: true,
@@ -89,9 +89,9 @@ export default function StakePage() {
             id: 'gold',
             name: 'Gold Pool',
             apy: 100,
-            totalStaked: 5692,
-            userStaked: 4,
-            rewards: 892.25,
+            totalStaked: 0,
+            userStaked: 0,
+            rewards: 0,
             lockPeriod: '60 days',
             multiplier: 2.0,
             isActive: true,
@@ -101,9 +101,9 @@ export default function StakePage() {
             id: 'silver',
             name: 'Silver Pool',
             apy: 75,
-            totalStaked: 8439,
-            userStaked: 3,
-            rewards: 704.5,
+            totalStaked: 0,
+            userStaked: 0,
+            rewards: 0,
             lockPeriod: '30 days',
             multiplier: 1.5,
             isActive: true,
@@ -113,7 +113,7 @@ export default function StakePage() {
             id: 'bronze',
             name: 'Bronze Pool',
             apy: 50,
-            totalStaked: 12847,
+            totalStaked: 0,
             userStaked: 0,
             rewards: 0,
             lockPeriod: '7 days',

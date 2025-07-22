@@ -36,25 +36,14 @@ interface LeaderboardEntry {
 }
 
 const mockReferralStats: ReferralStats = {
-  totalReferrals: 12,
-  activeReferrals: 8,
-  totalEarned: 2400,
-  currentTier: 'Gold',
-  nextTierProgress: 65
+  totalReferrals: 0,
+  activeReferrals: 0,
+  totalEarned: 0,
+  currentTier: 'Bronze',
+  nextTierProgress: 0
 };
 
-const mockLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, username: 'CyberKing', referrals: 156, earnings: 31200, tier: 'Diamond' },
-  { rank: 2, username: 'NeonQueen', referrals: 134, earnings: 26800, tier: 'Diamond' },
-  { rank: 3, username: 'HyperLord', referrals: 98, earnings: 19600, tier: 'Platinum' },
-  { rank: 4, username: 'QuantumCat', referrals: 87, earnings: 17400, tier: 'Platinum' },
-  { rank: 5, username: 'DigitalNinja', referrals: 76, earnings: 15200, tier: 'Gold' },
-  { rank: 6, username: 'CryptoWizard', referrals: 65, earnings: 13000, tier: 'Gold' },
-  { rank: 7, username: 'MetaVerse', referrals: 54, earnings: 10800, tier: 'Gold' },
-  { rank: 8, username: 'BlockChainer', referrals: 43, earnings: 8600, tier: 'Silver' },
-  { rank: 9, username: 'TokenMaster', referrals: 32, earnings: 6400, tier: 'Silver' },
-  { rank: 10, username: 'NFTCollector', referrals: 21, earnings: 4200, tier: 'Bronze' }
-];
+const mockLeaderboard: LeaderboardEntry[] = [];
 
 const tierColors = {
   Bronze: 'from-amber-600 to-amber-800',
@@ -408,50 +397,58 @@ export default function CommunityPage() {
             </div>
 
             <div className="space-y-2 sm:space-y-3">
-              {leaderboard.map((entry, index) => {
-                const TierIcon = tierIcons[entry.tier as keyof typeof tierIcons];
-                const tierGradient = tierColors[entry.tier as keyof typeof tierColors];
-                
-                return (
-                  <motion.div
-                    key={entry.rank}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all hover:scale-105 group ${
-                      entry.rank <= 3
-                        ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30 shadow-lg shadow-yellow-500/20'
-                        : 'bg-dark-800/50 border-dark-600 hover:border-dark-500 hover:bg-dark-700/50'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0 shadow-lg ${
-                        entry.rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black' :
-                        entry.rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-500 text-black' :
-                        entry.rank === 3 ? 'bg-gradient-to-r from-amber-600 to-amber-800 text-white' :
-                        'bg-dark-700 text-dark-300'
-                      }`}>
-                        {entry.rank}
-                      </div>
-                      
-                      <div className="min-w-0 flex-1">
-                        <p className="font-bold text-white text-sm sm:text-base truncate group-hover:text-hyperliquid-400 transition-colors">{entry.username}</p>
-                        <div className="flex items-center space-x-2">
-                          <div className={`flex items-center space-x-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r ${tierGradient} shadow-lg`}>
-                            <TierIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
-                            <span className="text-xs font-bold text-white">{entry.tier}</span>
+              {leaderboard.length > 0 ? (
+                leaderboard.map((entry, index) => {
+                  const TierIcon = tierIcons[entry.tier as keyof typeof tierIcons];
+                  const tierGradient = tierColors[entry.tier as keyof typeof tierColors];
+                  
+                  return (
+                    <motion.div
+                      key={entry.rank}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all hover:scale-105 group ${
+                        entry.rank <= 3
+                          ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30 shadow-lg shadow-yellow-500/20'
+                          : 'bg-dark-800/50 border-dark-600 hover:border-dark-500 hover:bg-dark-700/50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
+                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0 shadow-lg ${
+                          entry.rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black' :
+                          entry.rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-500 text-black' :
+                          entry.rank === 3 ? 'bg-gradient-to-r from-amber-600 to-amber-800 text-white' :
+                          'bg-dark-700 text-dark-300'
+                        }`}>
+                          {entry.rank}
+                        </div>
+                        
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-white text-sm sm:text-base truncate group-hover:text-hyperliquid-400 transition-colors">{entry.username}</p>
+                          <div className="flex items-center space-x-2">
+                            <div className={`flex items-center space-x-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r ${tierGradient} shadow-lg`}>
+                              <TierIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
+                              <span className="text-xs font-bold text-white">{entry.tier}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-white text-sm sm:text-base">{entry.referrals}</p>
-                      <p className="text-xs sm:text-sm text-dark-400">{entry.earnings.toLocaleString()}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-bold text-white text-sm sm:text-base">{entry.referrals}</p>
+                        <p className="text-xs sm:text-sm text-dark-400">{entry.earnings.toLocaleString()}</p>
+                      </div>
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 sm:py-12">
+                  <TrophyIcon className="h-12 w-12 sm:h-16 sm:w-16 text-dark-600 mx-auto mb-4" />
+                  <p className="text-dark-400 text-base sm:text-lg font-medium">No referrers yet</p>
+                  <p className="text-dark-500 text-sm sm:text-base mt-2">Be the first to start referring friends!</p>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

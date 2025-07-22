@@ -113,13 +113,13 @@ export default function ProfilePage() {
   
   // Loading and error states
   const [error, setError] = useState<string | null>(null);
-  const [nftData, setNftData] = useState(mockNFTs);
-  const [activityData, setActivityData] = useState(mockActivity);
+  const [nftData, setNftData] = useState<any[]>([]);
+  const [activityData, setActivityData] = useState<any[]>([]);
   const [profileStats, setProfileStats] = useState({
-    nftsOwned: mockNFTs.length,
-    staked: mockNFTs.filter(nft => nft.staked).length,
-    rewards: 15750,
-    tier: 'Gold'
+    nftsOwned: 0,
+    staked: 0,
+    rewards: 0,
+    tier: 'Bronze'
   });
   const [isStaking, setIsStaking] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -444,7 +444,7 @@ export default function ProfilePage() {
                         </div>
                         <div className="text-xs text-gray-500">
                           {Object.entries(nft.traits).slice(0, 2).map(([key, value]) => (
-                            <div key={key} className="truncate">{key}: {value}</div>
+                            <div key={key} className="truncate">{key}: {String(value)}</div>
                           ))}
                         </div>
                       </div>
