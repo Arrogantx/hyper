@@ -137,13 +137,10 @@ export default function ProfilePage() {
         setIsLoading(true);
         setError(null);
         
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Reduced loading time for better UX
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        // Simulate potential error (5% chance - reduced)
-        if (Math.random() < 0.05) {
-          throw new Error('Failed to load profile data. Please try again.');
-        }
+        // Removed error simulation for production
         
         // Load data successfully
         setNftData(mockNFTs);
@@ -155,7 +152,6 @@ export default function ProfilePage() {
           tier: 'Gold'
         });
         
-        // Removed automatic info toast to prevent spam
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load profile data';
         setError(errorMessage);
@@ -166,7 +162,7 @@ export default function ProfilePage() {
     };
 
     loadProfileData();
-  }, [showError]); // Removed showInfo dependency
+  }, [showError]);
 
   // Handle refresh
   const handleRefresh = async () => {
