@@ -88,15 +88,13 @@ export default function AdminPage() {
         setIsLoading(true);
         setError(null);
         
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Reduced loading delay
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Simulate potential error (10% chance)
-        if (Math.random() < 0.1) {
-          throw new Error('Failed to load admin data');
-        }
+        // Remove random error simulation for admin panel
+        // Admin panel should load reliably
         
-        showInfo('Admin Panel Loaded', 'All systems and data loaded successfully');
+        // Remove notification spam - no toast on load
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load admin data');
         showError('Loading Failed', 'Failed to load admin panel data');
@@ -106,7 +104,7 @@ export default function AdminPage() {
     };
 
     loadAdminData();
-  }, [showInfo, showError]);
+  }, [showError]);
 
   // Handle retry
   const handleRetry = () => {
@@ -291,8 +289,16 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 pt-16 sm:pt-20">
-      <LoadingOverlay isLoading={isLoading}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-hyperliquid-500"></div>
+            <span className="ml-3 text-gray-400">Loading admin panel...</span>
+          </div>
+        )}
+        
+        {!isLoading && (
+          <>
         
         {/* Status Badges */}
         <motion.div
@@ -824,8 +830,9 @@ export default function AdminPage() {
             </motion.div>
           </motion.div>
         )}
-        </div>
-      </LoadingOverlay>
+          </>
+        )}
+      </div>
     </div>
   );
 }
