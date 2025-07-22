@@ -24,6 +24,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { PageLoadingSkeleton, LoadingOverlay } from '@/components/ui/LoadingStates';
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useToast, useSuccessToast, useErrorToast } from '@/components/ui/Toast';
+import { ProvenanceDisplay } from '@/components/ui/ProvenanceDisplay';
 import { useSoundEngine } from '@/utils/sound';
 import { MINT_CONFIG } from '@/lib/constants';
 
@@ -314,6 +315,15 @@ const MintPage: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Provenance Verification */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <ProvenanceDisplay />
+            </motion.div>
           </motion.div>
 
           {/* Right Side - Mint Interface */}
