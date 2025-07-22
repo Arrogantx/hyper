@@ -30,26 +30,27 @@ export const CONTRACT_ADDRESSES = {
 
 // Mint Configuration
 export const MINT_CONFIG = {
-  MAX_SUPPLY: 10000,
+  MAX_SUPPLY: 4444,
   MAX_PER_WALLET: 5,
+  MINT_START_DATE: '2025-07-25T00:00:00Z', // July 25th, 2025
   PHASES: {
     FREE: {
       price: '0',
       maxPerWallet: 1,
-      startTime: 0,
-      endTime: 0,
+      startTime: new Date('2025-07-25T00:00:00Z').getTime() / 1000,
+      endTime: new Date('2025-07-26T00:00:00Z').getTime() / 1000,
     },
     WHITELIST: {
       price: '0.01',
       maxPerWallet: 3,
-      startTime: 0,
-      endTime: 0,
+      startTime: new Date('2025-07-26T00:00:00Z').getTime() / 1000,
+      endTime: new Date('2025-07-28T00:00:00Z').getTime() / 1000,
     },
     PUBLIC: {
       price: '0.02',
       maxPerWallet: 5,
-      startTime: 0,
-      endTime: 0,
+      startTime: new Date('2025-07-28T00:00:00Z').getTime() / 1000,
+      endTime: 0, // No end time for public mint
     },
   },
 } as const;

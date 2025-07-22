@@ -140,8 +140,8 @@ export default function ProfilePage() {
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Simulate potential error (10% chance)
-        if (Math.random() < 0.1) {
+        // Simulate potential error (5% chance - reduced)
+        if (Math.random() < 0.05) {
           throw new Error('Failed to load profile data. Please try again.');
         }
         
@@ -155,7 +155,7 @@ export default function ProfilePage() {
           tier: 'Gold'
         });
         
-        showInfo('Profile data loaded successfully');
+        // Removed automatic info toast to prevent spam
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load profile data';
         setError(errorMessage);
@@ -166,7 +166,7 @@ export default function ProfilePage() {
     };
 
     loadProfileData();
-  }, [showError, showInfo]);
+  }, [showError]); // Removed showInfo dependency
 
   // Handle refresh
   const handleRefresh = async () => {

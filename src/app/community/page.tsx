@@ -96,14 +96,14 @@ export default function CommunityPage() {
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Simulate potential error (10% chance)
-        if (Math.random() < 0.1) {
+        // Simulate potential error (5% chance - reduced)
+        if (Math.random() < 0.05) {
           throw new Error('Failed to load community data. Please try again.');
         }
         
         setReferralStats(mockReferralStats);
         setLeaderboard(mockLeaderboard);
-        showSuccessToast('Community data loaded successfully!');
+        // Removed automatic success toast to prevent spam
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load community data';
         setError(errorMessage);
@@ -114,7 +114,7 @@ export default function CommunityPage() {
     };
 
     loadCommunityData();
-  }, [showSuccessToast, showErrorToast]);
+  }, [showErrorToast]); // Removed showSuccessToast dependency
 
   const copyReferralCode = async () => {
     try {

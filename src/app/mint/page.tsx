@@ -39,14 +39,21 @@ const MintPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
+  // Check if mint is active based on start date
+  const isMintActive = () => {
+    const now = new Date();
+    const mintStartDate = new Date(MINT_CONFIG.MINT_START_DATE);
+    return now >= mintStartDate;
+  };
+
   // Mock data - replace with real contract calls
   const [mintData, setMintData] = useState({
-    totalSupply: 3247,
+    totalSupply: 1247, // Updated to reflect current progress
     maxSupply: MINT_CONFIG.MAX_SUPPLY,
     userMinted: 0,
     mintPrice: '0.02',
     isWhitelisted: false,
-    phaseActive: true,
+    phaseActive: isMintActive(),
   });
 
   useEffect(() => {
@@ -63,12 +70,12 @@ const MintPage: React.FC = () => {
         
         // In a real app, this would fetch from contract
         setMintData({
-          totalSupply: 3247,
+          totalSupply: 1247, // Updated to reflect current progress
           maxSupply: MINT_CONFIG.MAX_SUPPLY,
           userMinted: 0,
           mintPrice: '0.02',
           isWhitelisted: false,
-          phaseActive: true,
+          phaseActive: isMintActive(),
         });
       } catch (err) {
         setError('Failed to load mint data. Please try again.');
@@ -273,20 +280,41 @@ const MintPage: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold">Current Phase</h3>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
-                  <span className="text-neon-green font-bold">LIVE</span>
+                  {mintData.phaseActive ? (
+                    <>
+                      <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
+                      <span className="text-neon-green font-bold">LIVE</span>
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="h-4 w-4 text-neon-orange" />
+                      <span className="text-neon-orange font-bold">COMING SOON</span>
+                    </>
+                  )}
                 </div>
               </div>
               
-              <div className="bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Sparkles className="h-5 w-5 text-neon-purple" />
-                  <span className="font-bold text-lg">Public Mint</span>
+              {mintData.phaseActive ? (
+                <div className="bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Sparkles className="h-5 w-5 text-neon-purple" />
+                    <span className="font-bold text-lg">Public Mint</span>
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    Open to everyone • Max 5 per wallet
+                  </div>
                 </div>
-                <div className="text-sm text-gray-300">
-                  Open to everyone • Max 5 per wallet
+              ) : (
+                <div className="bg-gradient-to-r from-neon-orange/20 to-neon-red/20 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Clock className="h-5 w-5 text-neon-orange" />
+                    <span className="font-bold text-lg">Mint Starts Soon</span>
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    Mint begins July 25th, 2025 • Max 5 per wallet
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
@@ -398,6 +426,11 @@ const MintPage: React.FC = () => {
                         <>
                           <LoadingSpinner size="sm" className="mr-2" />
                           Minting...
+                        </>
+                      ) : !mintData.phaseActive ? (
+                        <>
+                          <Clock className="h-5 w-5 mr-2" />
+                          Mint Starts July 25th
                         </>
                       ) : (
                         <>
