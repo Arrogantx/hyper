@@ -1,7 +1,6 @@
 [build]
-  base = "hypercatz"
-  publish = ".next"
-  command = "npm run build"
+  publish = "build"
+  command = "npm run netlify-build"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -52,15 +51,6 @@
   for = "*.svg"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# Edge Functions for Supabase integration
-[[edge_functions]]
-  function = "supabase-auth"
-  path = "/api/auth/*"
-
-[[edge_functions]]
-  function = "supabase-data"
-  path = "/api/data/*"
 
 # Environment variables (set in Netlify dashboard)
 # NEXT_PUBLIC_SUPABASE_URL
