@@ -60,7 +60,7 @@ export const SWAP_TOKENS: SwapToken[] = [
     id: 'hype',
     symbol: 'HYPE',
     name: 'Hyperliquid',
-    icon: '🔥',
+    icon: '/tokens/hype.svg',
     address: '0x0000000000000000000000000000000000000000',
     decimals: 18,
     token: TOKENS.HYPE
@@ -69,7 +69,7 @@ export const SWAP_TOKENS: SwapToken[] = [
     id: 'usdc',
     symbol: 'USDC',
     name: 'USD Coin',
-    icon: '💵',
+    icon: '/tokens/usdc.svg',
     address: '0xA0b86a33E6441E6C673C5323C774C8e4b8b8e8e8',
     decimals: 6,
     token: TOKENS.USDC
@@ -78,7 +78,7 @@ export const SWAP_TOKENS: SwapToken[] = [
     id: 'weth',
     symbol: 'WETH',
     name: 'Wrapped Ether',
-    icon: '⟠',
+    icon: '/tokens/weth.svg',
     address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     decimals: 18,
     token: TOKENS.WETH
@@ -87,7 +87,7 @@ export const SWAP_TOKENS: SwapToken[] = [
     id: 'wbtc',
     symbol: 'WBTC',
     name: 'Wrapped Bitcoin',
-    icon: '₿',
+    icon: '/tokens/wbtc.svg',
     address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
     decimals: 8,
     token: TOKENS.WBTC
@@ -96,7 +96,7 @@ export const SWAP_TOKENS: SwapToken[] = [
     id: 'link',
     symbol: 'LINK',
     name: 'Chainlink',
-    icon: '🔗',
+    icon: '/tokens/link.svg',
     address: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
     decimals: 18,
     token: TOKENS.LINK

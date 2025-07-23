@@ -368,7 +368,24 @@ export default function SwapPage() {
         onClick={onToggle}
         className="flex items-center space-x-2 sm:space-x-3 bg-dark-700/50 hover:bg-dark-600/50 rounded-xl p-2 sm:p-3 transition-all duration-200 border border-dark-600/30 hover:border-hyperliquid-500/30 min-w-0 w-full sm:w-auto"
       >
-        <span className="text-xl sm:text-2xl flex-shrink-0">{token.icon}</span>
+        <img
+          src={token.icon}
+          alt={token.symbol}
+          className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 rounded-full"
+          onError={(e) => {
+            // Fallback to emoji if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.nextElementSibling?.classList.remove('hidden');
+          }}
+        />
+        <span className="text-xl sm:text-2xl flex-shrink-0 hidden">
+          {token.symbol === 'HYPE' ? '🔥' :
+           token.symbol === 'USDC' ? '💵' :
+           token.symbol === 'WETH' ? '⟠' :
+           token.symbol === 'WBTC' ? '₿' :
+           token.symbol === 'LINK' ? '🔗' : '🪙'}
+        </span>
         <div className="text-left min-w-0 flex-1">
           <div className="font-semibold text-white text-sm sm:text-base truncate">{token.symbol}</div>
           <div className="text-xs text-dark-400 truncate hidden sm:block">{token.name}</div>
@@ -395,7 +412,24 @@ export default function SwapPage() {
                 className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-dark-700/50 active:bg-dark-600/50 transition-colors first:rounded-t-xl last:rounded-b-xl touch-manipulation"
               >
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                  <span className="text-xl sm:text-2xl flex-shrink-0">{t.icon}</span>
+                  <img
+                    src={t.icon}
+                    alt={t.symbol}
+                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 rounded-full"
+                    onError={(e) => {
+                      // Fallback to emoji if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <span className="text-xl sm:text-2xl flex-shrink-0 hidden">
+                    {t.symbol === 'HYPE' ? '🔥' :
+                     t.symbol === 'USDC' ? '💵' :
+                     t.symbol === 'WETH' ? '⟠' :
+                     t.symbol === 'WBTC' ? '₿' :
+                     t.symbol === 'LINK' ? '🔗' : '🪙'}
+                  </span>
                   <div className="text-left min-w-0 flex-1">
                     <div className="font-semibold text-white text-sm sm:text-base truncate">{t.symbol}</div>
                     <div className="text-xs text-dark-400 truncate">{t.name}</div>
