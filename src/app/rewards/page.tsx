@@ -250,7 +250,7 @@ export default function RewardsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 pt-16 sm:pt-20">
         <div className="container mx-auto px-4 py-4 sm:py-8">
           <ErrorDisplay error={error} onRetry={retryLoadData} />
         </div>
@@ -259,7 +259,7 @@ export default function RewardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 pt-16 sm:pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 pt-16 sm:pt-20">
       <LoadingOverlay isLoading={isLoading}>
         <div className="container mx-auto px-4 py-4 sm:py-8">
           {/* Header */}

@@ -29,10 +29,11 @@ interface Game {
   prizePool: number;
   duration: string;
   difficulty: 'Easy' | 'Medium' | 'Hard' | 'Expert';
-  status: 'available' | 'full' | 'starting' | 'in-progress';
+  status: 'available' | 'full' | 'starting' | 'in-progress' | 'coming_soon';
   playersOnline: number;
   image: string;
   features: string[];
+  isWorking: boolean;
 }
 
 interface Lobby {
@@ -50,9 +51,9 @@ interface Lobby {
 
 const games: Game[] = [
   {
-    id: 'hypercatz-battle',
-    name: 'Hypercatz Battle Arena',
-    description: 'Epic PvP battles with your staked Hypercatz NFTs. Use special abilities and strategic gameplay to dominate opponents.',
+    id: 'hypercatz-pvp-arena',
+    name: 'Hypercatz PvP Arena',
+    description: 'Real-time PvP battles with your Hypercatz NFTs. Stake HYPE tokens to enter matches and compete for rewards in live combat.',
     type: 'pvp',
     minPlayers: 2,
     maxPlayers: 8,
@@ -61,46 +62,83 @@ const games: Game[] = [
     duration: '10-15 min',
     difficulty: 'Medium',
     status: 'available',
-    playersOnline: 247,
-    image: '/games/battle-arena.jpg',
-    features: ['Real-time PvP', 'NFT Abilities', 'Ranked Matches', 'Seasonal Rewards']
+    playersOnline: 0, // Real player count would be fetched from backend
+    image: '/games/pvp-arena.jpg',
+    features: ['Real-time Combat', 'NFT Abilities', 'Live Matchmaking', 'Skill-based Rewards'],
+    isWorking: true
   },
   {
-    id: 'treasure-hunt',
-    name: 'Neon Treasure Hunt',
-    description: 'Explore cyberpunk dungeons to find rare treasures and $HYPE tokens. Team up or go solo in this adventure.',
-    type: 'pve',
-    minPlayers: 1,
-    maxPlayers: 4,
-    entryFee: 25,
-    prizePool: 100,
-    duration: '20-30 min',
-    difficulty: 'Easy',
-    status: 'available',
-    playersOnline: 156,
-    image: '/games/treasure-hunt.jpg',
-    features: ['Co-op Mode', 'Procedural Dungeons', 'Rare Loot', 'Boss Battles']
-  },
-  {
-    id: 'hypercatz-racing',
-    name: 'Hypercatz Racing Circuit',
-    description: 'High-speed racing through neon-lit tracks. Customize your Hypercatz with speed boosts and special abilities.',
+    id: 'hypercatz-duels',
+    name: 'Hypercatz Duels',
+    description: '1v1 dueling system where players can challenge each other directly. Winner takes the staked tokens in intense head-to-head battles.',
     type: 'pvp',
     minPlayers: 2,
-    maxPlayers: 12,
-    entryFee: 75,
-    prizePool: 900,
+    maxPlayers: 2,
+    entryFee: 25,
+    prizePool: 50,
     duration: '5-8 min',
-    difficulty: 'Hard',
+    difficulty: 'Easy',
     status: 'available',
-    playersOnline: 89,
-    image: '/games/racing.jpg',
-    features: ['Custom Tracks', 'Power-ups', 'Time Trials', 'Championships']
+    playersOnline: 0,
+    image: '/games/duels.jpg',
+    features: ['1v1 Combat', 'Direct Challenges', 'Winner Takes All', 'Quick Matches'],
+    isWorking: true
   },
   {
-    id: 'grand-tournament',
-    name: 'Grand Championship',
-    description: 'Weekly tournament featuring the best Hypercatz players. Massive prize pools and exclusive rewards.',
+    id: 'battle-royale',
+    name: 'Battle Royale',
+    description: 'Massive multiplayer battle royale with up to 100 players. Last cat standing wins the entire prize pool in this ultimate survival game.',
+    type: 'pvp',
+    minPlayers: 50,
+    maxPlayers: 100,
+    entryFee: 100,
+    prizePool: 10000,
+    duration: '20-30 min',
+    difficulty: 'Hard',
+    status: 'coming_soon',
+    playersOnline: 0,
+    image: '/games/battle-royale.jpg',
+    features: ['100 Player Battles', 'Shrinking Arena', 'Massive Prize Pool', 'Survival Gameplay'],
+    isWorking: false
+  },
+  {
+    id: 'team-battles',
+    name: 'Team Battles',
+    description: '3v3 team-based battles. Form alliances and coordinate strategies to dominate the battlefield in tactical team combat.',
+    type: 'pvp',
+    minPlayers: 6,
+    maxPlayers: 6,
+    entryFee: 75,
+    prizePool: 450,
+    duration: '15-20 min',
+    difficulty: 'Hard',
+    status: 'coming_soon',
+    playersOnline: 0,
+    image: '/games/team-battles.jpg',
+    features: ['3v3 Combat', 'Team Strategy', 'Coordinated Attacks', 'Shared Rewards'],
+    isWorking: false
+  },
+  {
+    id: 'ranked-ladder',
+    name: 'Ranked Ladder',
+    description: 'Competitive ranked system with seasonal rewards. Climb the ladder and prove your skills in structured competitive play.',
+    type: 'pvp',
+    minPlayers: 2,
+    maxPlayers: 8,
+    entryFee: 60,
+    prizePool: 500,
+    duration: '12-18 min',
+    difficulty: 'Expert',
+    status: 'coming_soon',
+    playersOnline: 0,
+    image: '/games/ranked.jpg',
+    features: ['Competitive Ranking', 'Seasonal Rewards', 'Skill Matching', 'Leaderboards'],
+    isWorking: false
+  },
+  {
+    id: 'tournament-mode',
+    name: 'Tournament Championship',
+    description: 'Structured tournament brackets with elimination rounds. Compete for massive prize pools and exclusive NFT rewards.',
     type: 'tournament',
     minPlayers: 16,
     maxPlayers: 64,
@@ -108,10 +146,11 @@ const games: Game[] = [
     prizePool: 12800,
     duration: '2-3 hours',
     difficulty: 'Expert',
-    status: 'starting',
-    playersOnline: 45,
+    status: 'coming_soon',
+    playersOnline: 0,
     image: '/games/tournament.jpg',
-    features: ['Elimination Rounds', 'Live Streaming', 'Exclusive NFTs', 'Hall of Fame']
+    features: ['Elimination Brackets', 'Massive Prizes', 'Exclusive NFTs', 'Championship Glory'],
+    isWorking: false
   }
 ];
 
@@ -255,6 +294,7 @@ export default function GamesPage() {
       case 'full': return 'text-red-400';
       case 'starting': return 'text-yellow-400';
       case 'in-progress': return 'text-blue-400';
+      case 'coming_soon': return 'text-gray-400';
       default: return 'text-dark-400';
     }
   };
@@ -347,7 +387,9 @@ export default function GamesPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="feature-card group overflow-hidden"
+                className={`feature-card group overflow-hidden ${
+                  game.status === 'coming_soon' ? 'opacity-60 grayscale hover:grayscale-0 hover:opacity-80 transition-all duration-300' : ''
+                }`}
               >
                 {/* Game Image Placeholder */}
                 <div className="h-36 sm:h-40 md:h-48 bg-gradient-to-br from-hyperliquid-500/20 to-hyperliquid-600/20 relative overflow-hidden">
@@ -358,7 +400,7 @@ export default function GamesPage() {
                   </div>
                   <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
                     <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(game.status)} bg-dark-900/70 backdrop-blur-sm border border-dark-600/30`}>
-                      {game.status.toUpperCase()}
+                      {game.status === 'coming_soon' ? 'COMING SOON' : game.status.toUpperCase()}
                     </span>
                   </div>
                   <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
@@ -437,14 +479,15 @@ export default function GamesPage() {
 
                   <Button
                     onClick={() => setSelectedGame(game)}
-                    variant="primary"
+                    variant={game.status === 'coming_soon' ? 'outline' : 'primary'}
                     className="w-full text-sm sm:text-base py-2 sm:py-3"
-                    disabled={game.status === 'full' || game.status === 'in-progress'}
+                    disabled={game.status === 'full' || game.status === 'in-progress' || game.status === 'coming_soon'}
                   >
                     <PlayIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     {game.status === 'available' ? 'Play Now' :
                      game.status === 'starting' ? 'Join Game' :
-                     game.status === 'full' ? 'Game Full' : 'In Progress'}
+                     game.status === 'full' ? 'Game Full' :
+                     game.status === 'coming_soon' ? 'Coming Soon' : 'In Progress'}
                   </Button>
                 </div>
               </motion.div>

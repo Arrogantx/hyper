@@ -151,7 +151,7 @@ export function ActivityFeedSkeleton({ count = 5 }: { count?: number }) {
 // Full page loading state
 export function PageLoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 pt-20">
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
           {/* Header skeleton */}
