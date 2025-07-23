@@ -19,7 +19,9 @@ import {
   X,
   Volume2,
   VolumeX,
-  Zap
+  Zap,
+  ChevronDown,
+  Grid3X3
 } from 'lucide-react';
 import { useSoundEngine } from '@/utils/sound';
 import { NavItem } from '@/types';
@@ -31,15 +33,21 @@ import HypeConnectButton from '../wallet/HypeConnectButton';
 const Navigation: React.FC = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const { enabled: soundEnabled, setEnabled: setSoundEnabled, playClick } = useSoundEngine();
 
-  const navItems: NavItem[] = [
+  // Primary navigation items (most important)
+  const primaryNavItems: NavItem[] = [
     { name: 'Home', href: '/', icon: 'Home' },
     { name: 'Mint', href: '/mint', icon: 'Coins' },
-    { name: 'Whitelist', href: '/whitelist', icon: 'CheckCircle' },
     { name: 'Stake', href: '/stake', icon: 'TrendingUp' },
-    { name: 'Games', href: '/games', icon: 'Gamepad2' },
     { name: 'Swap', href: '/swap', icon: 'ArrowLeftRight' },
+    { name: 'Games', href: '/games', icon: 'Gamepad2' },
+  ];
+
+  // Secondary navigation items (in dropdown)
+  const secondaryNavItems: NavItem[] = [
+    { name: 'Whitelist', href: '/whitelist', icon: 'CheckCircle' },
     { name: 'Rewards', href: '/rewards', icon: 'Gift' },
     { name: 'Community', href: '/community', icon: 'Users' },
     { name: 'Profile', href: '/profile', icon: 'Package' },
@@ -64,12 +72,21 @@ const Navigation: React.FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const toggleMoreMenu = () => {
+    playClick();
+    setIsMoreMenuOpen(!isMoreMenuOpen);
+  };
+
   const toggleSound = () => {
     playClick();
     setSoundEnabled(!soundEnabled);
   };
 
-  const NavLink: React.FC<{ item: NavItem; isMobile?: boolean }> = ({ item, isMobile = false }) => {
+  const NavLink: React.FC<{ item: NavItem; isMobile?: boolean; onClick?: () => void }> = ({ 
+    item, 
+    isMobile = false, 
+    onClick 
+  }) => {
     const Icon = iconMap[item.icon as keyof typeof iconMap];
     const isActive = pathname === item.href;
 
@@ -89,6 +106,7 @@ const Navigation: React.FC = () => {
           )}
           onClick={() => {
             playClick();
+            onClick?.();
             if (isMobile) setIsMobileMenuOpen(false);
           }}
         >
@@ -126,11 +144,14 @@ const Navigation: React.FC = () => {
     );
   };
 
+  // Check if any secondary nav item is active
+  const isSecondaryActive = secondaryNavItems.some(item => pathname === item.href);
+
   return (
     <>
       {/* Desktop Navigation */}
       <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 glass-card border-b border-dark-700/50">
-        <div className="w-full max-w-none px-4 xl:max-w-7xl xl:mx-auto xl:px-6 py-4 flex items-center justify-between">
+        <div className="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -149,15 +170,85 @@ const Navigation: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-6 flex-1 justify-center max-w-4xl mx-8">
-            {navItems.slice(0, -1).map((item) => (
+          {/* Primary Navigation Links */}
+          <div className="flex items-center gap-2 flex-1 justify-center max-w-2xl mx-8">
+            {primaryNavItems.map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
+            
+            {/* More Menu */}
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={toggleMoreMenu}
+                className={cn(
+                  'relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 group',
+                  isSecondaryActive || isMoreMenuOpen
+                    ? 'bg-hyperliquid-500/10 text-hyperliquid-400 border border-hyperliquid-500/20 shadow-lg shadow-hyperliquid-500/10' 
+                    : 'text-gray-300 hover:text-hyperliquid-400 hover:bg-dark-800/50'
+                )}
+              >
+                <div className={cn(
+                  'flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300',
+                  isSecondaryActive || isMoreMenuOpen
+                    ? 'bg-hyperliquid-500/20 text-hyperliquid-400' 
+                    : 'text-gray-400 group-hover:text-hyperliquid-400 group-hover:bg-hyperliquid-500/10'
+                )}>
+                  <Grid3X3 className="h-4 w-4" />
+                </div>
+                <span className={cn(
+                  'font-medium transition-colors text-sm',
+                  isSecondaryActive || isMoreMenuOpen ? 'text-hyperliquid-400' : 'group-hover:text-hyperliquid-400'
+                )}>
+                  More
+                </span>
+                <ChevronDown className={cn(
+                  'h-4 w-4 transition-transform duration-200',
+                  isMoreMenuOpen ? 'rotate-180' : ''
+                )} />
+                
+                {/* Active indicator */}
+                {(isSecondaryActive || isMoreMenuOpen) && (
+                  <motion.div
+                    layoutId="moreActiveTab"
+                    className="absolute inset-0 rounded-xl border border-hyperliquid-500/30 bg-hyperliquid-500/5"
+                    initial={false}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-xl bg-hyperliquid-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </motion.button>
+
+              {/* More Menu Dropdown */}
+              <AnimatePresence>
+                {isMoreMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full right-0 mt-2 w-56 glass-card border border-dark-700/50 rounded-xl shadow-xl shadow-black/20 overflow-hidden"
+                  >
+                    <div className="p-2">
+                      {secondaryNavItems.map((item) => (
+                        <NavLink 
+                          key={item.href} 
+                          item={item} 
+                          onClick={() => setIsMoreMenuOpen(false)}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-4 flex-shrink-0">
             {/* HYPE Price Display */}
             <HypePrice variant="navbar" />
 
@@ -166,7 +257,7 @@ const Navigation: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={toggleSound}
-              className="p-2 hover:bg-dark-800/50"
+              className="p-2 hover:bg-dark-800/50 rounded-lg"
             >
               {soundEnabled ? (
                 <Volume2 className="h-5 w-5 text-hyperliquid-500" />
@@ -174,9 +265,6 @@ const Navigation: React.FC = () => {
                 <VolumeX className="h-5 w-5 text-gray-400" />
               )}
             </Button>
-
-            {/* Admin Link (if needed) */}
-            <NavLink item={navItems[navItems.length - 1]} />
 
             {/* Wallet Connect */}
             <div className="connect-button-wrapper">
@@ -188,7 +276,7 @@ const Navigation: React.FC = () => {
 
       {/* Mobile Navigation */}
       <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-card border-b border-dark-700/50">
-        <div className="w-full px-3 py-3 flex items-center justify-between">
+        <div className="w-full px-4 py-3 flex items-center justify-between">
           {/* Mobile Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-to-br from-hyperliquid-500 to-hyperliquid-600 rounded-lg flex items-center justify-center shadow-lg shadow-hyperliquid-500/25">
@@ -198,8 +286,8 @@ const Navigation: React.FC = () => {
           </div>
 
           {/* Mobile Controls */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            {/* HYPE Price Display - Mobile */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* HYPE Price Display - Mobile (hidden on very small screens) */}
             <div className="hidden sm:block scale-75 origin-right">
               <HypePrice variant="navbar" />
             </div>
@@ -209,7 +297,7 @@ const Navigation: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={toggleSound}
-              className="p-2 min-w-0 hover:bg-dark-800/50"
+              className="p-2 min-w-0 hover:bg-dark-800/50 rounded-lg"
             >
               {soundEnabled ? (
                 <Volume2 className="h-4 w-4 text-hyperliquid-500" />
@@ -233,7 +321,7 @@ const Navigation: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={toggleMobileMenu}
-              className="p-2 min-w-0 hover:bg-dark-800/50 relative z-50"
+              className="p-2 min-w-0 hover:bg-dark-800/50 relative z-50 rounded-lg"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5 text-hyperliquid-400" />
@@ -254,7 +342,16 @@ const Navigation: React.FC = () => {
               className="glass-card border-t border-dark-700/50 max-h-[calc(100vh-70px)] overflow-y-auto"
             >
               <div className="px-4 py-4 space-y-2">
-                {navItems.map((item) => (
+                {/* Primary nav items first */}
+                {primaryNavItems.map((item) => (
+                  <NavLink key={item.href} item={item} isMobile />
+                ))}
+                
+                {/* Divider */}
+                <div className="my-3 border-t border-dark-700/50" />
+                
+                {/* Secondary nav items */}
+                {secondaryNavItems.map((item) => (
                   <NavLink key={item.href} item={item} isMobile />
                 ))}
               </div>
