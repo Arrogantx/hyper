@@ -1,21 +1,58 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useReadContract } from 'wagmi';
+import { isAddress } from 'viem';
 import Button from '@/components/ui/Button';
 import { CheckCircleIcon, XCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI, HypercatzPhase } from '@/contracts/HypercatzNFT';
 
 export default function WhitelistPage() {
   const [address, setAddress] = useState('');
-  const [isChecking, setIsChecking] = useState(false);
+  const [checkAddress, setCheckAddress] = useState<string | null>(null);
   const [result, setResult] = useState<{
     isWhitelisted: boolean;
     message: string;
     tier?: string;
+    phaseAccess?: HypercatzPhase;
   } | null>(null);
 
-  const validateAddress = (addr: string): boolean => {
-    return /^0x[a-fA-F0-9]{40}$/.test(addr);
+  // Read contract data for the address being checked
+  const { data: phaseAccess, isLoading: isChecking, error } = useReadContract({
+    address: HYPERCATZ_NFT_ADDRESS,
+    abi: HYPERCATZ_NFT_ABI,
+    functionName: 'phaseAccess',
+    args: checkAddress ? [checkAddress as `0x${string}`] : undefined,
+    query: {
+      enabled: !!checkAddress && isAddress(checkAddress),
+    },
+  });
+
+  const getPhaseString = (phase: HypercatzPhase): string => {
+    switch (phase) {
+      case HypercatzPhase.GUARANTEED:
+        return 'GUARANTEED';
+      case HypercatzPhase.WHITELIST:
+        return 'WHITELIST';
+      case HypercatzPhase.PUBLIC:
+        return 'PUBLIC';
+      default:
+        return 'UNKNOWN';
+    }
+  };
+
+  const getTierFromPhase = (phase: HypercatzPhase): string => {
+    switch (phase) {
+      case HypercatzPhase.GUARANTEED:
+        return 'Diamond';
+      case HypercatzPhase.WHITELIST:
+        return 'Gold';
+      case HypercatzPhase.PUBLIC:
+        return 'Bronze';
+      default:
+        return 'None';
+    }
   };
 
   const checkWhitelist = async () => {
@@ -27,7 +64,7 @@ export default function WhitelistPage() {
       return;
     }
 
-    if (!validateAddress(address)) {
+    if (!isAddress(address)) {
       setResult({
         isWhitelisted: false,
         message: 'Invalid wallet address format'
@@ -35,27 +72,35 @@ export default function WhitelistPage() {
       return;
     }
 
-    setIsChecking(true);
     setResult(null);
-
-    // Simulate API call - replace with actual whitelist check
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Mock whitelist logic - replace with actual implementation
-    const mockWhitelisted = Math.random() > 0.5;
-    const tiers = ['Diamond', 'Gold', 'Silver', 'Bronze'];
-    const randomTier = tiers[Math.floor(Math.random() * tiers.length)];
-
-    setResult({
-      isWhitelisted: mockWhitelisted,
-      message: mockWhitelisted 
-        ? `Congratulations! Your address is whitelisted.`
-        : 'Sorry, your address is not on the whitelist.',
-      tier: mockWhitelisted ? randomTier : undefined
-    });
-
-    setIsChecking(false);
+    setCheckAddress(address);
   };
+
+  // Update result when contract data is loaded
+  useEffect(() => {
+    if (checkAddress && phaseAccess !== undefined && !isChecking) {
+      const phase = phaseAccess as HypercatzPhase;
+      const isWhitelisted = phase <= HypercatzPhase.WHITELIST; // GUARANTEED or WHITELIST
+      const tier = getTierFromPhase(phase);
+      const phaseString = getPhaseString(phase);
+
+      setResult({
+        isWhitelisted,
+        message: isWhitelisted
+          ? `Congratulations! Your address has ${phaseString} access.`
+          : 'Your address has PUBLIC access only.',
+        tier: isWhitelisted ? tier : undefined,
+        phaseAccess: phase
+      });
+    }
+
+    if (error && checkAddress) {
+      setResult({
+        isWhitelisted: false,
+        message: 'Error checking whitelist status. Please try again.'
+      });
+    }
+  }, [phaseAccess, isChecking, error, checkAddress]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
@@ -178,11 +223,22 @@ export default function WhitelistPage() {
                       <h4 className="text-cyan-400 font-semibold mb-2">Benefits:</h4>
                       <ul className="text-gray-300 space-y-1">
                         <li>• Priority minting access</li>
-                        <li>• Reduced gas fees</li>
                         <li>• Exclusive utility features</li>
-                        {result.tier === 'Diamond' && <li>• Free minting (gas only)</li>}
-                        {result.tier === 'Gold' && <li>• 50% discount on minting</li>}
-                        {result.tier === 'Silver' && <li>• 25% discount on minting</li>}
+                        <li>• Early access to games and staking</li>
+                        {result.tier === 'Diamond' && (
+                          <>
+                            <li>• Guaranteed mint allocation</li>
+                            <li>• Maximum mint per wallet: 1</li>
+                            <li>• First priority access</li>
+                          </>
+                        )}
+                        {result.tier === 'Gold' && (
+                          <>
+                            <li>• Whitelist mint access</li>
+                            <li>• Maximum mint per wallet: 3</li>
+                            <li>• Second priority access</li>
+                          </>
+                        )}
                       </ul>
                     </div>
                     
@@ -237,31 +293,28 @@ export default function WhitelistPage() {
             transition={{ duration: 0.6, delay: 0.8 }}
             className="mt-12 bg-gray-800/30 backdrop-blur-sm border border-gray-700/30 rounded-2xl p-6"
           >
-            <h3 className="text-xl font-semibold text-cyan-400 mb-4">Whitelist Tiers</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
-                  <span className="text-white font-semibold">Diamond</span>
-                  <span className="text-gray-400">- Free mint</span>
+            <h3 className="text-xl font-semibold text-cyan-400 mb-4">Access Tiers</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+                  <span className="text-white font-semibold">Diamond (Guaranteed)</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"></div>
-                  <span className="text-white font-semibold">Gold</span>
-                  <span className="text-gray-400">- 50% discount</span>
-                </div>
+                <span className="text-gray-400 text-sm">Max 1 mint • First priority</span>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-gray-300 to-gray-500 rounded-full"></div>
-                  <span className="text-white font-semibold">Silver</span>
-                  <span className="text-gray-400">- 25% discount</span>
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"></div>
+                  <span className="text-white font-semibold">Gold (Whitelist)</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-full"></div>
-                  <span className="text-white font-semibold">Bronze</span>
-                  <span className="text-gray-400">- Priority access</span>
+                <span className="text-gray-400 text-sm">Max 3 mints • Second priority</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-full"></div>
+                  <span className="text-white font-semibold">Bronze (Public)</span>
                 </div>
+                <span className="text-gray-400 text-sm">Standard access • No priority</span>
               </div>
             </div>
           </motion.div>

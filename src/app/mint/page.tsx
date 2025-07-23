@@ -26,7 +26,8 @@ import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useToast, useSuccessToast, useErrorToast } from '@/components/ui/Toast';
 import { ProvenanceDisplay } from '@/components/ui/ProvenanceDisplay';
 import { useSoundEngine } from '@/utils/sound';
-import { MINT_CONFIG } from '@/lib/constants';
+import { useHypercatzContract } from '@/hooks/useHypercatzContract';
+import { HypercatzPhase } from '@/contracts/HypercatzNFT';
 
 const MintPage: React.FC = () => {
   const { address, isConnected } = useAccount();
@@ -36,65 +37,57 @@ const MintPage: React.FC = () => {
   const errorToast = useErrorToast();
   
   const [mintAmount, setMintAmount] = useState(1);
-  const [currentPhase, setCurrentPhase] = useState('PUBLIC');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isMinting, setIsMinting] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Check if mint is active based on start date
-  const isMintActive = () => {
-    const now = new Date();
-    const mintStartDate = new Date(MINT_CONFIG.MINT_START_DATE);
-    return now >= mintStartDate;
-  };
-
-  // Mock data - replace with real contract calls
-  const [mintData, setMintData] = useState({
-    totalSupply: 1247, // Updated to reflect current progress
-    maxSupply: MINT_CONFIG.MAX_SUPPLY,
-    userMinted: 0,
-    mintPrice: '0.02',
-    isWhitelisted: false,
-    phaseActive: isMintActive(),
-  });
+  // Use the contract hook
+  const {
+    contractInfo,
+    userMintInfo,
+    getPhaseString,
+    getMaxMintForCurrentPhase,
+    getUserMintedInCurrentPhase,
+    canUserMintInCurrentPhase,
+    getRemainingMintsForUser,
+    mint,
+    hash,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    error: contractError,
+    isLoading: isContractLoading,
+    isUserDataLoading,
+  } = useHypercatzContract();
 
   useEffect(() => {
     setMounted(true);
-    
-    // Simulate loading mint data
-    const loadMintData = async () => {
-      setIsLoadingData(true);
-      setError(null);
-      
-      try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // In a real app, this would fetch from contract
-        setMintData({
-          totalSupply: 1247, // Updated to reflect current progress
-          maxSupply: MINT_CONFIG.MAX_SUPPLY,
-          userMinted: 0,
-          mintPrice: '0.02',
-          isWhitelisted: false,
-          phaseActive: isMintActive(),
-        });
-      } catch (err) {
-        setError('Failed to load mint data. Please try again.');
-        errorToast('Loading Error', 'Failed to load mint data');
-      } finally {
-        setIsLoadingData(false);
-      }
-    };
+  }, []);
 
-    loadMintData();
-  }, [errorToast]);
+  // Handle successful mint
+  useEffect(() => {
+    if (isConfirmed && hash) {
+      playMint();
+      successToast(
+        'Mint Successful!',
+        `Successfully minted ${mintAmount} Hypercatz NFT${mintAmount > 1 ? 's' : ''}`
+      );
+      setMintAmount(1);
+    }
+  }, [isConfirmed, hash, mintAmount, playMint, successToast]);
+
+  // Handle contract errors
+  useEffect(() => {
+    if (contractError) {
+      playError();
+      const errorMessage = contractError.message || 'Transaction failed';
+      errorToast('Mint Failed', errorMessage);
+    }
+  }, [contractError, playError, errorToast]);
 
   const handleMintAmountChange = (delta: number) => {
     playClick();
-    const newAmount = Math.max(1, Math.min(5, mintAmount + delta));
+    const maxMint = contractInfo ? Number(getMaxMintForCurrentPhase()) : 5;
+    const newAmount = Math.max(1, Math.min(maxMint, mintAmount + delta));
     setMintAmount(newAmount);
   };
 
@@ -105,73 +98,50 @@ const MintPage: React.FC = () => {
       return;
     }
 
-    // Check if user has enough balance
-    const totalCostNum = parseFloat(totalCost);
-    const userBalance = balance ? parseFloat(balance.formatted) : 0;
-    
-    if (userBalance < totalCostNum) {
+    if (!contractInfo || !userMintInfo) {
       playError();
-      errorToast('Insufficient Balance', `You need ${totalCost} HYPE to mint ${mintAmount} NFT${mintAmount > 1 ? 's' : ''}`);
+      errorToast('Contract Error', 'Unable to load contract data');
+      return;
+    }
+
+    // Check if user can mint in current phase
+    if (!canUserMintInCurrentPhase()) {
+      playError();
+      const currentPhaseStr = getPhaseString(contractInfo.currentPhase);
+      const userPhaseStr = getPhaseString(userMintInfo.phaseAccess);
+      errorToast('Access Denied', `Current phase is ${currentPhaseStr}, but you only have access to ${userPhaseStr}`);
       return;
     }
 
     // Check mint limits
-    if (mintData.userMinted + mintAmount > 5) {
+    const remainingMints = getRemainingMintsForUser();
+    if (BigInt(mintAmount) > remainingMints) {
       playError();
-      errorToast('Mint Limit Exceeded', 'You can only mint 5 NFTs per wallet');
+      errorToast('Mint Limit Exceeded', `You can only mint ${remainingMints.toString()} more NFT${remainingMints === BigInt(1) ? '' : 's'} in this phase`);
       return;
     }
 
-    setIsMinting(true);
+    // Check if supply is available
+    if (contractInfo.totalMinted + BigInt(mintAmount) > contractInfo.maxSupply) {
+      playError();
+      errorToast('Supply Exceeded', 'Not enough NFTs remaining in collection');
+      return;
+    }
+
     playClick();
 
     try {
-      // Simulate blockchain transaction
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate random failure (10% chance)
-          if (Math.random() < 0.1) {
-            reject(new Error('Transaction failed'));
-          } else {
-            resolve(true);
-          }
-        }, 3000);
-      });
-      
-      playMint();
-      
-      // Update mint data
-      setMintData(prev => ({
-        ...prev,
-        totalSupply: prev.totalSupply + mintAmount,
-        userMinted: prev.userMinted + mintAmount,
-      }));
-      
-      // Show success toast
-      successToast(
-        'Mint Successful!',
-        `Successfully minted ${mintAmount} Hypercatz NFT${mintAmount > 1 ? 's' : ''}`
-      );
-      
-      // Reset mint amount
-      setMintAmount(1);
-      
+      await mint(mintAmount);
     } catch (error: any) {
       playError();
       console.error('Mint failed:', error);
-      
       const errorMessage = error?.message || 'Transaction failed';
       errorToast('Mint Failed', errorMessage);
-      
-    } finally {
-      setIsMinting(false);
     }
   };
 
-  const mintProgress = (mintData.totalSupply / mintData.maxSupply) * 100;
-  const totalCost = (parseFloat(mintData.mintPrice) * mintAmount).toFixed(3);
-
-  if (!mounted || isLoadingData) {
+  // Loading states
+  if (!mounted || isContractLoading) {
     return <PageLoadingSkeleton />;
   }
 
@@ -185,6 +155,21 @@ const MintPage: React.FC = () => {
       </div>
     );
   }
+
+  // Contract data with fallbacks
+  const totalSupply = contractInfo ? Number(contractInfo.totalSupply) : 0;
+  const maxSupply = contractInfo ? Number(contractInfo.maxSupply) : 10000;
+  const totalMinted = contractInfo ? Number(contractInfo.totalMinted) : 0;
+  const currentPhase = contractInfo ? contractInfo.currentPhase : HypercatzPhase.PUBLIC;
+  const currentPhaseStr = contractInfo ? getPhaseString(currentPhase) : 'PUBLIC';
+  const userMinted = userMintInfo ? Number(getUserMintedInCurrentPhase()) : 0;
+  const maxMintForPhase = contractInfo ? Number(getMaxMintForCurrentPhase()) : 5;
+  const remainingMints = isConnected ? Number(getRemainingMintsForUser()) : 0;
+  const mintProgress = maxSupply > 0 ? (totalMinted / maxSupply) * 100 : 0;
+
+  // Mock price for display (since contract is free mint)
+  const displayPrice = '0.00';
+  const totalCost = (parseFloat(displayPrice) * mintAmount).toFixed(3);
 
   return (
     <div className="min-h-screen px-6 py-12 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800">
@@ -274,8 +259,8 @@ const MintPage: React.FC = () => {
                   </div>
                   
                   <div className="flex justify-between text-sm text-gray-400 mt-2">
-                    <span>{mintData.totalSupply.toLocaleString()} Minted</span>
-                    <span>{(mintData.maxSupply - mintData.totalSupply).toLocaleString()} Remaining</span>
+                    <span>{totalMinted.toLocaleString()} Minted</span>
+                    <span>{(maxSupply - totalMinted).toLocaleString()} Remaining</span>
                   </div>
                 </div>
 
@@ -285,7 +270,7 @@ const MintPage: React.FC = () => {
                     <div className="flex items-center justify-center mb-2">
                       <Coins className="w-5 h-5 text-hyperliquid-500" />
                     </div>
-                    <div className="stat-value">{mintData.totalSupply.toLocaleString()}</div>
+                    <div className="stat-value">{totalMinted.toLocaleString()}</div>
                     <div className="stat-label">Total Minted</div>
                   </div>
                   
@@ -293,24 +278,24 @@ const MintPage: React.FC = () => {
                     <div className="flex items-center justify-center mb-2">
                       <Users className="w-5 h-5 text-hyperliquid-500" />
                     </div>
-                    <div className="stat-value">2.8K+</div>
-                    <div className="stat-label">Holders</div>
+                    <div className="stat-value">{maxSupply.toLocaleString()}</div>
+                    <div className="stat-label">Max Supply</div>
                   </div>
                   
                   <div className="stat-card">
                     <div className="flex items-center justify-center mb-2">
                       <TrendingUp className="w-5 h-5 text-hyperliquid-500" />
                     </div>
-                    <div className="stat-value">1.2M</div>
-                    <div className="stat-label">Volume (ETH)</div>
+                    <div className="stat-value">{currentPhaseStr}</div>
+                    <div className="stat-label">Current Phase</div>
                   </div>
                   
                   <div className="stat-card">
                     <div className="flex items-center justify-center mb-2">
                       <Star className="w-5 h-5 text-hyperliquid-500" />
                     </div>
-                    <div className="stat-value">9.2</div>
-                    <div className="stat-label">Rarity Score</div>
+                    <div className="stat-value">{maxMintForPhase}</div>
+                    <div className="stat-label">Max Per Wallet</div>
                   </div>
                 </div>
               </div>
@@ -338,50 +323,31 @@ const MintPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-white">Current Phase</h3>
                 <div className="flex items-center gap-2">
-                  {mintData.phaseActive ? (
-                    <>
-                      <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
-                      <span className="text-hyperliquid-400 font-bold">LIVE</span>
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="h-4 w-4 text-accent-orange" />
-                      <span className="text-accent-orange font-bold">COMING SOON</span>
-                    </>
-                  )}
+                  <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
+                  <span className="text-hyperliquid-400 font-bold">LIVE</span>
                 </div>
               </div>
               
-              {mintData.phaseActive ? (
-                <div className="glass-card p-6 border-hyperliquid-500/20 glow-green mb-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Sparkles className="h-6 w-6 text-hyperliquid-500" />
-                    <span className="font-bold text-xl text-white">Public Mint Active</span>
-                  </div>
-                  <div className="text-gray-300">
-                    Open to everyone • Maximum 5 NFTs per wallet • No whitelist required
-                  </div>
+              <div className="glass-card p-6 border-hyperliquid-500/20 glow-green mb-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <Sparkles className="h-6 w-6 text-hyperliquid-500" />
+                  <span className="font-bold text-xl text-white">{currentPhaseStr} Mint Active</span>
                 </div>
-              ) : (
-                <div className="glass-card p-6 border-accent-orange/20 mb-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Clock className="h-6 w-6 text-accent-orange" />
-                    <span className="font-bold text-xl text-white">Mint Launches Soon</span>
-                  </div>
-                  <div className="text-gray-300">
-                    Mint begins July 25th, 2025 • Maximum 5 NFTs per wallet
-                  </div>
+                <div className="text-gray-300">
+                  {currentPhase === HypercatzPhase.PUBLIC && 'Open to everyone • Maximum 5 NFTs per wallet • No whitelist required'}
+                  {currentPhase === HypercatzPhase.WHITELIST && 'Whitelist holders only • Limited mint per wallet'}
+                  {currentPhase === HypercatzPhase.GUARANTEED && 'Guaranteed mint for eligible wallets'}
                 </div>
-              )}
+              </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
                   <div className="text-gray-400 text-sm mb-1">Mint Price</div>
-                  <div className="font-bold text-xl text-hyperliquid-400">{mintData.mintPrice} HYPE</div>
+                  <div className="font-bold text-xl text-hyperliquid-400">FREE</div>
                 </div>
                 <div className="text-center">
                   <div className="text-gray-400 text-sm mb-1">Your Minted</div>
-                  <div className="font-bold text-xl text-white">{mintData.userMinted} / 5</div>
+                  <div className="font-bold text-xl text-white">{userMinted} / {maxMintForPhase}</div>
                 </div>
               </div>
             </div>
@@ -419,25 +385,29 @@ const MintPage: React.FC = () => {
                       <span className="text-gray-400">Balance</span>
                       <span className="font-bold text-hyperliquid-400">{balance?.formatted.slice(0, 8)} {balance?.symbol}</span>
                     </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Remaining Mints</span>
+                      <span className="font-bold text-hyperliquid-400">{remainingMints}</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Mint Controls */}
-                <LoadingOverlay isLoading={isMinting} message="Processing mint transaction...">
+                <LoadingOverlay isLoading={isPending || isConfirming} message={isPending ? "Confirming transaction..." : "Processing mint transaction..."}>
                   <div className="feature-card">
                     <h3 className="text-2xl font-bold mb-8 text-white">Mint Your Hypercatz</h3>
                     
                     {/* Amount Selector */}
                     <div className="mb-8">
                       <label className="block text-sm font-medium text-gray-300 mb-4">
-                        Select Quantity
+                        Select Quantity (Max: {Math.min(maxMintForPhase, remainingMints)})
                       </label>
                       <div className="flex items-center justify-center gap-6">
                         <Button
                           variant="outline"
                           size="lg"
                           onClick={() => handleMintAmountChange(-1)}
-                          disabled={mintAmount <= 1 || isMinting}
+                          disabled={mintAmount <= 1 || isPending || isConfirming}
                           className="w-14 h-14 p-0"
                         >
                           <Minus className="h-5 w-5" />
@@ -451,7 +421,7 @@ const MintPage: React.FC = () => {
                           variant="outline"
                           size="lg"
                           onClick={() => handleMintAmountChange(1)}
-                          disabled={mintAmount >= 5 || isMinting}
+                          disabled={mintAmount >= Math.min(maxMintForPhase, remainingMints) || isPending || isConfirming}
                           className="w-14 h-14 p-0"
                         >
                           <Plus className="h-5 w-5" />
@@ -468,12 +438,12 @@ const MintPage: React.FC = () => {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-300">Price per NFT</span>
-                          <span className="font-medium text-white">{mintData.mintPrice} HYPE</span>
+                          <span className="font-medium text-white">FREE</span>
                         </div>
                         <div className="border-t border-dark-700 pt-4">
                           <div className="flex justify-between items-center">
                             <span className="font-bold text-lg text-white">Total Cost</span>
-                            <span className="font-bold text-2xl text-hyperliquid-400">{totalCost} HYPE</span>
+                            <span className="font-bold text-2xl text-hyperliquid-400">FREE</span>
                           </div>
                         </div>
                       </div>
@@ -483,19 +453,29 @@ const MintPage: React.FC = () => {
                     <Button
                       size="lg"
                       onClick={handleMint}
-                      isLoading={isMinting}
-                      disabled={!mintData.phaseActive || isMinting}
+                      isLoading={isPending || isConfirming}
+                      disabled={isPending || isConfirming || remainingMints === 0 || !canUserMintInCurrentPhase()}
                       className="w-full group text-lg py-4"
                     >
-                      {isMinting ? (
+                      {isPending ? (
+                        <>
+                          <LoadingSpinner size="sm" className="mr-3" />
+                          Confirming Transaction...
+                        </>
+                      ) : isConfirming ? (
                         <>
                           <LoadingSpinner size="sm" className="mr-3" />
                           Minting NFT{mintAmount > 1 ? 's' : ''}...
                         </>
-                      ) : !mintData.phaseActive ? (
+                      ) : remainingMints === 0 ? (
+                        <>
+                          <AlertCircle className="h-6 w-6 mr-3" />
+                          Mint Limit Reached
+                        </>
+                      ) : !canUserMintInCurrentPhase() ? (
                         <>
                           <Clock className="h-6 w-6 mr-3" />
-                          Mint Starts July 25th, 2025
+                          No Access to Current Phase
                         </>
                       ) : (
                         <>
@@ -504,6 +484,14 @@ const MintPage: React.FC = () => {
                         </>
                       )}
                     </Button>
+
+                    {/* Transaction Hash */}
+                    {hash && (
+                      <div className="mt-4 glass-card p-4 border-hyperliquid-500/20">
+                        <div className="text-sm text-gray-400 mb-1">Transaction Hash:</div>
+                        <div className="font-mono text-xs text-hyperliquid-400 break-all">{hash}</div>
+                      </div>
+                    )}
 
                     {/* Important Notice */}
                     <div className="mt-6 glass-card p-4 border-accent-orange/20">
