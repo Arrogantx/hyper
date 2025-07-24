@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { 
-  Zap, 
-  Coins, 
-  TrendingUp, 
-  Gamepad2, 
-  Users, 
+import {
+  Zap,
+  Coins,
+  TrendingUp,
+  Gamepad2,
+  Users,
   Gift,
   ArrowRight,
   Play,
@@ -19,11 +19,13 @@ import {
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useSoundEngine } from '@/utils/sound';
+import { useHypercatzContract } from '@/hooks/useHypercatzContract';
 
 const HomePage: React.FC = () => {
   const { scrollY } = useScroll();
   const { playLightning, playClick } = useSoundEngine();
   const [mounted, setMounted] = useState(false);
+  const { contractInfo } = useHypercatzContract();
 
   // Parallax effects
   const y1 = useTransform(scrollY, [0, 300], [0, -50]);
@@ -85,10 +87,15 @@ const HomePage: React.FC = () => {
     },
   ];
 
+  // Live stats from contract
+  const totalSupply = contractInfo ? Number(contractInfo.maxSupply) : 4444;
+  const totalMinted = contractInfo ? Number(contractInfo.totalMinted) : 0;
+  const mintProgress = totalSupply > 0 ? ((totalMinted / totalSupply) * 100).toFixed(1) : '0.0';
+  
   const stats = [
-    { label: 'Total Supply', value: '4,444', suffix: '', icon: Sparkles },
-    { label: 'Active Holders', value: '2.8', suffix: 'K+', icon: Users },
-    { label: 'Total Volume', value: '1.2', suffix: 'M ETH', icon: TrendingUp },
+    { label: 'Total Supply', value: totalSupply.toLocaleString(), suffix: '', icon: Sparkles },
+    { label: 'Minted', value: totalMinted.toLocaleString(), suffix: '', icon: Users },
+    { label: 'Progress', value: mintProgress, suffix: '%', icon: TrendingUp },
     { label: 'Staking APY', value: '125', suffix: '%', icon: Shield },
   ];
 

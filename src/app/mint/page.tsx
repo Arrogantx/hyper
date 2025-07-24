@@ -319,18 +319,48 @@ const MintPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-white">Current Phase</h3>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
-                    <span className="text-hyperliquid-400 font-bold">LIVE</span>
+                    <div className={`w-2 h-2 rounded-full ${
+                      currentPhase === HypercatzPhase.CLOSED
+                        ? 'bg-red-500'
+                        : 'bg-hyperliquid-500 animate-pulse'
+                    }`} />
+                    <span className={`font-bold ${
+                      currentPhase === HypercatzPhase.CLOSED
+                        ? 'text-red-400'
+                        : 'text-hyperliquid-400'
+                    }`}>
+                      {currentPhase === HypercatzPhase.CLOSED ? 'CLOSED' : 'LIVE'}
+                    </span>
                   </div>
                 </div>
                 
-                <div className="glass-card p-6 border-hyperliquid-500/20 glow-green mb-6">
+                <div className={`glass-card p-6 mb-6 ${
+                  currentPhase === HypercatzPhase.CLOSED
+                    ? 'border-red-500/20 glow-red'
+                    : 'border-hyperliquid-500/20 glow-green'
+                }`}>
                   <div className="flex items-center gap-3 mb-3">
-                    <Sparkles className="h-6 w-6 text-hyperliquid-500" />
-                    <span className="font-bold text-xl text-white">{currentPhaseStr} Mint Active</span>
+                    {currentPhase === HypercatzPhase.CLOSED ? (
+                      <AlertCircle className="h-6 w-6 text-red-500" />
+                    ) : (
+                      <Sparkles className="h-6 w-6 text-hyperliquid-500" />
+                    )}
+                    <span className="font-bold text-xl text-white">
+                      {currentPhase === HypercatzPhase.CLOSED
+                        ? 'Mint Currently Closed'
+                        : `${currentPhaseStr} Mint Active`
+                      }
+                    </span>
                   </div>
                   <div className="text-gray-300">
-                    Guaranteed mint for eligible wallets
+                    {currentPhase === HypercatzPhase.CLOSED
+                      ? 'Minting is not available at this time. Check back later or follow our social media for updates.'
+                      : currentPhase === HypercatzPhase.GUARANTEED
+                        ? 'Guaranteed mint for eligible wallets'
+                        : currentPhase === HypercatzPhase.WHITELIST
+                          ? 'Whitelist mint for eligible wallets'
+                          : 'Public mint open to all wallets'
+                    }
                   </div>
                 </div>
 

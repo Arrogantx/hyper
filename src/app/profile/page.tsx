@@ -88,10 +88,10 @@ const mockNFTs = [
 ];
 
 const mockActivity = [
-  { type: 'mint', item: 'Hypercatz #3333', time: '2 hours ago', value: '0.5 ETH' },
+  { type: 'mint', item: 'Hypercatz #3333', time: '2 hours ago', value: '0.5 HYPE' },
   { type: 'stake', item: 'Hypercatz #1337', time: '1 day ago', value: '+50 HCAT' },
   { type: 'game', item: 'Neon Runner Victory', time: '2 days ago', value: '+200 XP' },
-  { type: 'trade', item: 'Hypercatz #0420', time: '3 days ago', value: '1.2 ETH' },
+  { type: 'trade', item: 'Hypercatz #0420', time: '3 days ago', value: '1.2 HYPE' },
   { type: 'reward', item: 'Daily Login Bonus', time: '1 week ago', value: '+100 HCAT' }
 ];
 

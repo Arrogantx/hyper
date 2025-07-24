@@ -389,7 +389,7 @@ export default function AdminPage() {
               { label: 'Total Staked', value: mockStats.totalStaked.toLocaleString(), icon: FireIcon, change: '+5%' },
               { label: 'Total Rewards', value: `${mockStats.totalRewards.toLocaleString()} HCAT`, icon: BanknotesIcon, change: '+18%' },
               { label: 'Game Sessions', value: mockStats.gamesSessions.toLocaleString(), icon: TrophyIcon, change: '+22%' },
-              { label: 'Swap Volume', value: `${mockStats.swapVolume} ETH`, icon: ArrowPathIcon, change: '+35%' },
+              { label: 'Swap Volume', value: `${mockStats.swapVolume} HYPE`, icon: ArrowPathIcon, change: '+35%' },
               { label: 'System Health', value: '98.5%', icon: ShieldCheckIcon, change: '+0.2%' }
             ].map((stat, index) => (
               <motion.div

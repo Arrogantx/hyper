@@ -142,6 +142,8 @@ export const useHypercatzContract = () => {
   // Helper functions
   const getPhaseString = (phase: HypercatzPhase): string => {
     switch (phase) {
+      case HypercatzPhase.CLOSED:
+        return 'CLOSED';
       case HypercatzPhase.GUARANTEED:
         return 'GUARANTEED';
       case HypercatzPhase.WHITELIST:

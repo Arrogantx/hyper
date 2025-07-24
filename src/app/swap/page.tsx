@@ -794,7 +794,7 @@ export default function SwapPage() {
                         ~{swapQuote.bestRoute.gasEstimate
                           ? formatUnits(swapQuote.bestRoute.gasEstimate, 18)
                           : '0'
-                        } ETH
+                        } HYPE
                       </span>
                     </div>
                     <div className="flex justify-between items-start">
@@ -957,7 +957,7 @@ export default function SwapPage() {
                           {route.path?.join(' → ') || 'Direct'}
                         </div>
                         <div className="text-xs sm:text-sm text-dark-400">
-                          Gas: ~{route.gasEstimate ? formatUnits(route.gasEstimate, 18) : '0'} ETH
+                          Gas: ~{route.gasEstimate ? formatUnits(route.gasEstimate, 18) : '0'} HYPE
                         </div>
                       </div>
                       <div className="text-left sm:text-right">
