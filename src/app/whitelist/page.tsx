@@ -80,7 +80,8 @@ export default function WhitelistPage() {
   useEffect(() => {
     if (checkAddress && phaseAccess !== undefined && !isChecking) {
       const phase = phaseAccess as HypercatzPhase;
-      const isWhitelisted = phase <= HypercatzPhase.WHITELIST; // GUARANTEED or WHITELIST
+      // All phases (0, 1, 2) are valid access levels
+      const isWhitelisted = phase >= HypercatzPhase.GUARANTEED && phase <= HypercatzPhase.PUBLIC;
       const tier = getTierFromPhase(phase);
       const phaseString = getPhaseString(phase);
 
@@ -88,7 +89,7 @@ export default function WhitelistPage() {
         isWhitelisted,
         message: isWhitelisted
           ? `Congratulations! Your address has ${phaseString} access.`
-          : 'Your address has PUBLIC access only.',
+          : 'Your address does not have access to this mint.',
         tier: isWhitelisted ? tier : undefined,
         phaseAccess: phase
       });
