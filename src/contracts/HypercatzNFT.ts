@@ -886,9 +886,10 @@ export const HYPERCATZ_NFT_ABI = [
 
 // Phase enum values
 export enum HypercatzPhase {
-  GUARANTEED = 0,
-  WHITELIST = 1,
-  PUBLIC = 2
+  CLOSED = 0,
+  GUARANTEED = 1,
+  WHITELIST = 2,
+  PUBLIC = 3
 }
 
 // Type definitions for contract functions

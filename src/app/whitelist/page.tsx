@@ -31,6 +31,8 @@ export default function WhitelistPage() {
 
   const getPhaseString = (phase: HypercatzPhase): string => {
     switch (phase) {
+      case HypercatzPhase.CLOSED:
+        return 'CLOSED';
       case HypercatzPhase.GUARANTEED:
         return 'GUARANTEED';
       case HypercatzPhase.WHITELIST:
@@ -44,6 +46,8 @@ export default function WhitelistPage() {
 
   const getTierFromPhase = (phase: HypercatzPhase): string => {
     switch (phase) {
+      case HypercatzPhase.CLOSED:
+        return 'None';
       case HypercatzPhase.GUARANTEED:
         return 'Guaranteed';
       case HypercatzPhase.WHITELIST:
@@ -80,7 +84,8 @@ export default function WhitelistPage() {
   useEffect(() => {
     if (checkAddress && phaseAccess !== undefined && !isChecking) {
       const phase = phaseAccess as HypercatzPhase;
-      // All phases (0, 1, 2) are valid access levels
+      // Valid access levels are GUARANTEED (1), WHITELIST (2), and PUBLIC (3)
+      // CLOSED (0) means no access
       const isWhitelisted = phase >= HypercatzPhase.GUARANTEED && phase <= HypercatzPhase.PUBLIC;
       const tier = getTierFromPhase(phase);
       const phaseString = getPhaseString(phase);
@@ -89,7 +94,9 @@ export default function WhitelistPage() {
         isWhitelisted,
         message: isWhitelisted
           ? `Congratulations! Your address has ${phaseString} access.`
-          : 'Your address does not have access to this mint.',
+          : phase === HypercatzPhase.CLOSED
+            ? 'Your address does not have access to this mint.'
+            : 'Your address does not have access to this mint.',
         tier: isWhitelisted ? tier : undefined,
         phaseAccess: phase
       });
@@ -303,6 +310,13 @@ export default function WhitelistPage() {
           >
             <h3 className="text-xl font-semibold hyperliquid-gradient-text mb-4">Access Tiers</h3>
             <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800/70 transition-all duration-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-gradient-to-r from-red-400 to-red-500 rounded-full"></div>
+                  <span className="text-white font-semibold">Closed</span>
+                </div>
+                <span className="text-gray-400 text-sm">No access • Mint not available</span>
+              </div>
               <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800/70 transition-all duration-200">
                 <div className="flex items-center space-x-3">
                   <div className="w-4 h-4 bg-gradient-to-r from-hyperliquid-400 to-hyperliquid-500 rounded-full"></div>
