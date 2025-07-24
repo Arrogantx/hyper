@@ -11,8 +11,8 @@ export const HYPEREVM_CONFIG = {
     symbol: 'HYPE',
   },
   rpcUrls: {
-    public: { http: ['https://api.hyperliquid.xyz/evm'] },
-    default: { http: ['https://api.hyperliquid.xyz/evm'] },
+    public: { http: ['https://rpc.hyperliquid.xyz/evm'] },
+    default: { http: ['https://rpc.hyperliquid.xyz/evm'] },
   },
   blockExplorers: {
     default: { name: 'HyperEVM Explorer', url: 'https://hyperscan.com' },
@@ -21,7 +21,7 @@ export const HYPEREVM_CONFIG = {
 
 // Contract Addresses (to be updated when deployed)
 export const CONTRACT_ADDRESSES = {
-  HYPERCATZ_NFT: '0x0000000000000000000000000000000000000000',
+  HYPERCATZ_NFT: '0xa98F3CC961505CCcFB58AC58BC949a59dbdBe325',
   STAKING_CONTRACT: '0x0000000000000000000000000000000000000000',
   GAME_CONTRACT: '0x0000000000000000000000000000000000000000',
   REWARD_STORE: '0x0000000000000000000000000000000000000000',
