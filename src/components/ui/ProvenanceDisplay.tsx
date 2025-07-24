@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ShieldCheckIcon, 
+import {
+  ShieldCheckIcon,
   ExclamationTriangleIcon,
   ClipboardDocumentIcon,
-  CheckIcon
+  CheckIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 import { useSuccessToast, useErrorToast } from './Toast';
 
@@ -27,6 +28,7 @@ export function ProvenanceDisplay() {
     error: null,
   });
   const [copied, setCopied] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const showSuccessToast = useSuccessToast();
   const showErrorToast = useErrorToast();
@@ -125,10 +127,31 @@ export function ProvenanceDisplay() {
             )}
           </div>
           <h3 className="text-lg sm:text-xl font-bold text-white">🧬 Provenance Verification</h3>
+          <div className="relative">
+            <button
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+              className="text-gray-400 hover:text-hyperliquid-400 transition-colors"
+            >
+              <QuestionMarkCircleIcon className="h-4 w-4" />
+            </button>
+            {showTooltip && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-dark-800 border border-hyperliquid-500/30 rounded-lg shadow-lg z-10">
+                <div className="text-sm text-gray-300">
+                  <p className="font-medium text-hyperliquid-400 mb-2">What is Provenance Verification?</p>
+                  <p className="mb-2">Provenance verification ensures the authenticity and integrity of NFT metadata using cryptographic hashes.</p>
+                  <p className="text-xs text-gray-400">
+                    <strong>Benefits:</strong> Prevents tampering, ensures collection authenticity, and provides transparent verification of metadata integrity.
+                  </p>
+                </div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-dark-800"></div>
+              </div>
+            )}
+          </div>
         </div>
         
         <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-          provenance.verified 
+          provenance.verified
             ? 'bg-hyperliquid-500/20 text-hyperliquid-400 border border-hyperliquid-500/30'
             : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
         }`}>

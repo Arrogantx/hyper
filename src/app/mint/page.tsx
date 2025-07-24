@@ -202,8 +202,6 @@ const MintPage: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="feature-card"
           >
-            <h3 className="text-2xl font-bold mb-6 text-center text-white">Collection Preview</h3>
-            
             <div className="relative aspect-square bg-gradient-to-br from-hyperliquid-500/10 to-accent-blue/10 rounded-2xl overflow-hidden mb-6 group max-w-md mx-auto">
               <video
                 autoPlay
@@ -217,9 +215,6 @@ const MintPage: React.FC = () => {
                   <div className="text-8xl opacity-80">🐱</div>
                 </div>
               </video>
-              <div className="absolute top-4 right-4 glass-card px-3 py-1 border-hyperliquid-500/30">
-                <span className="text-sm font-bold text-hyperliquid-400">LEGENDARY</span>
-              </div>
               
               {/* Animated border */}
               <div className="absolute inset-0 border-2 border-hyperliquid-500/30 rounded-2xl group-hover:border-hyperliquid-500/50 transition-colors" />

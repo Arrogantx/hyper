@@ -45,11 +45,11 @@ export default function WhitelistPage() {
   const getTierFromPhase = (phase: HypercatzPhase): string => {
     switch (phase) {
       case HypercatzPhase.GUARANTEED:
-        return 'Diamond';
+        return 'Guaranteed';
       case HypercatzPhase.WHITELIST:
-        return 'Gold';
+        return 'Whitelist';
       case HypercatzPhase.PUBLIC:
-        return 'Bronze';
+        return 'FCFS';
       default:
         return 'None';
     }
@@ -108,7 +108,7 @@ export default function WhitelistPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 pt-24 pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 pt-24 pb-12">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -118,8 +118,8 @@ export default function WhitelistPage() {
         >
           {/* Header */}
           <div className="text-center mb-12">
-            <motion.h1 
-              className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-green-400 to-cyan-400 bg-clip-text text-transparent"
+            <motion.h1
+              className="text-5xl md:text-6xl font-bold mb-6 hyperliquid-gradient-text"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -141,7 +141,7 @@ export default function WhitelistPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 mb-8"
+            className="feature-card p-8 mb-8"
           >
             <div className="space-y-6">
               <div>
@@ -225,18 +225,25 @@ export default function WhitelistPage() {
                         <li>• Priority minting access</li>
                         <li>• Exclusive utility features</li>
                         <li>• Early access to games and staking</li>
-                        {result.tier === 'Diamond' && (
+                        {result.tier === 'Guaranteed' && (
                           <>
                             <li>• Guaranteed mint allocation</li>
-                            <li>• Maximum mint per wallet: 1</li>
+                            <li>• Maximum mint per wallet: 2</li>
                             <li>• First priority access</li>
                           </>
                         )}
-                        {result.tier === 'Gold' && (
+                        {result.tier === 'Whitelist' && (
                           <>
                             <li>• Whitelist mint access</li>
-                            <li>• Maximum mint per wallet: 3</li>
+                            <li>• Maximum mint per wallet: 2</li>
                             <li>• Second priority access</li>
+                          </>
+                        )}
+                        {result.tier === 'FCFS' && (
+                          <>
+                            <li>• Public mint access</li>
+                            <li>• Maximum mint per wallet: 2</li>
+                            <li>• First come, first serve</li>
                           </>
                         )}
                       </ul>
@@ -291,30 +298,30 @@ export default function WhitelistPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="mt-12 bg-gray-800/30 backdrop-blur-sm border border-gray-700/30 rounded-2xl p-6"
+            className="mt-12 feature-card p-6"
           >
-            <h3 className="text-xl font-semibold text-cyan-400 mb-4">Access Tiers</h3>
+            <h3 className="text-xl font-semibold hyperliquid-gradient-text mb-4">Access Tiers</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800/70 transition-all duration-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
-                  <span className="text-white font-semibold">Diamond (Guaranteed)</span>
+                  <div className="w-4 h-4 bg-gradient-to-r from-hyperliquid-400 to-hyperliquid-500 rounded-full"></div>
+                  <span className="text-white font-semibold">Guaranteed</span>
                 </div>
-                <span className="text-gray-400 text-sm">Max 1 mint • First priority</span>
+                <span className="text-gray-400 text-sm">Max 2 mints • First priority</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800/70 transition-all duration-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"></div>
-                  <span className="text-white font-semibold">Gold (Whitelist)</span>
+                  <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full"></div>
+                  <span className="text-white font-semibold">Whitelist</span>
                 </div>
-                <span className="text-gray-400 text-sm">Max 3 mints • Second priority</span>
+                <span className="text-gray-400 text-sm">Max 2 mints • Second priority</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800/70 transition-all duration-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-full"></div>
-                  <span className="text-white font-semibold">Bronze (Public)</span>
+                  <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
+                  <span className="text-white font-semibold">FCFS (Public)</span>
                 </div>
-                <span className="text-gray-400 text-sm">Standard access • No priority</span>
+                <span className="text-gray-400 text-sm">Max 2 mints • First come, first serve</span>
               </div>
             </div>
           </motion.div>
