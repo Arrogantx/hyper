@@ -1,23 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { usePublicClient } from 'wagmi';
 import { Address, formatAddress, getDisplayName, getAvatarUrl, isValidAddress } from '../utils/hypeResolver';
-
-// Mock data for demonstration - replace with actual contract calls
-const MOCK_DOMAINS: Record<string, string> = {
-  '0x1234567890123456789012345678901234567890': 'alice.hype',
-  '0x0987654321098765432109876543210987654321': 'bob.hype',
-  '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd': 'charlie.hype',
-};
-
-const MOCK_ADDRESSES: Record<string, string> = {
-  'alice.hype': '0x1234567890123456789012345678901234567890',
-  'bob.hype': '0x0987654321098765432109876543210987654321',
-  'charlie.hype': '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
-};
+import { getCurrentNetworkAddresses } from '@/contracts/addresses';
+import { DOT_HYPE_RESOLVER_ABI } from '@/contracts/abis';
 
 /**
- * Hook to resolve primary .hype domain for a wallet address
+ * Hook to resolve primary .hype domain for a wallet address using real contract calls
  * @param address - The wallet address to resolve
  * @returns Object with domain name, loading state, and error
  */
@@ -26,9 +16,18 @@ export function usePrimaryDomain(address?: Address) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const publicClient = usePublicClient();
+  const addresses = getCurrentNetworkAddresses();
+  const resolverAddress = addresses.DOT_HYPE_RESOLVER as Address;
+
   const resolveDomain = useCallback(async (addr: Address) => {
     if (!isValidAddress(addr)) {
       setError('Invalid address');
+      return;
+    }
+
+    if (!publicClient) {
+      setError('No public client available');
       return;
     }
 
@@ -36,19 +35,41 @@ export function usePrimaryDomain(address?: Address) {
     setError(null);
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock resolution - replace with actual contract call
-      const domain = MOCK_DOMAINS[addr.toLowerCase()] || null;
-      setPrimaryDomain(domain);
+      // Call getName function on the .hype resolver contract
+      const domainName = await publicClient.readContract({
+        address: resolverAddress,
+        abi: DOT_HYPE_RESOLVER_ABI,
+        functionName: 'getName',
+        args: [addr],
+      });
+
+      // Check if we got a valid domain name
+      if (domainName && typeof domainName === 'string' && domainName.trim() !== '') {
+        setPrimaryDomain(domainName.trim());
+      } else {
+        setPrimaryDomain(null);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to resolve domain');
+      console.error('Error fetching primary domain:', err);
+
+      // Handle specific error cases
+      let errorMessage = 'Failed to resolve domain';
+      if (err instanceof Error) {
+        if (err.message.includes('execution reverted')) {
+          errorMessage = 'No primary domain set for this address';
+        } else if (err.message.includes('OpcodeNotFound')) {
+          errorMessage = 'Resolver contract does not support getName function';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+
+      setError(errorMessage);
       setPrimaryDomain(null);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [publicClient, resolverAddress]);
 
   useEffect(() => {
     if (address) {
@@ -68,7 +89,7 @@ export function usePrimaryDomain(address?: Address) {
 }
 
 /**
- * Hook to resolve address from .hype domain name
+ * Hook to resolve address from .hype domain name using real contract calls
  * @param domain - The .hype domain to resolve
  * @returns Object with resolved address, loading state, and error
  */
@@ -77,9 +98,18 @@ export function useAddressFromDomain(domain?: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const publicClient = usePublicClient();
+  const addresses = getCurrentNetworkAddresses();
+  const resolverAddress = addresses.DOT_HYPE_RESOLVER as Address;
+
   const resolveAddress = useCallback(async (domainName: string) => {
     if (!domainName || !domainName.endsWith('.hype')) {
       setError('Invalid .hype domain');
+      return;
+    }
+
+    if (!publicClient) {
+      setError('No public client available');
       return;
     }
 
@@ -87,19 +117,28 @@ export function useAddressFromDomain(domain?: string) {
     setError(null);
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock resolution - replace with actual contract call
-      const address = MOCK_ADDRESSES[domainName.toLowerCase()] || null;
-      setResolvedAddress(address as Address);
+      // Call getAddress function on the .hype resolver contract
+      const address = await publicClient.readContract({
+        address: resolverAddress,
+        abi: DOT_HYPE_RESOLVER_ABI,
+        functionName: 'getAddress',
+        args: [domainName],
+      });
+
+      // Check if we got a valid address
+      if (address && isValidAddress(address as string)) {
+        setResolvedAddress(address as Address);
+      } else {
+        setResolvedAddress(null);
+      }
     } catch (err) {
+      console.error('Error resolving address from domain:', err);
       setError(err instanceof Error ? err.message : 'Failed to resolve address');
       setResolvedAddress(null);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [publicClient, resolverAddress]);
 
   useEffect(() => {
     if (domain) {
@@ -119,49 +158,80 @@ export function useAddressFromDomain(domain?: string) {
 }
 
 /**
- * Hook to get user avatar from .hype domain or address
- * @param identifier - Either a .hype domain or wallet address
+ * Hook to get user avatar from .hype domain using real contract calls
+ * @param address - User's wallet address
  * @returns Object with avatar URL, loading state, and error
  */
-export function useUserAvatar(identifier?: string) {
+export function useUserAvatar(address?: Address) {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const resolveAvatar = useCallback(async (id: string) => {
+  const publicClient = usePublicClient();
+  const addresses = getCurrentNetworkAddresses();
+  const resolverAddress = addresses.DOT_HYPE_RESOLVER as Address;
+
+  // Get the primary domain for this address first
+  const { primaryDomain } = usePrimaryDomain(address);
+
+  const fetchAvatar = useCallback(async (userAddress: Address) => {
+    if (!publicClient) {
+      setError('No public client available');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // For now, generate avatar from identifier
-      // In production, this would query text records from the resolver
-      const avatarUrl = getAvatarUrl(id);
-      setAvatar(avatarUrl);
+      // Get avatar text record from the .hype resolver using the address
+      const avatarRecord = await publicClient.readContract({
+        address: resolverAddress,
+        abi: DOT_HYPE_RESOLVER_ABI,
+        functionName: 'getValue',
+        args: [userAddress, 'avatar'],
+      });
+
+      if (avatarRecord && typeof avatarRecord === 'string' && avatarRecord.trim()) {
+        setAvatar(avatarRecord.trim());
+      } else {
+        // Generate a default avatar based on the primary domain or address
+        if (primaryDomain) {
+          const seed = primaryDomain.replace('.hype', '');
+          setAvatar(`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(seed)}&backgroundColor=22c55e&size=40`);
+        } else {
+          setAvatar(getAvatarUrl(userAddress));
+        }
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to resolve avatar');
-      setAvatar(null);
+      console.error('Error fetching avatar:', err);
+      // Fallback to generated avatar on error
+      if (primaryDomain) {
+        const seed = primaryDomain.replace('.hype', '');
+        setAvatar(`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(seed)}&backgroundColor=22c55e&size=40`);
+      } else {
+        setAvatar(getAvatarUrl(userAddress));
+      }
+      setError(err instanceof Error ? err.message : 'Failed to fetch avatar');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [publicClient, resolverAddress, primaryDomain]);
 
   useEffect(() => {
-    if (identifier) {
-      resolveAvatar(identifier);
+    if (address) {
+      fetchAvatar(address);
     } else {
       setAvatar(null);
       setError(null);
     }
-  }, [identifier, resolveAvatar]);
+  }, [address, fetchAvatar]);
 
   return {
     avatar,
     isLoading,
     error,
-    refetch: () => identifier && resolveAvatar(identifier),
+    refetch: () => address && fetchAvatar(address),
   };
 }
 
@@ -172,7 +242,7 @@ export function useUserAvatar(identifier?: string) {
  */
 export function useWalletDisplay(address?: Address) {
   const { primaryDomain, isLoading: domainLoading } = usePrimaryDomain(address);
-  const { avatar, isLoading: avatarLoading } = useUserAvatar(address || primaryDomain || '');
+  const { avatar, isLoading: avatarLoading } = useUserAvatar(address);
 
   const displayName = address ? getDisplayName(address, primaryDomain || undefined) : '';
   const isLoading = domainLoading || avatarLoading;
