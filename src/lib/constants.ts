@@ -11,11 +11,11 @@ export const HYPEREVM_CONFIG = {
     symbol: 'HYPE',
   },
   rpcUrls: {
-    public: { http: ['https://api.hyperliquid-testnet.xyz/evm'] },
-    default: { http: ['https://api.hyperliquid-testnet.xyz/evm'] },
+    public: { http: ['https://api.hyperliquid.xyz/evm'] },
+    default: { http: ['https://api.hyperliquid.xyz/evm'] },
   },
   blockExplorers: {
-    default: { name: 'HyperEVM Explorer', url: 'https://explorer.hyperliquid-testnet.xyz' },
+    default: { name: 'HyperEVM Explorer', url: 'https://hyperscan.com' },
   },
 } as const;
 
@@ -31,7 +31,7 @@ export const CONTRACT_ADDRESSES = {
 // Mint Configuration
 export const MINT_CONFIG = {
   MAX_SUPPLY: 4444,
-  MAX_PER_WALLET: 5,
+  MAX_PER_WALLET: 2,
   MINT_START_DATE: '2025-07-25T00:00:00Z', // July 25th, 2025
   PHASES: {
     FREE: {

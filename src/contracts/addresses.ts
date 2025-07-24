@@ -5,61 +5,34 @@ export interface NetworkAddresses {
   DOT_HYPE_REGISTRY: Address;
   DOT_HYPE_CONTROLLER: Address;
   DOT_HYPE_RESOLVER: Address;
+  DOT_HYPE_PRICE_ORACLE: any;
 }
 
 // HyperEVM Mainnet addresses
 const MAINNET_ADDRESSES: NetworkAddresses = {
-  DOT_HYPE_REGISTRY: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet registry address
-  DOT_HYPE_CONTROLLER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet controller address
-  DOT_HYPE_RESOLVER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet resolver address
+   DOT_HYPE_RESOLVER: '0x4d5e4ed4D5e4A160Fa136853597cDc2eBBe66494', // dotHYPE Resolver on Hyperliquid EVM
+    DOT_HYPE_CONTROLLER: '0xCd0A58e078c57B69A3Da6703213aa69085E2AC65', // dotHYPE Controller
+    DOT_HYPE_REGISTRY: '0xBf7cE65e6E920052C11690a80EAa3ed2fE752Dd8', // dotHYPE Registry
+    DOT_HYPE_PRICE_ORACLE: '0x09fAB7D96dB646a0f164E3EA84782B45F650Fb51' // dotHYPE Price Oracle
 };
 
-// HyperEVM Testnet addresses
-const TESTNET_ADDRESSES: NetworkAddresses = {
-  DOT_HYPE_REGISTRY: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet registry address
-  DOT_HYPE_CONTROLLER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet controller address
-  DOT_HYPE_RESOLVER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet resolver address
-};
-
-// Chain IDs for HyperEVM networks
-export const HYPER_EVM_MAINNET_CHAIN_ID = 998; // Replace with actual mainnet chain ID
-export const HYPER_EVM_TESTNET_CHAIN_ID = 999; // Replace with actual testnet chain ID
+// Chain ID for HyperEVM mainnet
+export const HYPER_EVM_MAINNET_CHAIN_ID = 999;
 
 /**
- * Get the current network addresses based on the active chain
- * Automatically detects network via chain ID
+ * Get the current network addresses
+ * Always returns mainnet addresses since testnet is not used
  */
 export function getCurrentNetworkAddresses(): NetworkAddresses {
-  // For now, we'll use a simple detection method
-  // In a real implementation, you'd get this from wagmi's useNetwork hook
-  const chainId = typeof window !== 'undefined' && (window as any).ethereum?.chainId;
-  
-  // Convert hex chain ID to number if needed
-  const numericChainId = typeof chainId === 'string' 
-    ? parseInt(chainId, 16) 
-    : chainId;
-
-  switch (numericChainId) {
-    case HYPER_EVM_MAINNET_CHAIN_ID:
-      return MAINNET_ADDRESSES;
-    case HYPER_EVM_TESTNET_CHAIN_ID:
-      return TESTNET_ADDRESSES;
-    default:
-      // Default to testnet for development
-      return TESTNET_ADDRESSES;
-  }
+  return MAINNET_ADDRESSES;
 }
 
 /**
  * Get addresses for a specific network
  */
 export function getNetworkAddresses(chainId: number): NetworkAddresses {
-  switch (chainId) {
-    case HYPER_EVM_MAINNET_CHAIN_ID:
-      return MAINNET_ADDRESSES;
-    case HYPER_EVM_TESTNET_CHAIN_ID:
-      return TESTNET_ADDRESSES;
-    default:
-      throw new Error(`Unsupported chain ID: ${chainId}`);
+  if (chainId === HYPER_EVM_MAINNET_CHAIN_ID) {
+    return MAINNET_ADDRESSES;
   }
+  throw new Error(`Unsupported chain ID: ${chainId}. Only HyperEVM mainnet (${HYPER_EVM_MAINNET_CHAIN_ID}) is supported.`);
 }

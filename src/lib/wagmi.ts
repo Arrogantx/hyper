@@ -11,13 +11,13 @@ const hyperEVM: Chain = {
   nativeCurrency: HYPEREVM_CONFIG.nativeCurrency,
   rpcUrls: HYPEREVM_CONFIG.rpcUrls,
   blockExplorers: HYPEREVM_CONFIG.blockExplorers,
-  testnet: true, // Set to false for mainnet
+  testnet: false, // Mainnet configuration
 };
 
 // Wagmi configuration
 export const config = getDefaultConfig({
   appName: 'Hypercatz',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2f5a2b1c8d3e4f5a6b7c8d9e0f1a2b3c',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '951ac8e94a777fccfd25cd03077ca1e0',
   chains: [hyperEVM],
   ssr: true,
 });

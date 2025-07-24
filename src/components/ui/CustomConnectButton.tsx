@@ -16,8 +16,8 @@ export function CustomConnectButton() {
         openAccountModal,
         openChainModal,
         openConnectModal,
-        authenticationStatus,
-        mounted,
+        authenticationcata
+        
       }) => {
         // Note: If your app doesn't use authentication, you
         // can remove all 'authenticationStatus' checks
