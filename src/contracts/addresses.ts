@@ -1,18 +1,24 @@
 import { Address } from 'viem';
 
-// Network configuration for .hype resolver addresses
+// Network configuration for .hype contract addresses
 export interface NetworkAddresses {
+  DOT_HYPE_REGISTRY: Address;
+  DOT_HYPE_CONTROLLER: Address;
   DOT_HYPE_RESOLVER: Address;
 }
 
 // HyperEVM Mainnet addresses
 const MAINNET_ADDRESSES: NetworkAddresses = {
-  DOT_HYPE_RESOLVER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet address
+  DOT_HYPE_REGISTRY: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet registry address
+  DOT_HYPE_CONTROLLER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet controller address
+  DOT_HYPE_RESOLVER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual mainnet resolver address
 };
 
 // HyperEVM Testnet addresses
 const TESTNET_ADDRESSES: NetworkAddresses = {
-  DOT_HYPE_RESOLVER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet address
+  DOT_HYPE_REGISTRY: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet registry address
+  DOT_HYPE_CONTROLLER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet controller address
+  DOT_HYPE_RESOLVER: '0x0000000000000000000000000000000000000000' as Address, // Replace with actual testnet resolver address
 };
 
 // Chain IDs for HyperEVM networks

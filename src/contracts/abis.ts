@@ -1,18 +1,19 @@
-export const DOT_HYPE_RESOLVER_ABI = [
+// .hype Registry Contract ABI
+export const DOT_HYPE_REGISTRY_ABI = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "addr",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
       }
     ],
-    "name": "getName",
+    "name": "owner",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "address",
         "name": "",
-        "type": "string"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -21,22 +22,160 @@ export const DOT_HYPE_RESOLVER_ABI = [
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      }
+    ],
+    "name": "resolver",
+    "outputs": [
+      {
         "internalType": "address",
-        "name": "addr",
+        "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      }
+    ],
+    "name": "recordExists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
       },
       {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "setOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "resolver",
+        "type": "address"
+      }
+    ],
+    "name": "setResolver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+] as const;
+
+// .hype Controller Contract ABI
+export const DOT_HYPE_CONTROLLER_ABI = [
+  {
+    "inputs": [
+      {
         "internalType": "string",
-        "name": "key",
+        "name": "name",
         "type": "string"
       }
     ],
-    "name": "getValue",
+    "name": "available",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "bool",
         "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "register",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "renew",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "rentPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -50,7 +189,30 @@ export const DOT_HYPE_RESOLVER_ABI = [
         "type": "string"
       }
     ],
-    "name": "getAddress",
+    "name": "nameExpires",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+] as const;
+
+// .hype Resolver Contract ABI
+export const DOT_HYPE_RESOLVER_ABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      }
+    ],
+    "name": "addr",
     "outputs": [
       {
         "internalType": "address",
@@ -64,9 +226,70 @@ export const DOT_HYPE_RESOLVER_ABI = [
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      }
+    ],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "key",
+        "type": "string"
+      }
+    ],
+    "name": "text",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
+      },
+      {
         "internalType": "address",
         "name": "addr",
         "type": "address"
+      }
+    ],
+    "name": "setAddr",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
       },
       {
         "internalType": "string",
@@ -82,9 +305,9 @@ export const DOT_HYPE_RESOLVER_ABI = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "addr",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "node",
+        "type": "bytes32"
       },
       {
         "internalType": "string",
@@ -97,7 +320,7 @@ export const DOT_HYPE_RESOLVER_ABI = [
         "type": "string"
       }
     ],
-    "name": "setValue",
+    "name": "setText",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -105,49 +328,12 @@ export const DOT_HYPE_RESOLVER_ABI = [
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "addr",
-        "type": "address"
+        "internalType": "bytes4",
+        "name": "interfaceID",
+        "type": "bytes4"
       }
     ],
-    "name": "setAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "addr",
-        "type": "address"
-      }
-    ],
-    "name": "hasPrimaryName",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "name": "isNameRegistered",
+    "name": "supportsInterface",
     "outputs": [
       {
         "internalType": "bool",
@@ -160,14 +346,64 @@ export const DOT_HYPE_RESOLVER_ABI = [
   }
 ] as const;
 
-// Type definitions for the resolver contract
+// Utility functions for .hype domain operations
+export const HYPE_DOMAIN_SUFFIX = '.hype';
+
+/**
+ * Convert a domain name to its corresponding node hash
+ * This follows the ENS namehash algorithm
+ */
+export function namehash(name: string): `0x${string}` {
+  if (!name) return '0x0000000000000000000000000000000000000000000000000000000000000000';
+  
+  // Import keccak256 and related functions from viem
+  const { keccak256, toBytes, concat } = require('viem');
+  
+  let node = '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`;
+  
+  if (name) {
+    const labels = name.split('.').reverse();
+    
+    for (const label of labels) {
+      const labelHash = keccak256(toBytes(label));
+      node = keccak256(concat([node, labelHash]));
+    }
+  }
+  
+  return node;
+}
+
+/**
+ * Check if a string is a valid .hype domain
+ */
+export function isValidHypeDomain(domain: string): boolean {
+  if (!domain || typeof domain !== 'string') return false;
+  return domain.endsWith(HYPE_DOMAIN_SUFFIX) && domain.length > 5;
+}
+
+// Type definitions for the contracts
+export interface DotHypeRegistryContract {
+  owner: (node: string) => Promise<string>;
+  resolver: (node: string) => Promise<string>;
+  recordExists: (node: string) => Promise<boolean>;
+  setOwner: (node: string, owner: string) => Promise<void>;
+  setResolver: (node: string, resolver: string) => Promise<void>;
+}
+
+export interface DotHypeControllerContract {
+  available: (name: string) => Promise<boolean>;
+  register: (name: string, owner: string, duration: bigint) => Promise<void>;
+  renew: (name: string, duration: bigint) => Promise<void>;
+  rentPrice: (name: string, duration: bigint) => Promise<bigint>;
+  nameExpires: (name: string) => Promise<bigint>;
+}
+
 export interface DotHypeResolverContract {
-  getName: (addr: string) => Promise<string>;
-  getValue: (addr: string, key: string) => Promise<string>;
-  getAddress: (name: string) => Promise<string>;
-  setName: (addr: string, name: string) => Promise<void>;
-  setValue: (addr: string, key: string, value: string) => Promise<void>;
-  setAddress: (name: string, addr: string) => Promise<void>;
-  hasPrimaryName: (addr: string) => Promise<boolean>;
-  isNameRegistered: (name: string) => Promise<boolean>;
+  addr: (node: string) => Promise<string>;
+  name: (node: string) => Promise<string>;
+  text: (node: string, key: string) => Promise<string>;
+  setAddr: (node: string, addr: string) => Promise<void>;
+  setName: (node: string, name: string) => Promise<void>;
+  setText: (node: string, key: string, value: string) => Promise<void>;
+  supportsInterface: (interfaceID: string) => Promise<boolean>;
 }

@@ -2,12 +2,17 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { usePublicClient } from 'wagmi';
-import { Address, formatAddress, getDisplayName, getAvatarUrl, isValidAddress } from '../utils/hypeResolver';
+import { Address, formatAddress, getDisplayName, getAvatarUrl, isValidAddress } from '@/utils/hypeResolver';
 import { getCurrentNetworkAddresses } from '@/contracts/addresses';
-import { DOT_HYPE_RESOLVER_ABI } from '@/contracts/abis';
+import { 
+  DOT_HYPE_REGISTRY_ABI, 
+  DOT_HYPE_RESOLVER_ABI, 
+  namehash, 
+  isValidHypeDomain 
+} from '@/contracts/abis';
 
 /**
- * Hook to resolve primary .hype domain for a wallet address using real contract calls
+ * Hook to resolve primary .hype domain for a wallet address using proper Registry → Resolver flow
  * @param address - The wallet address to resolve
  * @returns Object with domain name, loading state, and error
  */
@@ -18,7 +23,6 @@ export function usePrimaryDomain(address?: Address) {
 
   const publicClient = usePublicClient();
   const addresses = getCurrentNetworkAddresses();
-  const resolverAddress = addresses.DOT_HYPE_RESOLVER as Address;
 
   const resolveDomain = useCallback(async (addr: Address) => {
     if (!isValidAddress(addr)) {
@@ -35,17 +39,40 @@ export function usePrimaryDomain(address?: Address) {
     setError(null);
 
     try {
-      // Call getName function on the .hype resolver contract
-      const domainName = await publicClient.readContract({
-        address: resolverAddress,
-        abi: DOT_HYPE_RESOLVER_ABI,
-        functionName: 'getName',
-        args: [addr],
+      // Step 1: Create reverse lookup node for the address
+      // For reverse lookups, we use addr.reverse format
+      const reverseNode = namehash(`${addr.toLowerCase().slice(2)}.addr.reverse`);
+
+      // Step 2: Get the resolver for this reverse node from the registry
+      const resolverAddress = await publicClient.readContract({
+        address: addresses.DOT_HYPE_REGISTRY,
+        abi: DOT_HYPE_REGISTRY_ABI,
+        functionName: 'resolver',
+        args: [reverseNode],
       });
 
-      // Check if we got a valid domain name
+      // Step 3: If no resolver is set, there's no primary domain
+      if (!resolverAddress || resolverAddress === '0x0000000000000000000000000000000000000000') {
+        setPrimaryDomain(null);
+        return;
+      }
+
+      // Step 4: Query the resolver for the name
+      const domainName = await publicClient.readContract({
+        address: resolverAddress as Address,
+        abi: DOT_HYPE_RESOLVER_ABI,
+        functionName: 'name',
+        args: [reverseNode],
+      });
+
+      // Step 5: Validate the returned domain name
       if (domainName && typeof domainName === 'string' && domainName.trim() !== '') {
-        setPrimaryDomain(domainName.trim());
+        const cleanDomain = domainName.trim();
+        if (isValidHypeDomain(cleanDomain)) {
+          setPrimaryDomain(cleanDomain);
+        } else {
+          setPrimaryDomain(null);
+        }
       } else {
         setPrimaryDomain(null);
       }
@@ -57,8 +84,8 @@ export function usePrimaryDomain(address?: Address) {
       if (err instanceof Error) {
         if (err.message.includes('execution reverted')) {
           errorMessage = 'No primary domain set for this address';
-        } else if (err.message.includes('OpcodeNotFound')) {
-          errorMessage = 'Resolver contract does not support getName function';
+        } else if (err.message.includes('resolver not found')) {
+          errorMessage = 'No resolver configured for this address';
         } else {
           errorMessage = err.message;
         }
@@ -69,7 +96,7 @@ export function usePrimaryDomain(address?: Address) {
     } finally {
       setIsLoading(false);
     }
-  }, [publicClient, resolverAddress]);
+  }, [publicClient, addresses]);
 
   useEffect(() => {
     if (address) {
@@ -89,7 +116,7 @@ export function usePrimaryDomain(address?: Address) {
 }
 
 /**
- * Hook to resolve address from .hype domain name using real contract calls
+ * Hook to resolve address from .hype domain name using proper Registry → Resolver flow
  * @param domain - The .hype domain to resolve
  * @returns Object with resolved address, loading state, and error
  */
@@ -100,10 +127,9 @@ export function useAddressFromDomain(domain?: string) {
 
   const publicClient = usePublicClient();
   const addresses = getCurrentNetworkAddresses();
-  const resolverAddress = addresses.DOT_HYPE_RESOLVER as Address;
 
   const resolveAddress = useCallback(async (domainName: string) => {
-    if (!domainName || !domainName.endsWith('.hype')) {
+    if (!isValidHypeDomain(domainName)) {
       setError('Invalid .hype domain');
       return;
     }
@@ -117,19 +143,38 @@ export function useAddressFromDomain(domain?: string) {
     setError(null);
 
     try {
-      // Call getAddress function on the .hype resolver contract
-      const address = await publicClient.readContract({
-        address: resolverAddress,
-        abi: DOT_HYPE_RESOLVER_ABI,
-        functionName: 'getAddress',
-        args: [domainName],
+      // Step 1: Convert domain name to node hash
+      const node = namehash(domainName);
+
+      // Step 2: Get the resolver for this domain from the registry
+      const resolverAddress = await publicClient.readContract({
+        address: addresses.DOT_HYPE_REGISTRY,
+        abi: DOT_HYPE_REGISTRY_ABI,
+        functionName: 'resolver',
+        args: [node],
       });
 
-      // Check if we got a valid address
+      // Step 3: If no resolver is set, the domain doesn't resolve to an address
+      if (!resolverAddress || resolverAddress === '0x0000000000000000000000000000000000000000') {
+        setResolvedAddress(null);
+        setError('Domain has no resolver configured');
+        return;
+      }
+
+      // Step 4: Query the resolver for the address
+      const address = await publicClient.readContract({
+        address: resolverAddress as Address,
+        abi: DOT_HYPE_RESOLVER_ABI,
+        functionName: 'addr',
+        args: [node],
+      });
+
+      // Step 5: Validate the returned address
       if (address && isValidAddress(address as string)) {
         setResolvedAddress(address as Address);
       } else {
         setResolvedAddress(null);
+        setError('Domain does not resolve to a valid address');
       }
     } catch (err) {
       console.error('Error resolving address from domain:', err);
@@ -138,7 +183,7 @@ export function useAddressFromDomain(domain?: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [publicClient, resolverAddress]);
+  }, [publicClient, addresses]);
 
   useEffect(() => {
     if (domain) {
@@ -158,7 +203,7 @@ export function useAddressFromDomain(domain?: string) {
 }
 
 /**
- * Hook to get user avatar from .hype domain using real contract calls
+ * Hook to get user avatar from .hype domain using proper Registry → Resolver flow
  * @param address - User's wallet address
  * @returns Object with avatar URL, loading state, and error
  */
@@ -169,12 +214,11 @@ export function useUserAvatar(address?: Address) {
 
   const publicClient = usePublicClient();
   const addresses = getCurrentNetworkAddresses();
-  const resolverAddress = addresses.DOT_HYPE_RESOLVER as Address;
 
   // Get the primary domain for this address first
   const { primaryDomain } = usePrimaryDomain(address);
 
-  const fetchAvatar = useCallback(async (userAddress: Address) => {
+  const fetchAvatar = useCallback(async (userAddress: Address, domain?: string) => {
     if (!publicClient) {
       setError('No public client available');
       return;
@@ -184,20 +228,37 @@ export function useUserAvatar(address?: Address) {
     setError(null);
 
     try {
-      // Get avatar text record from the .hype resolver using the address
-      const avatarRecord = await publicClient.readContract({
-        address: resolverAddress,
-        abi: DOT_HYPE_RESOLVER_ABI,
-        functionName: 'getValue',
-        args: [userAddress, 'avatar'],
-      });
+      let avatarRecord = '';
 
-      if (avatarRecord && typeof avatarRecord === 'string' && avatarRecord.trim()) {
+      if (domain && isValidHypeDomain(domain)) {
+        // Step 1: Convert domain name to node hash
+        const node = namehash(domain);
+
+        // Step 2: Get the resolver for this domain from the registry
+        const resolverAddress = await publicClient.readContract({
+          address: addresses.DOT_HYPE_REGISTRY,
+          abi: DOT_HYPE_REGISTRY_ABI,
+          functionName: 'resolver',
+          args: [node],
+        });
+
+        // Step 3: If resolver exists, query for avatar text record
+        if (resolverAddress && resolverAddress !== '0x0000000000000000000000000000000000000000') {
+          avatarRecord = await publicClient.readContract({
+            address: resolverAddress as Address,
+            abi: DOT_HYPE_RESOLVER_ABI,
+            functionName: 'text',
+            args: [node, 'avatar'],
+          }) as string;
+        }
+      }
+
+      if (avatarRecord && avatarRecord.trim()) {
         setAvatar(avatarRecord.trim());
       } else {
         // Generate a default avatar based on the primary domain or address
-        if (primaryDomain) {
-          const seed = primaryDomain.replace('.hype', '');
+        if (domain) {
+          const seed = domain.replace('.hype', '');
           setAvatar(`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(seed)}&backgroundColor=22c55e&size=40`);
         } else {
           setAvatar(getAvatarUrl(userAddress));
@@ -206,8 +267,8 @@ export function useUserAvatar(address?: Address) {
     } catch (err) {
       console.error('Error fetching avatar:', err);
       // Fallback to generated avatar on error
-      if (primaryDomain) {
-        const seed = primaryDomain.replace('.hype', '');
+      if (domain) {
+        const seed = domain.replace('.hype', '');
         setAvatar(`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(seed)}&backgroundColor=22c55e&size=40`);
       } else {
         setAvatar(getAvatarUrl(userAddress));
@@ -216,22 +277,88 @@ export function useUserAvatar(address?: Address) {
     } finally {
       setIsLoading(false);
     }
-  }, [publicClient, resolverAddress, primaryDomain]);
+  }, [publicClient, addresses]);
 
   useEffect(() => {
     if (address) {
-      fetchAvatar(address);
+      fetchAvatar(address, primaryDomain || undefined);
     } else {
       setAvatar(null);
       setError(null);
     }
-  }, [address, fetchAvatar]);
+  }, [address, primaryDomain, fetchAvatar]);
 
   return {
     avatar,
     isLoading,
     error,
-    refetch: () => address && fetchAvatar(address),
+    refetch: () => address && fetchAvatar(address, primaryDomain || undefined),
+  };
+}
+
+/**
+ * Hook to check if a .hype domain is available for registration
+ * @param domain - The .hype domain to check
+ * @returns Object with availability status, loading state, and error
+ */
+export function useDomainAvailability(domain?: string) {
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const publicClient = usePublicClient();
+  const addresses = getCurrentNetworkAddresses();
+
+  const checkAvailability = useCallback(async (domainName: string) => {
+    if (!isValidHypeDomain(domainName)) {
+      setError('Invalid .hype domain');
+      return;
+    }
+
+    if (!publicClient) {
+      setError('No public client available');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Step 1: Convert domain name to node hash
+      const node = namehash(domainName);
+
+      // Step 2: Check if record exists in registry
+      const recordExists = await publicClient.readContract({
+        address: addresses.DOT_HYPE_REGISTRY,
+        abi: DOT_HYPE_REGISTRY_ABI,
+        functionName: 'recordExists',
+        args: [node],
+      });
+
+      setIsAvailable(!recordExists);
+    } catch (err) {
+      console.error('Error checking domain availability:', err);
+      setError(err instanceof Error ? err.message : 'Failed to check availability');
+      setIsAvailable(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [publicClient, addresses]);
+
+  useEffect(() => {
+    if (domain) {
+      checkAvailability(domain);
+    } else {
+      setIsAvailable(null);
+      setError(null);
+    }
+  }, [domain, checkAvailability]);
+
+  return {
+    isAvailable,
+    isLoading,
+    error,
+    refetch: () => domain && checkAvailability(domain),
   };
 }
 
