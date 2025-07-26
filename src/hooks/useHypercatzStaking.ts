@@ -144,11 +144,11 @@ export const useHypercatzStaking = () => {
       throw new Error(`Invalid token IDs: ${invalidIds.join(', ')}`);
     }
 
-    // Additional validation - ensure all are positive integers
-    const nonPositiveIds = tokenIds.filter(id => !Number.isInteger(id) || id <= 0);
-    if (nonPositiveIds.length > 0) {
-      console.error(`Non-positive token IDs found: ${nonPositiveIds.join(', ')}`);
-      throw new Error(`Token IDs must be positive integers: ${nonPositiveIds.join(', ')}`);
+    // Additional validation - ensure all are non-negative integers
+    const invalidIds2 = tokenIds.filter(id => !Number.isInteger(id) || id < 0);
+    if (invalidIds2.length > 0) {
+      console.error(`Invalid token IDs found: ${invalidIds2.join(', ')}`);
+      throw new Error(`Token IDs must be non-negative integers: ${invalidIds2.join(', ')}`);
     }
 
     // Validate that user actually owns these tokens

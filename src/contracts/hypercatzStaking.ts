@@ -460,5 +460,5 @@ export const formatStakingDuration = (stakedAt: bigint): string => {
 };
 
 export const isValidTokenId = (tokenId: number): boolean => {
-  return tokenId > 0 && tokenId <= 4444; // Assuming max supply of 4444
+  return tokenId >= 0 && tokenId <= 4444; // Token IDs start from 0, max supply of 4444
 };
