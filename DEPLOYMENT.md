@@ -75,10 +75,18 @@ NEXT_PUBLIC_RPC_URL=https://api.hyperliquid-testnet.xyz/evm
 NEXT_PUBLIC_BLOCK_EXPLORER_URL=https://hyperliquid-testnet.blockscout.com
 
 # Contract Addresses (Update with actual deployed contracts)
-NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=0x...
-NEXT_PUBLIC_STAKING_CONTRACT_ADDRESS=0x...
-NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS=0x...
-NEXT_PUBLIC_REWARDS_CONTRACT_ADDRESS=0x...
+NEXT_PUBLIC_HYPERCATZ_NFT_ADDRESS=0xa98F3CC961505CCcFB58AC58BC949a59dbdBe325
+NEXT_PUBLIC_STAKING_CONTRACT_ADDRESS=0x5b1F4087e322415489bFd41495aF32157bEC8f38
+NEXT_PUBLIC_HYPE_TOKEN_ADDRESS=0x...
+NEXT_PUBLIC_GAME_CONTRACT_ADDRESS=0x...
+NEXT_PUBLIC_REWARD_STORE_ADDRESS=0x...
+
+# Staking Configuration
+NEXT_PUBLIC_STAKING_ENABLED=true
+NEXT_PUBLIC_STAKING_MAX_NFTS_PER_TX=50
+NEXT_PUBLIC_STAKING_MIN_LOCK_PERIOD=604800
+NEXT_PUBLIC_STAKING_MAX_LOCK_PERIOD=31536000
+NEXT_PUBLIC_STAKING_ANALYTICS_ENABLED=true
 
 # Application Configuration
 NEXT_PUBLIC_APP_NAME=Hypercatz
@@ -249,9 +257,158 @@ For deployment issues:
 - Consult Next.js static export documentation
 - Contact support at the configured support email
 
+## Staking System Deployment
+
+### Prerequisites for Staking
+
+Before deploying the staking functionality, ensure:
+
+1. **Smart Contracts Deployed**:
+   - Hypercatz NFT contract (already deployed)
+   - Staking contract with proper pool configurations
+   - HYPE token contract
+   - All contracts verified on block explorer
+
+2. **Contract Integration**:
+   - Update contract addresses in environment variables
+   - Verify ABI compatibility
+   - Test contract interactions on testnet
+
+### Staking-Specific Environment Variables
+
+```bash
+# Staking Contract Configuration
+NEXT_PUBLIC_STAKING_CONTRACT_ADDRESS=0x...
+NEXT_PUBLIC_HYPE_TOKEN_ADDRESS=0x...
+
+# Staking Feature Flags
+NEXT_PUBLIC_STAKING_ENABLED=true
+NEXT_PUBLIC_STAKING_ANALYTICS_ENABLED=true
+
+# Staking Limits and Security
+NEXT_PUBLIC_STAKING_MAX_NFTS_PER_TX=50
+NEXT_PUBLIC_STAKING_MIN_LOCK_PERIOD=604800
+NEXT_PUBLIC_STAKING_MAX_LOCK_PERIOD=31536000
+
+# Pool Configuration (if needed for frontend validation)
+NEXT_PUBLIC_STAKING_POOLS_COUNT=4
+NEXT_PUBLIC_STAKING_MAX_APY=200
+```
+
+### Staking Deployment Checklist
+
+#### Pre-Deployment
+- [ ] Smart contracts deployed and verified
+- [ ] Contract addresses updated in environment variables
+- [ ] Staking pools configured with correct parameters
+- [ ] Security validations tested
+- [ ] Rate limiting configured
+- [ ] Analytics endpoints set up
+
+#### Testing
+- [ ] Stake NFTs functionality tested
+- [ ] Unstake NFTs functionality tested
+- [ ] Claim rewards functionality tested
+- [ ] Pool switching tested
+- [ ] Error handling tested
+- [ ] Security validations tested
+- [ ] Transaction history tested
+- [ ] Analytics dashboard tested
+
+#### Production Deployment
+- [ ] Environment variables set in Netlify
+- [ ] Contract addresses verified
+- [ ] Staking enabled in production
+- [ ] Monitoring and alerts configured
+- [ ] User documentation updated
+
+### Staking Security Considerations
+
+1. **Contract Security**:
+   - Ensure staking contracts are audited
+   - Verify contract addresses match expected values
+   - Implement proper access controls
+
+2. **Frontend Security**:
+   - Validate all user inputs
+   - Implement rate limiting
+   - Check for phishing attempts
+   - Validate transaction parameters
+
+3. **User Protection**:
+   - Clear warnings about lock periods
+   - Transaction confirmation dialogs
+   - Gas estimation and warnings
+   - Slippage protection where applicable
+
+### Monitoring Staking Operations
+
+1. **Key Metrics to Monitor**:
+   - Total Value Locked (TVL)
+   - Number of active stakers
+   - Reward distribution rates
+   - Transaction success rates
+   - Gas usage patterns
+
+2. **Alerts to Set Up**:
+   - Contract interaction failures
+   - Unusual staking patterns
+   - High gas price warnings
+   - Security validation failures
+
+3. **Analytics Integration**:
+   - Track staking adoption
+   - Monitor pool utilization
+   - Measure user engagement
+   - Analyze reward claim patterns
+
+### Troubleshooting Staking Issues
+
+#### Common Issues
+
+1. **Contract Not Deployed Error**:
+   - Verify contract addresses in environment variables
+   - Check if contracts are deployed on correct network
+   - Ensure ABI files are up to date
+
+2. **Transaction Failures**:
+   - Check gas limits and prices
+   - Verify user has sufficient balance
+   - Ensure NFTs are not already staked elsewhere
+
+3. **Reward Calculation Issues**:
+   - Verify pool parameters are correct
+   - Check reward distribution logic
+   - Ensure timestamp calculations are accurate
+
+4. **Security Validation Failures**:
+   - Review security check implementations
+   - Verify contract address validations
+   - Check rate limiting configurations
+
+### Rollback Procedures
+
+If issues arise with staking functionality:
+
+1. **Immediate Actions**:
+   - Set `NEXT_PUBLIC_STAKING_ENABLED=false`
+   - Deploy updated configuration
+   - Monitor for any ongoing transactions
+
+2. **Investigation**:
+   - Check contract events and logs
+   - Review transaction history
+   - Analyze error patterns
+
+3. **Resolution**:
+   - Fix identified issues
+   - Test thoroughly on staging
+   - Gradually re-enable functionality
+
 ## Version History
 
 - v1.0.0 - Initial deployment configuration
 - v1.1.0 - Added comprehensive Supabase integration
 - v1.2.0 - Enhanced security headers and caching
 - v1.3.0 - Mobile optimization and loading states
+- v1.4.0 - Production-ready staking system implementation
