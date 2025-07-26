@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useReadContracts } from 'wagmi';
+import { readContract } from '@wagmi/core';
 import { formatUnits, parseUnits } from 'viem';
 import {
   HYPERCATZ_STAKING_ADDRESS,
@@ -13,6 +14,7 @@ import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzN
 import { HYPER_POINTS_ABI } from '@/contracts/abis';
 import { getCurrentNetworkAddresses } from '@/contracts/addresses';
 import { CONTRACT_ADDRESSES } from '@/lib/constants';
+import { config } from '@/lib/wagmi';
 import { useUserNFTs } from './useUserNFTs';
 
 export const useHypercatzStaking = () => {
@@ -112,6 +114,22 @@ export const useHypercatzStaking = () => {
   console.log("Available NFTs for staking:", availableNFTs);
   console.log("Currently staked NFTs:", stakedTokenIds ? stakedTokenIds.map(id => Number(id)) : []);
 
+  // Helper function to validate token existence on-chain
+  const validateTokenExists = async (tokenId: number): Promise<boolean> => {
+    try {
+      const owner = await readContract(config, {
+        address: HYPERCATZ_NFT_ADDRESS,
+        abi: HYPERCATZ_NFT_ABI,
+        functionName: 'ownerOf',
+        args: [BigInt(tokenId)],
+      });
+      return !!owner;
+    } catch (error) {
+      console.log(`Token #${tokenId} does not exist or error checking:`, error);
+      return false;
+    }
+  };
+
   // User staking data
   const userStakingData: UserStakingData = {
     stakedTokenIds: stakedTokenIds ? [...stakedTokenIds] : [],
@@ -153,11 +171,36 @@ export const useHypercatzStaking = () => {
 
     // Validate that user actually owns these tokens
     const userOwnedIds = availableNFTs;
+    console.log("User's available NFTs for validation:", userOwnedIds);
+    console.log("Token IDs being validated:", tokenIds);
+    
     const notOwnedIds = tokenIds.filter(id => !userOwnedIds.includes(id));
     if (notOwnedIds.length > 0) {
       console.error(`User does not own these token IDs: ${notOwnedIds.join(', ')}`);
       console.error(`User's available NFTs: ${userOwnedIds.join(', ')}`);
-      throw new Error(`You don't own these NFTs: ${notOwnedIds.join(', ')}`);
+      
+      // Provide more specific error message
+      if (userOwnedIds.length === 0) {
+        throw new Error(`No NFTs found in your wallet. Please ensure you own Hypercatz NFTs and try refreshing the page.`);
+      } else {
+        throw new Error(`You don't own NFT${notOwnedIds.length > 1 ? 's' : ''} #${notOwnedIds.join(', #')}. Available NFTs: #${userOwnedIds.join(', #')}`);
+      }
+    }
+
+    // Additional validation: Check if tokens actually exist on-chain
+    console.log("Performing on-chain token existence validation...");
+    const nonExistentTokens: number[] = [];
+    
+    for (const tokenId of tokenIds) {
+      const exists = await validateTokenExists(tokenId);
+      if (!exists) {
+        nonExistentTokens.push(tokenId);
+      }
+    }
+    
+    if (nonExistentTokens.length > 0) {
+      console.error(`These tokens do not exist on-chain: ${nonExistentTokens.join(', ')}`);
+      throw new Error(`Token${nonExistentTokens.length > 1 ? 's' : ''} #${nonExistentTokens.join(', #')} do${nonExistentTokens.length === 1 ? 'es' : ''} not exist. Please refresh the page and try again.`);
     }
 
     console.log("All token IDs validated successfully");

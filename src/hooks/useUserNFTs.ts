@@ -82,27 +82,51 @@ export function useUserNFTs(): UseUserNFTsReturn {
             if (index === 0) {
               console.warn('tokenOfOwnerByIndex not supported, falling back to ownership validation');
               
-              // Check token #0 first since user reported owning it
-              const commonTokenIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+              // Fallback: Check a wider range of token IDs to find user's actual tokens
+              // Since we know the user has `userBalance` NFTs, we need to find them
+              console.warn('Using fallback method to find user tokens');
               
-              for (const testTokenId of commonTokenIds) {
-                if (tokenIds.length >= userBalance) break;
+              // Check tokens in batches to avoid overwhelming the RPC
+              const maxTokenId = 4444; // Based on MAX_SUPPLY
+              const batchSize = 50;
+              
+              for (let start = 0; start <= maxTokenId && tokenIds.length < userBalance; start += batchSize) {
+                const end = Math.min(start + batchSize - 1, maxTokenId);
+                const batch = [];
+                
+                // Create batch of ownership checks
+                for (let testTokenId = start; testTokenId <= end && tokenIds.length < userBalance; testTokenId++) {
+                  batch.push(
+                    readContract(config, {
+                      address: HYPERCATZ_NFT_ADDRESS,
+                      abi: HYPERCATZ_NFT_ABI,
+                      functionName: 'ownerOf',
+                      args: [BigInt(testTokenId)],
+                    }).then(owner => ({ tokenId: testTokenId, owner }))
+                    .catch(() => ({ tokenId: testTokenId, owner: null })) // Token doesn't exist
+                  );
+                }
                 
                 try {
-                  const owner = await readContract(config, {
-                    address: HYPERCATZ_NFT_ADDRESS,
-                    abi: HYPERCATZ_NFT_ABI,
-                    functionName: 'ownerOf',
-                    args: [BigInt(testTokenId)],
-                  });
+                  const results = await Promise.all(batch);
                   
-                  if (owner && (owner as string).toLowerCase() === address.toLowerCase()) {
-                    tokenIds.push(testTokenId);
-                    console.log(`User owns token #${testTokenId}`);
+                  for (const result of results) {
+                    if (tokenIds.length >= userBalance) break;
+                    
+                    if (result.owner &&
+                        (result.owner as string).toLowerCase() === address.toLowerCase()) {
+                      tokenIds.push(result.tokenId);
+                      console.log(`User owns token #${result.tokenId}`);
+                    }
                   }
-                } catch (ownerError) {
-                  // Token doesn't exist or other error, continue
-                  continue;
+                } catch (batchError) {
+                  console.error(`Error in batch ${start}-${end}:`, batchError);
+                  // Continue with next batch
+                }
+                
+                // Small delay to avoid rate limiting
+                if (start + batchSize <= maxTokenId) {
+                  await new Promise(resolve => setTimeout(resolve, 100));
                 }
               }
               break; // Exit the main loop since we're using fallback method
@@ -111,6 +135,12 @@ export function useUserNFTs(): UseUserNFTsReturn {
         }
 
         console.log(`Found ${tokenIds.length} actual token IDs for user:`, tokenIds);
+        
+        // Final validation: ensure we found the expected number of tokens
+        if (tokenIds.length !== userBalance) {
+          console.warn(`Expected ${userBalance} tokens but found ${tokenIds.length}. This might indicate an issue with token enumeration.`);
+        }
+        
         setUserTokenIds(tokenIds.sort((a, b) => a - b)); // Sort ascending
         
       } catch (err) {
