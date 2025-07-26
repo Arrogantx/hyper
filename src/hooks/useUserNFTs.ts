@@ -34,7 +34,13 @@ export function useUserNFTs(): UseUserNFTsReturn {
   // Fetch actual token IDs owned by the user using tokenOfOwnerByIndex
   useEffect(() => {
     const fetchUserTokenIds = async () => {
-      console.log('useUserNFTs: fetchUserTokenIds called', { address, balance: balance?.toString() });
+      console.log('useUserNFTs: fetchUserTokenIds called', {
+        address,
+        balance: balance?.toString(),
+        balanceType: typeof balance,
+        balanceNumber: balance ? Number(balance) : 'undefined',
+        balanceRaw: balance
+      });
       
       if (!address) {
         console.log('useUserNFTs: No address, setting empty token IDs');
@@ -45,10 +51,65 @@ export function useUserNFTs(): UseUserNFTsReturn {
       }
 
       if (!balance || Number(balance) === 0) {
-        console.log('useUserNFTs: No balance or zero balance, setting empty token IDs');
-        setUserTokenIds([]);
-        setIsLoading(false);
+        console.log('useUserNFTs: No balance or zero balance detected, but checking for token ownership anyway...');
+        
+        // Even if balanceOf returns 0, the user might still own tokens
+        // This can happen due to contract issues or wallet connection problems
+        // Let's check for token ownership directly
+        setIsLoading(true);
         setError(null);
+        
+        try {
+          const tokenIds: number[] = [];
+          
+          // Check a reasonable range of token IDs for ownership
+          // Start with common low token IDs including 0, then check some higher ranges
+          const tokenIdsToCheck = [
+            // Low token IDs (most common)
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            // Some mid-range tokens
+            50, 51, 52, 53, 54, 55, 100, 101, 102, 103, 104, 105,
+            // Some higher tokens
+            500, 501, 502, 1000, 1001, 1002, 2000, 2001, 2002
+          ];
+          
+          console.log('Checking token ownership for IDs:', tokenIdsToCheck);
+          
+          for (const tokenId of tokenIdsToCheck) {
+            try {
+              const owner = await readContract(config, {
+                address: HYPERCATZ_NFT_ADDRESS,
+                abi: HYPERCATZ_NFT_ABI,
+                functionName: 'ownerOf',
+                args: [BigInt(tokenId)],
+              });
+              
+              if (owner && (owner as string).toLowerCase() === address.toLowerCase()) {
+                tokenIds.push(tokenId);
+                console.log(`User owns token #${tokenId} (despite balanceOf returning 0)`);
+              }
+            } catch (ownerError) {
+              // Token doesn't exist or other error, continue
+              continue;
+            }
+          }
+          
+          if (tokenIds.length > 0) {
+            console.log(`Found ${tokenIds.length} tokens despite balanceOf returning 0:`, tokenIds);
+            setUserTokenIds(tokenIds.sort((a, b) => a - b));
+          } else {
+            console.log('No tokens found even with direct ownership check');
+            setUserTokenIds([]);
+          }
+          
+        } catch (err) {
+          console.error('Error in fallback token ownership check:', err);
+          setError(err as Error);
+          setUserTokenIds([]);
+        } finally {
+          setIsLoading(false);
+        }
+        
         return;
       }
 
