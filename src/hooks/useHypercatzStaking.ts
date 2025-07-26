@@ -13,6 +13,7 @@ import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzN
 import { HYPER_POINTS_ABI } from '@/contracts/abis';
 import { getCurrentNetworkAddresses } from '@/contracts/addresses';
 import { CONTRACT_ADDRESSES } from '@/lib/constants';
+import { useUserNFTs } from './useUserNFTs';
 
 export const useHypercatzStaking = () => {
   const { address, isConnected } = useAccount();
@@ -22,7 +23,9 @@ export const useHypercatzStaking = () => {
   });
 
   const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
-  const [userNFTs, setUserNFTs] = useState<number[]>([]);
+  
+  // Use the new hook to get user's actual NFT token IDs
+  const { userTokenIds, isLoading: nftsLoading, error: nftsError } = useUserNFTs();
 
   // Check if contracts are deployed (not zero address)
   const contractsDeployed = HYPERCATZ_STAKING_ADDRESS !== '0x0000000000000000000000000000000000000000';
@@ -99,36 +102,15 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  // Load user's available NFTs (not staked)
-  useEffect(() => {
-    const loadUserNFTs = async () => {
-      if (!address || !nftBalance || Number(nftBalance) === 0) {
-        setUserNFTs([]);
-        return;
-      }
+  // Calculate available NFTs (user's NFTs minus staked ones)
+  const availableNFTs = userTokenIds.filter(tokenId => {
+    const stakedIds = stakedTokenIds ? stakedTokenIds.map(id => Number(id)) : [];
+    return !stakedIds.includes(tokenId);
+  });
 
-      try {
-        // Get all user's NFTs
-        const allNFTs: number[] = [];
-        for (let i = 0; i < Math.min(Number(nftBalance), 50); i++) {
-          // This would typically involve calling tokenOfOwnerByIndex
-          // For now, simulate with sequential IDs
-          allNFTs.push(i + 1);
-        }
-
-        // Filter out staked NFTs
-        const stakedIds = stakedTokenIds ? stakedTokenIds.map(id => Number(id)) : [];
-        const availableNFTs = allNFTs.filter(id => !stakedIds.includes(id));
-        
-        setUserNFTs(availableNFTs);
-      } catch (error) {
-        console.error('Error loading user NFTs:', error);
-        setUserNFTs([]);
-      }
-    };
-
-    loadUserNFTs();
-  }, [address, nftBalance, stakedTokenIds]);
+  console.log("User's token IDs:", userTokenIds);
+  console.log("Available NFTs for staking:", availableNFTs);
+  console.log("Currently staked NFTs:", stakedTokenIds ? stakedTokenIds.map(id => Number(id)) : []);
 
   // User staking data
   const userStakingData: UserStakingData = {
@@ -140,22 +122,56 @@ export const useHypercatzStaking = () => {
 
   // Staking functions
   const stakeNFTs = useCallback(async (tokenIds: number[]) => {
+    console.log("=== STAKING DEBUG INFO ===");
+    console.log("Token IDs to stake:", tokenIds);
+    console.log("Token IDs length:", tokenIds.length);
+    console.log("Token IDs types:", tokenIds.map(id => typeof id));
+    
     if (!isConnected) throw new Error('Wallet not connected');
     if (!contractsDeployed) throw new Error('Staking contract not deployed');
     if (tokenIds.length === 0) throw new Error('No NFTs selected');
 
     // Validate token IDs
-    const invalidIds = tokenIds.filter(id => !isValidTokenId(id));
+    console.log("Validating token IDs...");
+    const invalidIds = tokenIds.filter(id => {
+      const isValid = isValidTokenId(id);
+      console.log(`Token ID ${id}: ${isValid ? 'VALID' : 'INVALID'}`);
+      return !isValid;
+    });
+    
     if (invalidIds.length > 0) {
+      console.error(`Invalid token IDs found: ${invalidIds.join(', ')}`);
       throw new Error(`Invalid token IDs: ${invalidIds.join(', ')}`);
     }
 
+    // Additional validation - ensure all are positive integers
+    const nonPositiveIds = tokenIds.filter(id => !Number.isInteger(id) || id <= 0);
+    if (nonPositiveIds.length > 0) {
+      console.error(`Non-positive token IDs found: ${nonPositiveIds.join(', ')}`);
+      throw new Error(`Token IDs must be positive integers: ${nonPositiveIds.join(', ')}`);
+    }
+
+    // Validate that user actually owns these tokens
+    const userOwnedIds = availableNFTs;
+    const notOwnedIds = tokenIds.filter(id => !userOwnedIds.includes(id));
+    if (notOwnedIds.length > 0) {
+      console.error(`User does not own these token IDs: ${notOwnedIds.join(', ')}`);
+      console.error(`User's available NFTs: ${userOwnedIds.join(', ')}`);
+      throw new Error(`You don't own these NFTs: ${notOwnedIds.join(', ')}`);
+    }
+
+    console.log("All token IDs validated successfully");
+    console.log("Converting to BigInt:", tokenIds.map(id => BigInt(id)));
+
     try {
+      const tokenIdsBigInt = tokenIds.map(id => BigInt(id));
+      console.log("Staking contract call args:", tokenIdsBigInt);
+      
       writeContract({
         address: HYPERCATZ_STAKING_ADDRESS,
         abi: HYPERCATZ_STAKING_ABI,
         functionName: 'stake',
-        args: [tokenIds.map(id => BigInt(id))],
+        args: [tokenIdsBigInt],
       });
     } catch (error) {
       console.error('Staking failed:', error);
@@ -199,7 +215,7 @@ export const useHypercatzStaking = () => {
 
   // Helper functions
   const canStake = (): boolean => {
-    return !!(contractsDeployed && isConnected && userNFTs.length > 0);
+    return !!(contractsDeployed && isConnected && availableNFTs.length > 0);
   };
 
   const canUnstake = (): boolean => {
@@ -262,7 +278,7 @@ export const useHypercatzStaking = () => {
     
     // User data
     userStakingData,
-    userNFTs,
+    userNFTs: availableNFTs,
     selectedNFTs,
     setSelectedNFTs,
     nftBalance: nftBalance ? Number(nftBalance) : 0,
