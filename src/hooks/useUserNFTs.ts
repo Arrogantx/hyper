@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useReadContracts } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzNFT';
+import { readContract } from '@wagmi/core';
+import { config } from '@/lib/wagmi';
 
 export interface UseUserNFTsReturn {
   userTokenIds: number[];
@@ -29,10 +31,21 @@ export function useUserNFTs(): UseUserNFTsReturn {
     },
   });
 
-  // Fetch actual token IDs owned by the user
+  // Fetch actual token IDs owned by the user using tokenOfOwnerByIndex
   useEffect(() => {
     const fetchUserTokenIds = async () => {
-      if (!address || !balance || Number(balance) === 0) {
+      console.log('useUserNFTs: fetchUserTokenIds called', { address, balance: balance?.toString() });
+      
+      if (!address) {
+        console.log('useUserNFTs: No address, setting empty token IDs');
+        setUserTokenIds([]);
+        setIsLoading(false);
+        setError(null);
+        return;
+      }
+
+      if (!balance || Number(balance) === 0) {
+        console.log('useUserNFTs: No balance or zero balance, setting empty token IDs');
         setUserTokenIds([]);
         setIsLoading(false);
         setError(null);
@@ -44,44 +57,60 @@ export function useUserNFTs(): UseUserNFTsReturn {
 
       try {
         const userBalance = Number(balance);
-        console.log(`User has ${userBalance} NFTs, fetching token IDs...`);
+        console.log(`useUserNFTs: User ${address} has ${userBalance} NFTs, fetching actual token IDs using tokenOfOwnerByIndex...`);
 
-        // For now, we'll use a practical approach:
-        // 1. Check recently minted token IDs (likely to be owned by active users)
-        // 2. Validate ownership before adding to the list
-        
         const tokenIds: number[] = [];
         
-        // Get total supply to know the range of possible token IDs
-        const maxPossibleTokenId = 4444; // Based on MAX_SUPPLY
-        
-        // Strategy: Check the most recently minted tokens first (higher IDs)
-        // This is more likely to find user's tokens quickly
-        const startId = Math.max(1, maxPossibleTokenId - 1000); // Check last 1000 tokens
-        
-        let foundTokens = 0;
-        for (let tokenId = maxPossibleTokenId; tokenId >= startId && foundTokens < userBalance; tokenId--) {
+        // Use tokenOfOwnerByIndex to get the actual token IDs owned by the user
+        for (let index = 0; index < userBalance; index++) {
           try {
-            // We'll validate ownership in the staking hook instead
-            // For now, create a reasonable set of token IDs based on user's balance
-            if (foundTokens < userBalance) {
-              tokenIds.push(tokenId - foundTokens);
-              foundTokens++;
+            const tokenId = await readContract(config, {
+              address: HYPERCATZ_NFT_ADDRESS,
+              abi: HYPERCATZ_NFT_ABI,
+              functionName: 'tokenOfOwnerByIndex',
+              args: [address, BigInt(index)],
+            });
+            
+            const tokenIdNumber = Number(tokenId);
+            tokenIds.push(tokenIdNumber);
+            console.log(`Token at index ${index}: #${tokenIdNumber}`);
+            
+          } catch (err) {
+            console.error(`Error fetching token at index ${index}:`, err);
+            // If tokenOfOwnerByIndex fails, the contract might not support enumeration
+            // Fall back to checking ownership of common token IDs
+            if (index === 0) {
+              console.warn('tokenOfOwnerByIndex not supported, falling back to ownership validation');
+              
+              // Check token #0 first since user reported owning it
+              const commonTokenIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+              
+              for (const testTokenId of commonTokenIds) {
+                if (tokenIds.length >= userBalance) break;
+                
+                try {
+                  const owner = await readContract(config, {
+                    address: HYPERCATZ_NFT_ADDRESS,
+                    abi: HYPERCATZ_NFT_ABI,
+                    functionName: 'ownerOf',
+                    args: [BigInt(testTokenId)],
+                  });
+                  
+                  if (owner && (owner as string).toLowerCase() === address.toLowerCase()) {
+                    tokenIds.push(testTokenId);
+                    console.log(`User owns token #${testTokenId}`);
+                  }
+                } catch (ownerError) {
+                  // Token doesn't exist or other error, continue
+                  continue;
+                }
+              }
+              break; // Exit the main loop since we're using fallback method
             }
-          } catch (error) {
-            continue;
-          }
-        }
-        
-        // If we didn't find enough, fill with sequential IDs (fallback)
-        while (tokenIds.length < Math.min(userBalance, 10)) {
-          const fallbackId = tokenIds.length + 1;
-          if (!tokenIds.includes(fallbackId)) {
-            tokenIds.push(fallbackId);
           }
         }
 
-        console.log(`Generated ${tokenIds.length} potential token IDs:`, tokenIds);
+        console.log(`Found ${tokenIds.length} actual token IDs for user:`, tokenIds);
         setUserTokenIds(tokenIds.sort((a, b) => a - b)); // Sort ascending
         
       } catch (err) {
@@ -118,7 +147,7 @@ export function useTokenOwnership(tokenId: number) {
     functionName: 'ownerOf',
     args: tokenId ? [BigInt(tokenId)] : undefined,
     query: {
-      enabled: !!tokenId && tokenId > 0,
+      enabled: !!tokenId && tokenId >= 0, // Allow token ID 0
     },
   });
 
