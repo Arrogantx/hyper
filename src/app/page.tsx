@@ -311,7 +311,7 @@ const HomePage: React.FC = () => {
           <div className="glass-card p-12 border-hyperliquid-500/20 glow-green">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-hyperliquid-500/10 border border-hyperliquid-500/30 mb-8">
               <Sparkles className="w-4 h-4 text-hyperliquid-400" />
-              <span className="text-sm font-medium text-hyperliquid-400">Mint Goes Live July 25th, 2025</span>
+              <span className="text-sm font-medium text-hyperliquid-400">Mint Goes Live July 26th, 2025</span>
             </div>
             
             <h2 className="text-4xl md:text-5xl font-bold mb-6 hyperliquid-gradient-text">
