@@ -46,6 +46,17 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (toast: Omit<Toast, 'id'>) => {
+    // Check for duplicate toasts (same title and message)
+    const isDuplicate = toasts.some(existingToast =>
+      existingToast.title === toast.title &&
+      existingToast.message === toast.message &&
+      existingToast.type === toast.type
+    );
+    
+    if (isDuplicate) {
+      return; // Don't add duplicate toast
+    }
+    
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: Toast = {
       ...toast,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAccount } from 'wagmi';
 import Button from '@/components/ui/Button';
@@ -61,6 +61,7 @@ export default function StakePage() {
 
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
+  const [lastProcessedHash, setLastProcessedHash] = useState<string | null>(null);
   
   const successToast = useSuccessToast();
   const errorToast = useErrorToast();
@@ -154,15 +155,21 @@ export default function StakePage() {
     }
   };
 
-  // Handle transaction success
-  if (isConfirmed && hash) {
-    if (isStaking) {
-      successToast('Transaction Successful!', `NFTs ${selectedNFTs.length > 1 ? 'were' : 'was'} successfully processed`);
-      setSelectedNFTs([]);
-    } else if (isClaiming) {
-      successToast('Rewards Claimed!', 'Your rewards have been successfully claimed');
+  // Handle transaction success - prevent duplicate notifications
+  useEffect(() => {
+    if (isConfirmed && hash && hash !== lastProcessedHash) {
+      setLastProcessedHash(hash);
+      
+      if (isStaking) {
+        successToast('Transaction Successful!', `NFTs ${selectedNFTs.length > 1 ? 'were' : 'was'} successfully processed`);
+        setSelectedNFTs([]);
+        setIsStaking(false);
+      } else if (isClaiming) {
+        successToast('Rewards Claimed!', 'Your rewards have been successfully claimed');
+        setIsClaiming(false);
+      }
     }
-  }
+  }, [isConfirmed, hash, lastProcessedHash, isStaking, isClaiming, selectedNFTs.length, successToast]);
 
   // Show loading skeleton while data is loading
   if (isLoading) {

@@ -248,6 +248,13 @@ export const useHypercatzStaking = () => {
     return estimatedNFTValue > 0 ? (yearlyReward / estimatedNFTValue) * 100 : 0;
   };
 
+  // Determine if we're still loading critical data
+  const isLoadingCriticalData = isConnected && (
+    (contractsDeployed && address && stakedTokenIds === undefined) ||
+    (contractsDeployed && address && claimableRewards === undefined) ||
+    (contractsDeployed && address && rewardRatePerNFT === undefined)
+  );
+
   return {
     // Contract state
     contractsDeployed,
@@ -288,6 +295,6 @@ export const useHypercatzStaking = () => {
     error,
     
     // Loading states
-    isLoading: false, // We provide fallback data
+    isLoading: isLoadingCriticalData,
   };
 };
