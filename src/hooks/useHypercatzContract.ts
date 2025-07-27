@@ -9,18 +9,8 @@ export const useHypercatzContract = () => {
     hash,
   });
 
-  // Add timeout state to prevent infinite loading
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
-
-  // Set a timeout for loading state - only as last resort
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log('🕐 Loading timeout triggered - switching to fallback data');
-      setLoadingTimeout(true);
-    }, 10000); // 10 second timeout - give more time for real data
-
-    return () => clearTimeout(timer);
-  }, []);
+  // Remove aggressive timeout that causes fallback data issues
+  // Let the RPC calls take their natural time to complete
 
   // Read contract data with balanced polling - prioritize getting real data first
   // Static data - shorter cache to ensure initial load, then longer cache
@@ -170,8 +160,8 @@ export const useHypercatzContract = () => {
   });
 
   // Contract info object with fallback data
-  const hasContractData = maxSupply && totalSupply !== undefined && totalMinted !== undefined && currentPhase !== undefined && maxPerWalletGuaranteed && maxPerWalletWhitelist && maxPerWalletPublic;
-  const contractInfo: ContractInfo = (hasContractData && !loadingTimeout) ? {
+  const hasContractData = maxSupply !== undefined && totalSupply !== undefined && totalMinted !== undefined && currentPhase !== undefined && maxPerWalletGuaranteed !== undefined && maxPerWalletWhitelist !== undefined && maxPerWalletPublic !== undefined;
+  const contractInfo: ContractInfo = hasContractData ? {
     maxSupply: maxSupply as bigint,
     totalSupply: totalSupply as bigint,
     totalMinted: totalMinted as bigint,
@@ -404,8 +394,8 @@ export const useHypercatzContract = () => {
     isConfirmed,
     error,
     
-    // Loading states - properly detect when we're loading user data with timeout protection
-    isLoading: !loadingTimeout && (maxSupply === undefined || totalSupply === undefined || totalMinted === undefined || currentPhase === undefined || maxPerWalletGuaranteed === undefined || maxPerWalletWhitelist === undefined || maxPerWalletPublic === undefined),
-    isUserDataLoading: !loadingTimeout && isConnected && (userPhaseAccess === undefined || userBalance === undefined || mintedInGuaranteed === undefined || mintedInWhitelist === undefined || mintedInPublic === undefined),
+    // Loading states
+    isLoading: maxSupply === undefined || totalSupply === undefined || totalMinted === undefined || currentPhase === undefined,
+    isUserDataLoading: isConnected && (userPhaseAccess === undefined || userBalance === undefined || mintedInGuaranteed === undefined || mintedInWhitelist === undefined || mintedInPublic === undefined),
   };
 };
