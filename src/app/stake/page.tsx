@@ -75,9 +75,30 @@ export default function StakePage() {
   const [isApproving, setIsApproving] = useState(false);
   const [lastProcessedHash, setLastProcessedHash] = useState<string | null>(null);
   const [lastProcessedApprovalHash, setLastProcessedApprovalHash] = useState<string | null>(null);
+  const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
   
   const successToast = useSuccessToast();
   const errorToast = useErrorToast();
+
+  // Add timeout for loading state to prevent infinite loading
+  useEffect(() => {
+    if (isLoading && isConnected) {
+      const timeout = setTimeout(() => {
+        console.warn('Loading timeout reached, forcing page render');
+        // Clear any existing timeout
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
+        }
+      }, 15000); // 15 second timeout
+      
+      setLoadingTimeout(timeout);
+      
+      return () => {
+        clearTimeout(timeout);
+        setLoadingTimeout(null);
+      };
+    }
+  }, [isLoading, isConnected, loadingTimeout]);
 
   const handleStake = async () => {
     // Check if approval is needed first
@@ -229,8 +250,8 @@ export default function StakePage() {
     }
   }, [isApprovalConfirmed, approvalHash, lastProcessedApprovalHash, successToast, refetchApprovalStatus]);
 
-  // Show loading skeleton while data is loading
-  if (isLoading) {
+  // Show loading skeleton while data is loading, but with timeout protection
+  if (isLoading && !loadingTimeout) {
     return <StakingPoolSkeleton />;
   }
 

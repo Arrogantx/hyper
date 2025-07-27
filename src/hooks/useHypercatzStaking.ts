@@ -118,21 +118,33 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  // Comprehensive refetch function
+  // Comprehensive refetch function with timeout and error recovery
   const refetchAllData = useCallback(async () => {
     console.log('Refetching all staking data...');
     try {
-      await Promise.all([
+      // Add timeout to prevent hanging
+      const refetchPromises = [
         refetchStakedTokenIds(),
         refetchClaimableRewards(),
         refetchTotalEarned(),
         refetchTotalClaimed(),
         refetchUserNFTs(), // Refetch user NFTs
         refetchApprovalStatus(), // Refetch approval status
+      ];
+
+      // Race against timeout to prevent hanging
+      await Promise.race([
+        Promise.all(refetchPromises),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Refetch timeout')), 10000)
+        )
       ]);
+      
       console.log('All data refetched successfully');
     } catch (error) {
       console.error('Error refetching data:', error);
+      // Don't throw the error to prevent UI crashes
+      // The individual hooks will handle their own error states
     }
   }, [refetchStakedTokenIds, refetchClaimableRewards, refetchTotalEarned, refetchTotalClaimed, refetchUserNFTs, refetchApprovalStatus]);
 
@@ -348,11 +360,12 @@ export const useHypercatzStaking = () => {
   };
 
   // Determine if we're still loading critical data
-  const isLoadingCriticalData = isConnected && (
+  // Only show loading if we're actually waiting for initial data, not during refetches
+  const isLoadingCriticalData = isConnected && contractsDeployed && address && (
     nftsLoading ||
-    (contractsDeployed && address && stakedTokenIds === undefined) ||
-    (contractsDeployed && address && claimableRewards === undefined) ||
-    (contractsDeployed && address && rewardRatePerNFT === undefined)
+    (stakedTokenIds === undefined && !isPending && !isConfirming) ||
+    (claimableRewards === undefined && !isPending && !isConfirming) ||
+    (rewardRatePerNFT === undefined && !isPending && !isConfirming)
   );
 
   return {
