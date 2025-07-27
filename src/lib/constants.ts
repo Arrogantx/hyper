@@ -13,24 +13,18 @@ export const HYPEREVM_CONFIG = {
   rpcUrls: {
     public: {
       http: [
-        // Primary CORS-friendly endpoint
-        'https://api.hyperliquid.xyz/evm',
-        // Fallback endpoints
-        'https://rpc-hyperevm.hyperliquid.xyz',
-        'https://hyperevm-rpc.hyperliquid.xyz',
-        // Original endpoint as last resort (may have CORS issues)
-        'https://rpc.hyperliquid.xyz/evm'
+        // Primary HyperLiquid RPC endpoint
+        'https://rpc.hyperliquid.xyz/evm',
+        // Backup DRPC endpoint
+        'https://hyperliquid.drpc.org'
       ]
     },
     default: {
       http: [
-        // Primary CORS-friendly endpoint
-        'https://api.hyperliquid.xyz/evm',
-        // Fallback endpoints
-        'https://rpc-hyperevm.hyperliquid.xyz',
-        'https://hyperevm-rpc.hyperliquid.xyz',
-        // Original endpoint as last resort (may have CORS issues)
-        'https://rpc.hyperliquid.xyz/evm'
+        // Primary HyperLiquid RPC endpoint
+        'https://rpc.hyperliquid.xyz/evm',
+        // Backup DRPC endpoint
+        'https://hyperliquid.drpc.org'
       ]
     },
   },

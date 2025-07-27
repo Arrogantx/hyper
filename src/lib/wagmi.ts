@@ -10,27 +10,21 @@ const hyperEVM: Chain = {
   name: HYPEREVM_CONFIG.name,
   nativeCurrency: HYPEREVM_CONFIG.nativeCurrency,
   rpcUrls: {
-    // Use CORS-friendly RPC endpoints to prevent browser blocking
+    // Use correct RPC endpoints for HyperLiquid Mainnet
     public: {
       http: [
-        // Primary CORS-friendly endpoint
-        'https://api.hyperliquid.xyz/evm',
-        // Fallback endpoints
-        'https://rpc-hyperevm.hyperliquid.xyz',
-        'https://hyperevm-rpc.hyperliquid.xyz',
-        // Original endpoint as last resort (may have CORS issues)
+        // Primary HyperLiquid RPC endpoint
         'https://rpc.hyperliquid.xyz/evm',
+        // Backup DRPC endpoint
+        'https://hyperliquid.drpc.org',
       ]
     },
     default: {
       http: [
-        // Primary CORS-friendly endpoint
-        'https://api.hyperliquid.xyz/evm',
-        // Fallback endpoints
-        'https://rpc-hyperevm.hyperliquid.xyz',
-        'https://hyperevm-rpc.hyperliquid.xyz',
-        // Original endpoint as last resort (may have CORS issues)
+        // Primary HyperLiquid RPC endpoint
         'https://rpc.hyperliquid.xyz/evm',
+        // Backup DRPC endpoint
+        'https://hyperliquid.drpc.org',
       ]
     },
   },
