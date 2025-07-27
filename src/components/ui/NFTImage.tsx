@@ -1,19 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useReadContract } from 'wagmi';
-import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzNFT';
+import { useState } from 'react';
 import Image from 'next/image';
-
-interface NFTMetadata {
-  name: string;
-  description: string;
-  image: string;
-  attributes?: Array<{
-    trait_type: string;
-    value: string | number;
-  }>;
-}
 
 interface NFTImageProps {
   tokenId: number;
@@ -25,53 +13,16 @@ interface NFTImageProps {
   variant?: 'stake' | 'unstake' | 'default';
 }
 
-export function NFTImage({ 
-  tokenId, 
-  className = '', 
-  showId = true, 
+export function NFTImage({
+  tokenId,
+  className = '',
+  showId = true,
   size = 'md',
   onClick,
   selected = false,
   variant = 'default'
 }: NFTImageProps) {
-  const [metadata, setMetadata] = useState<NFTMetadata | null>(null);
   const [imageError, setImageError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Get token URI from contract
-  const { data: tokenURI, isLoading: uriLoading, error: uriError } = useReadContract({
-    address: HYPERCATZ_NFT_ADDRESS,
-    abi: HYPERCATZ_NFT_ABI,
-    functionName: 'tokenURI',
-    args: [BigInt(tokenId)],
-    query: {
-      enabled: tokenId >= 0,
-    },
-  });
-
-  // Fetch metadata from URI
-  useEffect(() => {
-    const fetchMetadata = async () => {
-      if (!tokenURI || uriLoading) return;
-      
-      setIsLoading(true);
-      try {
-        const response = await fetch(tokenURI as string);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch metadata: ${response.status}`);
-        }
-        const data = await response.json();
-        setMetadata(data);
-      } catch (error) {
-        console.error(`Error fetching metadata for token ${tokenId}:`, error);
-        setMetadata(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMetadata();
-  }, [tokenURI, tokenId, uriLoading]);
 
   // Size classes
   const sizeClasses = {
@@ -100,48 +51,32 @@ export function NFTImage({
     return `${baseStyles} hover:ring-2 hover:ring-gray-400`;
   };
 
-  // Loading state
-  if (isLoading || uriLoading) {
+  // Error state fallback
+  if (imageError) {
     return (
-      <div 
-        className={`${sizeClasses[size]} ${className} ${getVariantStyles()} rounded-lg bg-dark-700 flex items-center justify-center animate-pulse`}
-        onClick={onClick}
-      >
-        <div className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Error state or no metadata
-  if (uriError || !metadata || imageError) {
-    return (
-      <div 
+      <div
         className={`${sizeClasses[size]} ${className} ${getVariantStyles()} rounded-lg bg-dark-700 flex flex-col items-center justify-center text-gray-300`}
         onClick={onClick}
       >
         <div className="text-xs font-medium">#{tokenId}</div>
-        {(uriError || !metadata) && (
-          <div className="text-xs text-gray-500 mt-1">No Data</div>
-        )}
-        {imageError && (
-          <div className="text-xs text-gray-500 mt-1">Image Error</div>
-        )}
+        <div className="text-xs text-gray-500 mt-1">Image Error</div>
       </div>
     );
   }
 
   return (
-    <div 
+    <div
       className={`${sizeClasses[size]} ${className} ${getVariantStyles()} rounded-lg overflow-hidden relative group`}
       onClick={onClick}
     >
-      <Image
-        src={metadata.image}
-        alt={metadata.name || `Hypercatz #${tokenId}`}
-        fill
-        className="object-cover"
+      <video
+        src="/images/pre-reveal.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-full object-cover"
         onError={() => setImageError(true)}
-        sizes="(max-width: 768px) 80px, 96px"
       />
       
       {/* Overlay with token ID */}
@@ -165,14 +100,16 @@ export function NFTImage({
 }
 
 // Fallback component for when we just need a simple placeholder
-export function NFTPlaceholder({ 
-  tokenId, 
-  className = '', 
+export function NFTPlaceholder({
+  tokenId,
+  className = '',
   size = 'md',
   onClick,
   selected = false,
   variant = 'default'
 }: Omit<NFTImageProps, 'showId'>) {
+  const [imageError, setImageError] = useState(false);
+  
   const sizeClasses = {
     sm: 'w-16 h-16',
     md: 'w-20 h-20',
@@ -198,12 +135,42 @@ export function NFTPlaceholder({
     return `${baseStyles} hover:ring-2 hover:ring-gray-400`;
   };
 
+  // Error state fallback
+  if (imageError) {
+    return (
+      <div
+        className={`${sizeClasses[size]} ${className} ${getVariantStyles()} rounded-lg bg-dark-700 flex items-center justify-center text-gray-300 font-medium text-sm`}
+        onClick={onClick}
+      >
+        #{tokenId}
+      </div>
+    );
+  }
+
   return (
-    <div 
-      className={`${sizeClasses[size]} ${className} ${getVariantStyles()} rounded-lg bg-dark-700 flex items-center justify-center text-gray-300 font-medium text-sm`}
+    <div
+      className={`${sizeClasses[size]} ${className} ${getVariantStyles()} rounded-lg overflow-hidden relative group`}
       onClick={onClick}
     >
-      #{tokenId}
+      <video
+        src="/images/pre-reveal.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+        onError={() => setImageError(true)}
+      />
+      
+      {/* Selection indicator */}
+      {selected && (
+        <div className="absolute top-1 right-1">
+          <div className={`w-3 h-3 rounded-full ${
+            variant === 'stake' ? 'bg-hyperliquid-500' :
+            variant === 'unstake' ? 'bg-red-500' : 'bg-blue-500'
+          }`} />
+        </div>
+      )}
     </div>
   );
 }
