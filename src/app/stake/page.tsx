@@ -56,12 +56,23 @@ export default function StakePage() {
     isConfirming,
     isConfirmed,
     error,
-    isLoading
+    isLoading,
+    // Approval related
+    isApprovedForAll,
+    isApprovalLoading,
+    approveAll,
+    approvalHash,
+    isApprovalPending,
+    isApprovalConfirming,
+    isApprovalConfirmed,
+    approvalError,
   } = useHypercatzStaking();
 
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
   const [lastProcessedHash, setLastProcessedHash] = useState<string | null>(null);
+  const [lastProcessedApprovalHash, setLastProcessedApprovalHash] = useState<string | null>(null);
   
   const successToast = useSuccessToast();
   const errorToast = useErrorToast();
@@ -126,6 +137,30 @@ export default function StakePage() {
     }
   };
 
+  const handleApproveNFTs = async () => {
+    if (!isConnected) {
+      errorToast('Wallet Not Connected', 'Please connect your wallet first');
+      return;
+    }
+
+    if (!contractsDeployed) {
+      errorToast('Contract Not Available', 'Staking contract is not deployed');
+      return;
+    }
+
+    setIsApproving(true);
+    
+    try {
+      await approveAll();
+      // Transaction state is handled by the hook
+    } catch (error: any) {
+      console.error('Approval failed:', error);
+      errorToast('Approval Failed', error.message || 'Failed to approve NFTs for staking');
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
   const handleClaimRewards = async () => {
     // Validate operation prerequisites
     const validationError = validateStakingOperation('claim', {
@@ -170,6 +205,15 @@ export default function StakePage() {
       }
     }
   }, [isConfirmed, hash, lastProcessedHash, isStaking, isClaiming, selectedNFTs.length, successToast]);
+
+  // Handle approval transaction success
+  useEffect(() => {
+    if (isApprovalConfirmed && approvalHash && approvalHash !== lastProcessedApprovalHash) {
+      setLastProcessedApprovalHash(approvalHash);
+      successToast('Approval Successful!', 'Your NFTs are now approved for staking');
+      setIsApproving(false);
+    }
+  }, [isApprovalConfirmed, approvalHash, lastProcessedApprovalHash, successToast]);
 
   // Show loading skeleton while data is loading
   if (isLoading) {
@@ -357,6 +401,60 @@ export default function StakePage() {
             </motion.div>
           )}
 
+          {/* NFT Approval Section */}
+          {userNFTs.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.9 }}
+              className="mb-16"
+            >
+              <div className="feature-card">
+                <h3 className="text-2xl font-bold text-hyperliquid-400 mb-6">NFT Approval Status</h3>
+                
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${isApprovedForAll ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span className="text-lg font-medium text-white">
+                      {isApprovedForAll ? 'NFTs Approved for Staking' : 'NFTs Need Approval'}
+                    </span>
+                  </div>
+                  
+                  {!isApprovedForAll && (
+                    <Button
+                      onClick={handleApproveNFTs}
+                      disabled={isApproving || isApprovalPending || isApprovalConfirming}
+                      variant="primary"
+                      className="flex items-center gap-2"
+                    >
+                      {isApproving || isApprovalPending || isApprovalConfirming ? (
+                        <>
+                          <LoadingSpinner size="sm" />
+                          <span>
+                            {isApprovalPending ? 'Approving...' : isApprovalConfirming ? 'Confirming...' : 'Processing...'}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Star className="h-4 w-4" />
+                          Approve NFTs for Staking
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="text-sm text-gray-400">
+                  {isApprovedForAll ? (
+                    <p>✅ Your NFTs are approved and ready for staking. You can now stake your selected NFTs below.</p>
+                  ) : (
+                    <p>⚠️ Before you can stake your NFTs, you need to approve them for the staking contract. This is a one-time transaction that allows the staking contract to manage your NFTs.</p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Staking Interface */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -418,7 +516,7 @@ export default function StakePage() {
 
                   <Button
                     onClick={handleStake}
-                    disabled={isStaking || isPending || selectedNFTs.length === 0 || !canStake()}
+                    disabled={isStaking || isPending || selectedNFTs.length === 0 || !canStake() || !isApprovedForAll}
                     className="w-full"
                     variant="primary"
                   >
@@ -427,6 +525,8 @@ export default function StakePage() {
                         <LoadingSpinner size="sm" />
                         <span>Staking...</span>
                       </div>
+                    ) : !isApprovedForAll ? (
+                      'Approve NFTs First'
                     ) : (
                       `Stake ${selectedNFTs.length} NFT${selectedNFTs.length !== 1 ? 's' : ''}`
                     )}
@@ -613,7 +713,7 @@ export default function StakePage() {
           </motion.div>
 
           {/* Transaction Status */}
-          {(isPending || isConfirming) && (
+          {(isPending || isConfirming || isApprovalPending || isApprovalConfirming) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -622,18 +722,21 @@ export default function StakePage() {
               <div className="glass-card p-6 border-hyperliquid-500/30">
                 <LoadingSpinner size="lg" className="mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-white mb-2">
-                  {isPending ? 'Confirming Transaction...' : 'Processing...'}
+                  {(isPending || isApprovalPending) ? 'Confirming Transaction...' : 'Processing...'}
                 </h3>
                 <p className="text-gray-400">
-                  {isPending 
+                  {(isPending || isApprovalPending)
                     ? 'Please confirm the transaction in your wallet'
-                    : 'Your transaction is being processed on the blockchain'
+                    : (isApprovalConfirming
+                      ? 'Your approval transaction is being processed on the blockchain'
+                      : 'Your transaction is being processed on the blockchain'
+                    )
                   }
                 </p>
-                {hash && (
+                {(hash || approvalHash) && (
                   <div className="mt-4">
                     <a
-                      href={`https://hyperscan.com/tx/${hash}`}
+                      href={`https://hyperscan.com/tx/${hash || approvalHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-hyperliquid-400 hover:text-hyperliquid-300 text-sm"

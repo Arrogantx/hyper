@@ -16,6 +16,7 @@ import { getCurrentNetworkAddresses } from '@/contracts/addresses';
 import { CONTRACT_ADDRESSES } from '@/lib/constants';
 import { config } from '@/lib/wagmi';
 import { useUserNFTs } from './useUserNFTs';
+import { useNFTApproval } from './useNFTApproval';
 
 export const useHypercatzStaking = () => {
   const { address, isConnected } = useAccount();
@@ -28,6 +29,18 @@ export const useHypercatzStaking = () => {
   
   // Use the new hook to get user's actual NFT token IDs
   const { userTokenIds, isLoading: nftsLoading, error: nftsError } = useUserNFTs();
+  
+  // Use the approval hook
+  const {
+    isApprovedForAll,
+    isApprovalLoading,
+    approveAll,
+    approvalHash,
+    isApprovalPending,
+    isApprovalConfirming,
+    isApprovalConfirmed,
+    approvalError,
+  } = useNFTApproval();
 
   // Check if contracts are deployed (not zero address)
   const contractsDeployed = HYPERCATZ_STAKING_ADDRESS !== '0x0000000000000000000000000000000000000000';
@@ -149,6 +162,14 @@ export const useHypercatzStaking = () => {
     if (!contractsDeployed) throw new Error('Staking contract not deployed');
     if (tokenIds.length === 0) throw new Error('No NFTs selected');
 
+    // Check approval status first
+    console.log("Checking NFT approval status...");
+    console.log("Is approved for all:", isApprovedForAll);
+    
+    if (!isApprovedForAll) {
+      throw new Error('NFTs must be approved for staking first. Please approve your NFTs and try again.');
+    }
+
     // Validate token IDs
     console.log("Validating token IDs...");
     const invalidIds = tokenIds.filter(id => {
@@ -203,7 +224,7 @@ export const useHypercatzStaking = () => {
       throw new Error(`Token${nonExistentTokens.length > 1 ? 's' : ''} #${nonExistentTokens.join(', #')} do${nonExistentTokens.length === 1 ? 'es' : ''} not exist. Please refresh the page and try again.`);
     }
 
-    console.log("All token IDs validated successfully");
+    console.log("All validations passed, proceeding with staking...");
     console.log("Converting to BigInt:", tokenIds.map(id => BigInt(id)));
 
     try {
@@ -220,7 +241,7 @@ export const useHypercatzStaking = () => {
       console.error('Staking failed:', error);
       throw error;
     }
-  }, [isConnected, contractsDeployed, writeContract, availableNFTs]);
+  }, [isConnected, contractsDeployed, writeContract, availableNFTs, isApprovedForAll]);
 
   const unstakeNFTs = useCallback(async (tokenIds: number[]) => {
     if (!isConnected) throw new Error('Wallet not connected');
@@ -327,6 +348,16 @@ export const useHypercatzStaking = () => {
     setSelectedNFTs,
     nftBalance: nftBalance ? Number(nftBalance) : 0,
     hyperPointsBalance: hyperPointsBalance ? Number(formatUnits(hyperPointsBalance, 18)) : 0,
+    
+    // Approval state
+    isApprovedForAll,
+    isApprovalLoading,
+    approveAll,
+    approvalHash,
+    isApprovalPending,
+    isApprovalConfirming,
+    isApprovalConfirmed,
+    approvalError,
     
     // Contract functions
     stakeNFTs,
