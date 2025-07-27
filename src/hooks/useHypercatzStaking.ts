@@ -45,7 +45,7 @@ export const useHypercatzStaking = () => {
   } = useNFTApproval();
 
   // Check if contracts are deployed (not zero address)
-  const contractsDeployed = HYPERCATZ_STAKING_ADDRESS !== '0x5b1F4087e322415489bFd41495aF32157bEC8f38';
+  const contractsDeployed = HYPERCATZ_STAKING_ADDRESS !== '0x0000000000000000000000000000000000000000';
 
   // Read user's NFT balance
   const { data: nftBalance } = useReadContract({
