@@ -440,10 +440,21 @@ export interface UserStakingData {
 }
 
 // Utility functions
-export const calculateRewards = (stakedAt: bigint, rewardRate: bigint): bigint => {
+export const getRewardMultiplier = (stakedCount: number): number => {
+  if (stakedCount >= 25) return 1.5;
+  if (stakedCount >= 10) return 1.25;
+  if (stakedCount >= 4) return 1.1;
+  return 1.0;
+};
+
+export const calculateRewards = (stakedAt: bigint, rewardRate: bigint, stakedCount: number = 1): bigint => {
   const currentTime = BigInt(Math.floor(Date.now() / 1000));
   const stakingDuration = currentTime - stakedAt;
-  return (stakingDuration * rewardRate) / BigInt(86400); // Per day
+  const baseReward = (stakingDuration * rewardRate) / BigInt(86400); // Per day
+  
+  // Apply multiplier based on staked count
+  const multiplier = getRewardMultiplier(stakedCount);
+  return BigInt(Math.floor(Number(baseReward) * multiplier));
 };
 
 export const formatStakingDuration = (stakedAt: bigint): string => {

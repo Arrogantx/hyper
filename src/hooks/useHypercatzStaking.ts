@@ -8,7 +8,8 @@ import {
   type UserStakingData,
   calculateRewards,
   formatStakingDuration,
-  isValidTokenId
+  isValidTokenId,
+  getRewardMultiplier
 } from '@/contracts/hypercatzStaking';
 import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzNFT';
 import { HYPER_POINTS_ABI } from '@/contracts/abis';
@@ -44,7 +45,7 @@ export const useHypercatzStaking = () => {
   } = useNFTApproval();
 
   // Check if contracts are deployed (not zero address)
-  const contractsDeployed = HYPERCATZ_STAKING_ADDRESS !== '0x0000000000000000000000000000000000000000';
+  const contractsDeployed = HYPERCATZ_STAKING_ADDRESS !== '0x5b1F4087e322415489bFd41495aF32157bEC8f38';
 
   // Read user's NFT balance
   const { data: nftBalance } = useReadContract({
@@ -324,8 +325,20 @@ export const useHypercatzStaking = () => {
   const getEstimatedDailyRewards = (): number => {
     if (!rewardRatePerNFT || userStakingData.stakedTokenIds.length === 0) return 0;
     
+    const stakedCount = userStakingData.stakedTokenIds.length;
     const dailyRewardPerNFT = Number(formatUnits(rewardRatePerNFT, 18));
-    return dailyRewardPerNFT * userStakingData.stakedTokenIds.length;
+    
+    // Apply multipliers based on number of staked NFTs (matching smart contract logic)
+    let multiplier = 1.0;
+    if (stakedCount >= 25) {
+      multiplier = 1.5;
+    } else if (stakedCount >= 10) {
+      multiplier = 1.25;
+    } else if (stakedCount >= 4) {
+      multiplier = 1.1;
+    }
+    
+    return dailyRewardPerNFT * stakedCount * multiplier;
   };
 
   const getTotalStaked = (): number => {
@@ -357,6 +370,10 @@ export const useHypercatzStaking = () => {
     const estimatedNFTValue = 1; // Placeholder - replace with actual logic
     
     return estimatedNFTValue > 0 ? (yearlyReward / estimatedNFTValue) * 100 : 0;
+  };
+
+  const getCurrentMultiplier = (): number => {
+    return getRewardMultiplier(userStakingData.stakedTokenIds.length);
   };
 
   // Determine if we're still loading critical data
@@ -408,6 +425,7 @@ export const useHypercatzStaking = () => {
     getTotalEarnedAmount,
     getTotalClaimedAmount,
     getAPY,
+    getCurrentMultiplier,
     
     // Contract data
     rewardRatePerNFT: rewardRatePerNFT ? Number(formatUnits(rewardRatePerNFT, 18)) : 0,
