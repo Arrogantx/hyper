@@ -49,6 +49,10 @@ const MintPage: React.FC = () => {
     getUserMintedInCurrentPhase,
     canUserMintInCurrentPhase,
     getRemainingMintsForUser,
+    getUserPhaseString,
+    getPhaseAccessStatus,
+    hasValidPhaseAccess,
+    isUserPhaseLoading,
     mint,
     hash,
     isPending,
@@ -166,6 +170,9 @@ const MintPage: React.FC = () => {
   const maxMintForPhase = contractInfo ? Number(getMaxMintForCurrentPhase()) : 5;
   const remainingMints = isConnected ? Number(getRemainingMintsForUser()) : 0;
   const mintProgress = maxSupply > 0 ? (totalMinted / maxSupply) * 100 : 0;
+
+  // Get phase access status
+  const phaseAccessStatus = getPhaseAccessStatus();
 
   // Mock price for display (since contract is free mint)
   const displayPrice = '0.00';
@@ -364,6 +371,44 @@ const MintPage: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Phase Access Status */}
+                {isConnected && (
+                  <div className={`glass-card p-4 mb-6 ${
+                    phaseAccessStatus.hasAccess
+                      ? 'border-green-500/20 bg-green-500/5'
+                      : phaseAccessStatus.isLoading
+                        ? 'border-yellow-500/20 bg-yellow-500/5'
+                        : 'border-red-500/20 bg-red-500/5'
+                  }`}>
+                    <div className="flex items-center gap-3 mb-2">
+                      {phaseAccessStatus.isLoading ? (
+                        <Clock className="h-5 w-5 text-yellow-500 animate-spin" />
+                      ) : phaseAccessStatus.hasAccess ? (
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <AlertCircle className="h-5 w-5 text-red-500" />
+                      )}
+                      <span className={`font-bold ${
+                        phaseAccessStatus.isLoading
+                          ? 'text-yellow-400'
+                          : phaseAccessStatus.hasAccess
+                            ? 'text-green-400'
+                            : 'text-red-400'
+                      }`}>
+                        {phaseAccessStatus.isLoading
+                          ? 'Checking Phase Access...'
+                          : phaseAccessStatus.hasAccess
+                            ? 'Phase Access Granted'
+                            : 'Phase Access Denied'
+                        }
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-300">
+                      {phaseAccessStatus.message}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
                     <div className="text-gray-400 text-sm mb-1">Mint Price</div>
@@ -478,7 +523,7 @@ const MintPage: React.FC = () => {
                         size="lg"
                         onClick={handleMint}
                         isLoading={isPending || isConfirming}
-                        disabled={isPending || isConfirming || remainingMints === 0 || !canUserMintInCurrentPhase()}
+                        disabled={isPending || isConfirming || remainingMints === 0 || !phaseAccessStatus.hasAccess || phaseAccessStatus.isLoading}
                         className="w-full group text-lg py-4"
                       >
                         {isPending ? (
@@ -496,10 +541,18 @@ const MintPage: React.FC = () => {
                             <AlertCircle className="h-6 w-6 mr-3" />
                             Mint Limit Reached
                           </>
-                        ) : !canUserMintInCurrentPhase() ? (
+                        ) : phaseAccessStatus.isLoading ? (
                           <>
-                            <Clock className="h-6 w-6 mr-3" />
-                            No Access to Current Phase
+                            <Clock className="h-6 w-6 mr-3 animate-spin" />
+                            Checking Phase Access...
+                          </>
+                        ) : !phaseAccessStatus.hasAccess ? (
+                          <>
+                            <AlertCircle className="h-6 w-6 mr-3" />
+                            {phaseAccessStatus.userPhase !== null
+                              ? `Need ${getPhaseString(phaseAccessStatus.currentPhase)} Access`
+                              : 'Phase Access Required'
+                            }
                           </>
                         ) : (
                           <>

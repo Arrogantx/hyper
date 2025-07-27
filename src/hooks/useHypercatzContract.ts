@@ -123,21 +123,14 @@ export const useHypercatzContract = () => {
     maxPerWalletPublic: BigInt(5),
   };
 
-  // User mint info object with fallback data
-  const userMintInfo: UserMintInfo = isConnected && userPhaseAccess !== undefined && mintedInGuaranteed !== undefined && mintedInWhitelist !== undefined && mintedInPublic !== undefined && userBalance !== undefined ? {
+  // User mint info object - only provide data when we have real contract data
+  const userMintInfo: UserMintInfo | null = isConnected && userPhaseAccess !== undefined && mintedInGuaranteed !== undefined && mintedInWhitelist !== undefined && mintedInPublic !== undefined && userBalance !== undefined ? {
     phaseAccess: userPhaseAccess as HypercatzPhase,
     mintedInGuaranteed: mintedInGuaranteed as bigint,
     mintedInWhitelist: mintedInWhitelist as bigint,
     mintedInPublic: mintedInPublic as bigint,
     balance: userBalance as bigint,
-  } : {
-    // Fallback data for demo purposes
-    phaseAccess: HypercatzPhase.PUBLIC,
-    mintedInGuaranteed: BigInt(0),
-    mintedInWhitelist: BigInt(0),
-    mintedInPublic: BigInt(0),
-    balance: BigInt(0),
-  };
+  } : null;
 
   // Helper functions
   const getPhaseString = (phase: HypercatzPhase): string => {
@@ -201,6 +194,87 @@ export const useHypercatzContract = () => {
     return maxMint > userMinted ? maxMint - userMinted : BigInt(0);
   };
 
+  // Get user's actual phase access (returns null if not available)
+  const getUserPhaseAccess = (): HypercatzPhase | null => {
+    return userMintInfo?.phaseAccess ?? null;
+  };
+
+  // Check if user phase data is loading
+  const isUserPhaseLoading = (): boolean => {
+    return isConnected && userPhaseAccess === undefined;
+  };
+
+  // Get user phase access string with loading/error states
+  const getUserPhaseString = (): string => {
+    if (!isConnected) return 'Connect wallet to check phase access';
+    if (isUserPhaseLoading()) return 'Loading phase access...';
+    if (userMintInfo === null) return 'Unable to determine phase access';
+    return getPhaseString(userMintInfo.phaseAccess);
+  };
+
+  // Check if user has valid phase access for current phase
+  const hasValidPhaseAccess = (): boolean => {
+    if (!isConnected || !userMintInfo || !contractInfo) return false;
+    return userMintInfo.phaseAccess <= contractInfo.currentPhase;
+  };
+
+  // Get phase access status with detailed information
+  const getPhaseAccessStatus = (): {
+    hasAccess: boolean;
+    userPhase: HypercatzPhase | null;
+    currentPhase: HypercatzPhase;
+    isLoading: boolean;
+    message: string;
+  } => {
+    const currentPhase = contractInfo.currentPhase;
+    const userPhase = getUserPhaseAccess();
+    const isLoading = isUserPhaseLoading();
+
+    if (!isConnected) {
+      return {
+        hasAccess: false,
+        userPhase: null,
+        currentPhase,
+        isLoading: false,
+        message: 'Connect wallet to check phase access'
+      };
+    }
+
+    if (isLoading) {
+      return {
+        hasAccess: false,
+        userPhase: null,
+        currentPhase,
+        isLoading: true,
+        message: 'Loading phase access...'
+      };
+    }
+
+    if (userPhase === null) {
+      return {
+        hasAccess: false,
+        userPhase: null,
+        currentPhase,
+        isLoading: false,
+        message: 'Unable to determine phase access'
+      };
+    }
+
+    const hasAccess = userPhase <= currentPhase;
+    const userPhaseStr = getPhaseString(userPhase);
+    const currentPhaseStr = getPhaseString(currentPhase);
+
+    return {
+      hasAccess,
+      userPhase,
+      currentPhase,
+      isLoading: false,
+      message: hasAccess
+        ? `You have ${userPhaseStr} access for ${currentPhaseStr} phase`
+        : `You have ${userPhaseStr} access, but current phase is ${currentPhaseStr}`
+    };
+  };
+
   // Mint functions
   const mintSingle = async () => {
     if (!isConnected) throw new Error('Wallet not connected');
@@ -244,6 +318,13 @@ export const useHypercatzContract = () => {
     canUserMintInCurrentPhase,
     getRemainingMintsForUser,
     
+    // New phase access functions
+    getUserPhaseAccess,
+    getUserPhaseString,
+    hasValidPhaseAccess,
+    getPhaseAccessStatus,
+    isUserPhaseLoading,
+    
     // Mint functions
     mint,
     mintSingle,
@@ -256,8 +337,8 @@ export const useHypercatzContract = () => {
     isConfirmed,
     error,
     
-    // Loading states - only show loading if we're actually waiting for real contract data
-    isLoading: false, // Always false since we provide fallback data
-    isUserDataLoading: false, // Always false since we provide fallback data
+    // Loading states - properly detect when we're loading user data
+    isLoading: maxSupply === undefined || totalSupply === undefined || totalMinted === undefined || currentPhase === undefined,
+    isUserDataLoading: isConnected && (userPhaseAccess === undefined || userBalance === undefined || mintedInGuaranteed === undefined || mintedInWhitelist === undefined || mintedInPublic === undefined),
   };
 };
