@@ -3,34 +3,29 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { Chain } from 'viem';
 import { HYPEREVM_CONFIG } from './constants';
+import { createHybridTransport } from './rpcTransport';
 
-// Define HyperEVM chain with enhanced configuration and CORS-friendly RPC endpoints
+// Define HyperEVM chain with enhanced configuration and RPC manager integration
 const hyperEVM: Chain = {
   id: HYPEREVM_CONFIG.id,
   name: HYPEREVM_CONFIG.name,
   nativeCurrency: HYPEREVM_CONFIG.nativeCurrency,
   rpcUrls: {
-    // Use CORS-friendly RPC endpoints for HyperLiquid Mainnet
+    // Fallback URLs for wallet integration (still needed for wallet chain addition)
     public: {
       http: [
-        // Primary official HyperLiquid RPC (CORS-friendly)
-        'https://rpc.hyperliquid.xyz/evm',
-        // Backup CORS-friendly endpoints
         'https://hyperliquid-mainnet.rpc.thirdweb.com',
         'https://hyperliquid.drpc.org',
-        // Additional backup RPC endpoint
-        'https://evmrpc-eu.hyperpc.app/0d337df0a2484e27b7c896f503de4e71',
+        'https://rpc.hyperliquid.xyz/evm',
+        'https://hyperliquid-rpc.publicnode.com',
       ]
     },
     default: {
       http: [
-        // Primary official HyperLiquid RPC (CORS-friendly)
-        'https://rpc.hyperliquid.xyz/evm',
-        // Backup CORS-friendly endpoints
         'https://hyperliquid-mainnet.rpc.thirdweb.com',
         'https://hyperliquid.drpc.org',
-        // Additional backup RPC endpoint
-        'https://evmrpc-eu.hyperpc.app/0d337df0a2484e27b7c896f503de4e71',
+        'https://rpc.hyperliquid.xyz/evm',
+        'https://hyperliquid-rpc.publicnode.com',
       ]
     },
   },
@@ -42,11 +37,14 @@ const hyperEVM: Chain = {
   },
 };
 
-// Enhanced Wagmi configuration with better wallet support
+// Enhanced Wagmi configuration with RPC manager transport
 export const config = getDefaultConfig({
   appName: 'Hypercatz NFT Utility Hub',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '951ac8e94a777fccfd25cd03077ca1e0',
   chains: [hyperEVM],
+  transports: {
+    [hyperEVM.id]: createHybridTransport(),
+  },
   ssr: true,
 });
 

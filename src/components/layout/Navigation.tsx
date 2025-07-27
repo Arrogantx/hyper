@@ -27,6 +27,7 @@ import { cn } from '@/utils/cn';
 import Button from '@/components/ui/Button';
 import HypePrice from '../ui/HypePrice';
 import { EnhancedConnectButton } from '@/components/ui/EnhancedConnectButton';
+import { RPCStatus } from '@/components/ui/RPCStatus';
 
 const Navigation: React.FC = () => {
   const pathname = usePathname();
@@ -276,6 +277,11 @@ const Navigation: React.FC = () => {
           <div className="flex items-center gap-4 flex-shrink-0">
             {/* HYPE Price Display */}
             <HypePrice variant="navbar" />
+
+            {/* RPC Status */}
+            <div className="relative">
+              <RPCStatus />
+            </div>
 
             {/* Sound Toggle */}
             <Button
