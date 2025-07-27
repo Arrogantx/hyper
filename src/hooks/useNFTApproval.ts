@@ -16,6 +16,7 @@ export interface UseNFTApprovalReturn {
   // Approval functions
   approveAll: () => void;
   approveToken: (tokenId: number) => void;
+  refetchApprovalStatus: () => void;
   
   // Transaction states
   approvalHash: string | undefined;
@@ -33,7 +34,7 @@ export function useNFTApproval(): UseNFTApprovalReturn {
   });
 
   // Check if user has approved all NFTs for the staking contract
-  const { data: isApprovedForAll, isLoading: isApprovalLoading } = useReadContract({
+  const { data: isApprovedForAll, isLoading: isApprovalLoading, refetch: refetchApprovalStatus } = useReadContract({
     address: HYPERCATZ_NFT_ADDRESS,
     abi: HYPERCATZ_NFT_ABI,
     functionName: 'isApprovedForAll',
@@ -108,6 +109,7 @@ export function useNFTApproval(): UseNFTApprovalReturn {
     // Approval functions
     approveAll,
     approveToken,
+    refetchApprovalStatus,
     
     // Transaction states
     approvalHash,

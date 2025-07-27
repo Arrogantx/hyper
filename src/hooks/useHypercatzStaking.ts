@@ -28,7 +28,7 @@ export const useHypercatzStaking = () => {
   const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
   
   // Use the new hook to get user's actual NFT token IDs
-  const { userTokenIds, isLoading: nftsLoading, error: nftsError } = useUserNFTs();
+  const { userTokenIds, isLoading: nftsLoading, error: nftsError, refetch: refetchUserNFTs } = useUserNFTs();
   
   // Use the approval hook
   const {
@@ -40,6 +40,7 @@ export const useHypercatzStaking = () => {
     isApprovalConfirming,
     isApprovalConfirmed,
     approvalError,
+    refetchApprovalStatus,
   } = useNFTApproval();
 
   // Check if contracts are deployed (not zero address)
@@ -67,8 +68,8 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  // Read staking contract data
-  const { data: stakedTokenIds } = useReadContract({
+  // Read staking contract data with refetch capability
+  const { data: stakedTokenIds, refetch: refetchStakedTokenIds } = useReadContract({
     address: HYPERCATZ_STAKING_ADDRESS,
     abi: HYPERCATZ_STAKING_ABI,
     functionName: 'getStaked',
@@ -78,7 +79,7 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  const { data: claimableRewards } = useReadContract({
+  const { data: claimableRewards, refetch: refetchClaimableRewards } = useReadContract({
     address: HYPERCATZ_STAKING_ADDRESS,
     abi: HYPERCATZ_STAKING_ABI,
     functionName: 'getClaimable',
@@ -88,7 +89,7 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  const { data: totalEarned } = useReadContract({
+  const { data: totalEarned, refetch: refetchTotalEarned } = useReadContract({
     address: HYPERCATZ_STAKING_ADDRESS,
     abi: HYPERCATZ_STAKING_ABI,
     functionName: 'getTotalEarned',
@@ -98,7 +99,7 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  const { data: totalClaimed } = useReadContract({
+  const { data: totalClaimed, refetch: refetchTotalClaimed } = useReadContract({
     address: HYPERCATZ_STAKING_ADDRESS,
     abi: HYPERCATZ_STAKING_ABI,
     functionName: 'totalClaimed',
@@ -116,6 +117,24 @@ export const useHypercatzStaking = () => {
       enabled: contractsDeployed,
     },
   });
+
+  // Comprehensive refetch function
+  const refetchAllData = useCallback(async () => {
+    console.log('Refetching all staking data...');
+    try {
+      await Promise.all([
+        refetchStakedTokenIds(),
+        refetchClaimableRewards(),
+        refetchTotalEarned(),
+        refetchTotalClaimed(),
+        refetchUserNFTs(), // Refetch user NFTs
+        refetchApprovalStatus(), // Refetch approval status
+      ]);
+      console.log('All data refetched successfully');
+    } catch (error) {
+      console.error('Error refetching data:', error);
+    }
+  }, [refetchStakedTokenIds, refetchClaimableRewards, refetchTotalEarned, refetchTotalClaimed, refetchUserNFTs, refetchApprovalStatus]);
 
   // Calculate available NFTs (user's NFTs minus staked ones)
   const availableNFTs = userTokenIds.filter(tokenId => {
@@ -363,6 +382,8 @@ export const useHypercatzStaking = () => {
     stakeNFTs,
     unstakeNFTs,
     claimRewards,
+    refetchAllData,
+    refetchApprovalStatus,
     
     // Helper functions
     canStake,
