@@ -144,8 +144,13 @@ const MintPage: React.FC = () => {
     }
   };
 
-  // Loading states
-  if (!mounted || isContractLoading) {
+  // Loading states - only show skeleton if we're actually loading and haven't timed out
+  if (!mounted) {
+    return <PageLoadingSkeleton />;
+  }
+
+  // Show skeleton only for the first few seconds, then show content with fallback data
+  if (isContractLoading) {
     return <PageLoadingSkeleton />;
   }
 

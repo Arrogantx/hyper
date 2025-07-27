@@ -9,50 +9,101 @@ export const useHypercatzContract = () => {
     hash,
   });
 
-  // Read contract data
+  // Add timeout state to prevent infinite loading
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+
+  // Set a timeout for loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('🕐 Loading timeout triggered - switching to fallback data');
+      setLoadingTimeout(true);
+    }, 3000); // 3 second timeout (reduced from 5)
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Read contract data with optimized polling
+  // Static data - cache for 5 minutes, no polling
   const { data: maxSupply } = useReadContract({
     address: HYPERCATZ_NFT_ADDRESS,
     abi: HYPERCATZ_NFT_ABI,
     functionName: 'MAX_SUPPLY',
-  });
-
-  const { data: totalSupply } = useReadContract({
-    address: HYPERCATZ_NFT_ADDRESS,
-    abi: HYPERCATZ_NFT_ABI,
-    functionName: 'totalSupply',
-  });
-
-  const { data: totalMinted } = useReadContract({
-    address: HYPERCATZ_NFT_ADDRESS,
-    abi: HYPERCATZ_NFT_ABI,
-    functionName: 'totalMinted',
-  });
-
-  const { data: currentPhase } = useReadContract({
-    address: HYPERCATZ_NFT_ADDRESS,
-    abi: HYPERCATZ_NFT_ABI,
-    functionName: 'currentPhase',
+    query: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+      refetchInterval: false, // Never refetch automatically
+    },
   });
 
   const { data: maxPerWalletGuaranteed } = useReadContract({
     address: HYPERCATZ_NFT_ADDRESS,
     abi: HYPERCATZ_NFT_ABI,
     functionName: 'maxPerWalletGuaranteed',
+    query: {
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+    },
   });
 
   const { data: maxPerWalletWhitelist } = useReadContract({
     address: HYPERCATZ_NFT_ADDRESS,
     abi: HYPERCATZ_NFT_ABI,
     functionName: 'maxPerWalletWhitelist',
+    query: {
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+    },
   });
 
   const { data: maxPerWalletPublic } = useReadContract({
     address: HYPERCATZ_NFT_ADDRESS,
     abi: HYPERCATZ_NFT_ABI,
     functionName: 'maxPerWalletPublic',
+    query: {
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+    },
   });
 
-  // User-specific data
+  // Semi-dynamic data - cache for 30 seconds, poll every 60 seconds
+  const { data: currentPhase } = useReadContract({
+    address: HYPERCATZ_NFT_ADDRESS,
+    abi: HYPERCATZ_NFT_ABI,
+    functionName: 'currentPhase',
+    query: {
+      staleTime: 30 * 1000, // 30 seconds
+      refetchOnWindowFocus: false,
+      refetchInterval: 60 * 1000, // Poll every 60 seconds
+    },
+  });
+
+  // Dynamic data - cache for 15 seconds, poll every 30 seconds
+  const { data: totalSupply } = useReadContract({
+    address: HYPERCATZ_NFT_ADDRESS,
+    abi: HYPERCATZ_NFT_ABI,
+    functionName: 'totalSupply',
+    query: {
+      staleTime: 15 * 1000, // 15 seconds
+      refetchOnWindowFocus: false,
+      refetchInterval: 30 * 1000, // Poll every 30 seconds
+    },
+  });
+
+  const { data: totalMinted } = useReadContract({
+    address: HYPERCATZ_NFT_ADDRESS,
+    abi: HYPERCATZ_NFT_ABI,
+    functionName: 'totalMinted',
+    query: {
+      staleTime: 15 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: 30 * 1000,
+    },
+  });
+
+  // User-specific data - optimized polling for connected users only
   const { data: userPhaseAccess } = useReadContract({
     address: HYPERCATZ_NFT_ADDRESS,
     abi: HYPERCATZ_NFT_ABI,
@@ -60,6 +111,9 @@ export const useHypercatzContract = () => {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
+      staleTime: 2 * 60 * 1000, // 2 minutes (phase access rarely changes)
+      refetchOnWindowFocus: false,
+      refetchInterval: false, // Only refetch manually when needed
     },
   });
 
@@ -70,6 +124,9 @@ export const useHypercatzContract = () => {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
+      staleTime: 30 * 1000, // 30 seconds
+      refetchOnWindowFocus: false,
+      refetchInterval: 45 * 1000, // Poll every 45 seconds when connected
     },
   });
 
@@ -80,6 +137,9 @@ export const useHypercatzContract = () => {
     args: address ? [address, HypercatzPhase.GUARANTEED] : undefined,
     query: {
       enabled: !!address,
+      staleTime: 60 * 1000, // 1 minute
+      refetchOnWindowFocus: false,
+      refetchInterval: false, // Only refetch after transactions
     },
   });
 
@@ -90,6 +150,9 @@ export const useHypercatzContract = () => {
     args: address ? [address, HypercatzPhase.WHITELIST] : undefined,
     query: {
       enabled: !!address,
+      staleTime: 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
     },
   });
 
@@ -100,11 +163,15 @@ export const useHypercatzContract = () => {
     args: address ? [address, HypercatzPhase.PUBLIC] : undefined,
     query: {
       enabled: !!address,
+      staleTime: 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
     },
   });
 
   // Contract info object with fallback data
-  const contractInfo: ContractInfo = maxSupply && totalSupply !== undefined && totalMinted !== undefined && currentPhase !== undefined && maxPerWalletGuaranteed && maxPerWalletWhitelist && maxPerWalletPublic ? {
+  const hasContractData = maxSupply && totalSupply !== undefined && totalMinted !== undefined && currentPhase !== undefined && maxPerWalletGuaranteed && maxPerWalletWhitelist && maxPerWalletPublic;
+  const contractInfo: ContractInfo = (hasContractData && !loadingTimeout) ? {
     maxSupply: maxSupply as bigint,
     totalSupply: totalSupply as bigint,
     totalMinted: totalMinted as bigint,
@@ -113,7 +180,7 @@ export const useHypercatzContract = () => {
     maxPerWalletWhitelist: maxPerWalletWhitelist as bigint,
     maxPerWalletPublic: maxPerWalletPublic as bigint,
   } : {
-    // Fallback data for demo purposes
+    // Fallback data when RPC calls fail or timeout
     maxSupply: BigInt(4444),
     totalSupply: BigInt(1234),
     totalMinted: BigInt(1234),
@@ -337,8 +404,8 @@ export const useHypercatzContract = () => {
     isConfirmed,
     error,
     
-    // Loading states - properly detect when we're loading user data
-    isLoading: maxSupply === undefined || totalSupply === undefined || totalMinted === undefined || currentPhase === undefined,
-    isUserDataLoading: isConnected && (userPhaseAccess === undefined || userBalance === undefined || mintedInGuaranteed === undefined || mintedInWhitelist === undefined || mintedInPublic === undefined),
+    // Loading states - properly detect when we're loading user data with timeout protection
+    isLoading: !loadingTimeout && (maxSupply === undefined || totalSupply === undefined || totalMinted === undefined || currentPhase === undefined || maxPerWalletGuaranteed === undefined || maxPerWalletWhitelist === undefined || maxPerWalletPublic === undefined),
+    isUserDataLoading: !loadingTimeout && isConnected && (userPhaseAccess === undefined || userBalance === undefined || mintedInGuaranteed === undefined || mintedInWhitelist === undefined || mintedInPublic === undefined),
   };
 };
