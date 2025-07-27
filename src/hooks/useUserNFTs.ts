@@ -50,159 +50,188 @@ export function useUserNFTs(): UseUserNFTsReturn {
         return;
       }
 
-      if (!balance || Number(balance) === 0) {
-        console.log('useUserNFTs: No balance or zero balance detected, but checking for token ownership anyway...');
-        
-        // Even if balanceOf returns 0, the user might still own tokens
-        // This can happen due to contract issues or wallet connection problems
-        // Let's check for token ownership directly
-        setIsLoading(true);
-        setError(null);
-        
-        try {
-          const tokenIds: number[] = [];
-          
-          // Check a reasonable range of token IDs for ownership
-          // Start with common low token IDs including 0, then check some higher ranges
-          const tokenIdsToCheck = [
-            // Low token IDs (most common)
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-            // Some mid-range tokens
-            50, 51, 52, 53, 54, 55, 100, 101, 102, 103, 104, 105,
-            // Some higher tokens
-            500, 501, 502, 1000, 1001, 1002, 2000, 2001, 2002
-          ];
-          
-          console.log('Checking token ownership for IDs:', tokenIdsToCheck);
-          
-          for (const tokenId of tokenIdsToCheck) {
-            try {
-              const owner = await readContract(config, {
-                address: HYPERCATZ_NFT_ADDRESS,
-                abi: HYPERCATZ_NFT_ABI,
-                functionName: 'ownerOf',
-                args: [BigInt(tokenId)],
-              });
-              
-              if (owner && (owner as string).toLowerCase() === address.toLowerCase()) {
-                tokenIds.push(tokenId);
-                console.log(`User owns token #${tokenId} (despite balanceOf returning 0)`);
-              }
-            } catch (ownerError) {
-              // Token doesn't exist or other error, continue
-              continue;
-            }
-          }
-          
-          if (tokenIds.length > 0) {
-            console.log(`Found ${tokenIds.length} tokens despite balanceOf returning 0:`, tokenIds);
-            setUserTokenIds(tokenIds.sort((a, b) => a - b));
-          } else {
-            console.log('No tokens found even with direct ownership check');
-            setUserTokenIds([]);
-          }
-          
-        } catch (err) {
-          console.error('Error in fallback token ownership check:', err);
-          setError(err as Error);
-          setUserTokenIds([]);
-        } finally {
-          setIsLoading(false);
-        }
-        
-        return;
-      }
-
       setIsLoading(true);
       setError(null);
 
       try {
-        const userBalance = Number(balance);
-        console.log(`useUserNFTs: User ${address} has ${userBalance} NFTs, fetching actual token IDs using tokenOfOwnerByIndex...`);
+        const userBalance = balance ? Number(balance) : 0;
+        console.log(`useUserNFTs: User ${address} has ${userBalance} NFTs according to balanceOf`);
+        console.log(`useUserNFTs: Balance raw value:`, balance);
+        console.log(`useUserNFTs: Balance type:`, typeof balance);
 
         const tokenIds: number[] = [];
         
-        // Use tokenOfOwnerByIndex to get the actual token IDs owned by the user
-        for (let index = 0; index < userBalance; index++) {
-          try {
-            const tokenId = await readContract(config, {
-              address: HYPERCATZ_NFT_ADDRESS,
-              abi: HYPERCATZ_NFT_ABI,
-              functionName: 'tokenOfOwnerByIndex',
-              args: [address, BigInt(index)],
-            });
+        // 🔍 DEBUGGING: Test ownership of token #0 specifically since user confirmed they own it
+        console.log('🔍 Testing ownership of token #0 (user confirmed they own this)...');
+        try {
+          const owner0 = await readContract(config, {
+            address: HYPERCATZ_NFT_ADDRESS,
+            abi: HYPERCATZ_NFT_ABI,
+            functionName: 'ownerOf',
+            args: [BigInt(0)],
+          });
+          console.log(`Token #0 owner from contract:`, owner0);
+          console.log(`User address:`, address);
+          console.log(`Addresses match:`, owner0 && (owner0 as string).toLowerCase() === address.toLowerCase());
+          
+          if (owner0 && (owner0 as string).toLowerCase() === address.toLowerCase()) {
+            tokenIds.push(0);
+            console.log('✅ CONFIRMED: User owns token #0!');
             
-            const tokenIdNumber = Number(tokenId);
-            tokenIds.push(tokenIdNumber);
-            console.log(`Token at index ${index}: #${tokenIdNumber}`);
-            
-          } catch (err) {
-            console.error(`Error fetching token at index ${index}:`, err);
-            // If tokenOfOwnerByIndex fails, the contract might not support enumeration
-            // Fall back to checking ownership of common token IDs
-            if (index === 0) {
-              console.warn('tokenOfOwnerByIndex not supported, falling back to ownership validation');
-              
-              // Fallback: Check a wider range of token IDs to find user's actual tokens
-              // Since we know the user has `userBalance` NFTs, we need to find them
-              console.warn('Using fallback method to find user tokens');
-              
-              // Check tokens in batches to avoid overwhelming the RPC
-              const maxTokenId = 4444; // Based on MAX_SUPPLY
-              const batchSize = 50;
-              
-              for (let start = 0; start <= maxTokenId && tokenIds.length < userBalance; start += batchSize) {
-                const end = Math.min(start + batchSize - 1, maxTokenId);
-                const batch = [];
+            // Test a few more tokens to see if user owns others
+            const additionalTests = [1, 2, 3, 4, 5];
+            for (const testToken of additionalTests) {
+              try {
+                const owner = await readContract(config, {
+                  address: HYPERCATZ_NFT_ADDRESS,
+                  abi: HYPERCATZ_NFT_ABI,
+                  functionName: 'ownerOf',
+                  args: [BigInt(testToken)],
+                });
                 
-                // Create batch of ownership checks
-                for (let testTokenId = start; testTokenId <= end && tokenIds.length < userBalance; testTokenId++) {
-                  batch.push(
-                    readContract(config, {
-                      address: HYPERCATZ_NFT_ADDRESS,
-                      abi: HYPERCATZ_NFT_ABI,
-                      functionName: 'ownerOf',
-                      args: [BigInt(testTokenId)],
-                    }).then(owner => ({ tokenId: testTokenId, owner }))
-                    .catch(() => ({ tokenId: testTokenId, owner: null })) // Token doesn't exist
-                  );
+                if (owner && (owner as string).toLowerCase() === address.toLowerCase()) {
+                  tokenIds.push(testToken);
+                  console.log(`✅ User also owns token #${testToken}!`);
                 }
-                
-                try {
-                  const results = await Promise.all(batch);
+              } catch (err) {
+                // Token doesn't exist or user doesn't own it, continue
+                continue;
+              }
+            }
+            
+            // If we found tokens, return them immediately
+            if (tokenIds.length > 0) {
+              console.log(`🎉 Found ${tokenIds.length} tokens via direct testing:`, tokenIds);
+              setUserTokenIds(tokenIds.sort((a, b) => a - b));
+              return;
+            }
+          } else {
+            console.log('❌ Contract says user does NOT own token #0 - this contradicts user feedback!');
+            console.log('❌ This suggests there might be a network/RPC issue or wrong contract address');
+          }
+        } catch (err) {
+          console.error('❌ Error checking token #0 ownership:', err);
+        }
+        
+        // First, try to use tokenOfOwnerByIndex if balance > 0
+        if (userBalance > 0) {
+          console.log('Attempting to use tokenOfOwnerByIndex...');
+          let enumSuccess = true;
+          
+          for (let index = 0; index < userBalance; index++) {
+            try {
+              const tokenId = await readContract(config, {
+                address: HYPERCATZ_NFT_ADDRESS,
+                abi: HYPERCATZ_NFT_ABI,
+                functionName: 'tokenOfOwnerByIndex',
+                args: [address, BigInt(index)],
+              });
+              
+              const tokenIdNumber = Number(tokenId);
+              tokenIds.push(tokenIdNumber);
+              console.log(`Token at index ${index}: #${tokenIdNumber}`);
+              
+            } catch (err) {
+              console.error(`Error fetching token at index ${index}:`, err);
+              enumSuccess = false;
+              break;
+            }
+          }
+          
+          // If enumeration was successful, we're done
+          if (enumSuccess && tokenIds.length === userBalance) {
+            console.log(`Successfully enumerated ${tokenIds.length} tokens using tokenOfOwnerByIndex`);
+            setUserTokenIds(tokenIds.sort((a, b) => a - b));
+            return;
+          } else {
+            console.warn('tokenOfOwnerByIndex failed or incomplete, falling back to ownership scanning');
+            tokenIds.length = 0; // Clear partial results
+          }
+        }
+        
+        // Fallback method: scan for token ownership
+        // This handles cases where balanceOf returns 0 but user actually owns tokens,
+        // or when tokenOfOwnerByIndex is not supported/fails
+        console.log('Using fallback ownership scanning method...');
+        
+        // Define ranges to check - prioritize common token ranges
+        const tokenRanges = [
+          // Low token IDs (most common for early mints)
+          { start: 0, end: 100 },
+          // Mid-range tokens
+          { start: 100, end: 500 },
+          // Higher range tokens
+          { start: 500, end: 1000 },
+          // Even higher if needed
+          { start: 1000, end: 2000 },
+          // Final range up to max supply
+          { start: 2000, end: 4444 }
+        ];
+        
+        const batchSize = 25; // Smaller batch size to avoid RPC limits
+        let foundTokens = 0;
+        const expectedTokens = userBalance > 0 ? userBalance : 10; // If balance is 0, check up to 10 tokens
+        
+        for (const range of tokenRanges) {
+          if (foundTokens >= expectedTokens && userBalance > 0) break;
+          
+          console.log(`Scanning token range ${range.start}-${range.end}...`);
+          
+          for (let start = range.start; start <= range.end && (foundTokens < expectedTokens || userBalance === 0); start += batchSize) {
+            const end = Math.min(start + batchSize - 1, range.end);
+            const batch = [];
+            
+            // Create batch of ownership checks
+            for (let testTokenId = start; testTokenId <= end; testTokenId++) {
+              batch.push(
+                readContract(config, {
+                  address: HYPERCATZ_NFT_ADDRESS,
+                  abi: HYPERCATZ_NFT_ABI,
+                  functionName: 'ownerOf',
+                  args: [BigInt(testTokenId)],
+                }).then(owner => ({ tokenId: testTokenId, owner, exists: true }))
+                .catch(() => ({ tokenId: testTokenId, owner: null, exists: false }))
+              );
+            }
+            
+            try {
+              const results = await Promise.all(batch);
+              
+              for (const result of results) {
+                if (result.exists && result.owner &&
+                    (result.owner as string).toLowerCase() === address.toLowerCase()) {
+                  tokenIds.push(result.tokenId);
+                  foundTokens++;
+                  console.log(`User owns token #${result.tokenId}`);
                   
-                  for (const result of results) {
-                    if (tokenIds.length >= userBalance) break;
-                    
-                    if (result.owner &&
-                        (result.owner as string).toLowerCase() === address.toLowerCase()) {
-                      tokenIds.push(result.tokenId);
-                      console.log(`User owns token #${result.tokenId}`);
-                    }
+                  // If we found the expected number of tokens (and balance > 0), we can stop
+                  if (userBalance > 0 && foundTokens >= userBalance) {
+                    break;
                   }
-                } catch (batchError) {
-                  console.error(`Error in batch ${start}-${end}:`, batchError);
-                  // Continue with next batch
-                }
-                
-                // Small delay to avoid rate limiting
-                if (start + batchSize <= maxTokenId) {
-                  await new Promise(resolve => setTimeout(resolve, 100));
                 }
               }
-              break; // Exit the main loop since we're using fallback method
+              
+              // Small delay to avoid rate limiting
+              if (start + batchSize <= range.end) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+              }
+              
+            } catch (batchError) {
+              console.error(`Error in batch ${start}-${end}:`, batchError);
+              // Continue with next batch
             }
           }
         }
 
-        console.log(`Found ${tokenIds.length} actual token IDs for user:`, tokenIds);
+        console.log(`Ownership scan complete. Found ${tokenIds.length} tokens for user.`);
         
-        // Final validation: ensure we found the expected number of tokens
-        if (tokenIds.length !== userBalance) {
-          console.warn(`Expected ${userBalance} tokens but found ${tokenIds.length}. This might indicate an issue with token enumeration.`);
+        if (tokenIds.length > 0) {
+          console.log(`User owns tokens:`, tokenIds.sort((a, b) => a - b));
+        } else {
+          console.log('No tokens found for user');
         }
         
-        setUserTokenIds(tokenIds.sort((a, b) => a - b)); // Sort ascending
+        setUserTokenIds(tokenIds.sort((a, b) => a - b));
         
       } catch (err) {
         console.error('Error fetching user token IDs:', err);

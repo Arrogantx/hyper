@@ -220,7 +220,7 @@ export const useHypercatzStaking = () => {
       console.error('Staking failed:', error);
       throw error;
     }
-  }, [isConnected, contractsDeployed, writeContract]);
+  }, [isConnected, contractsDeployed, writeContract, availableNFTs]);
 
   const unstakeNFTs = useCallback(async (tokenIds: number[]) => {
     if (!isConnected) throw new Error('Wallet not connected');
@@ -309,6 +309,7 @@ export const useHypercatzStaking = () => {
 
   // Determine if we're still loading critical data
   const isLoadingCriticalData = isConnected && (
+    nftsLoading ||
     (contractsDeployed && address && stakedTokenIds === undefined) ||
     (contractsDeployed && address && claimableRewards === undefined) ||
     (contractsDeployed && address && rewardRatePerNFT === undefined)
