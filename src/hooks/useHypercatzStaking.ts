@@ -327,7 +327,7 @@ export const useHypercatzStaking = () => {
     
     const stakedCount = userStakingData.stakedTokenIds.length;
     // Convert from per-second rate to per-day rate (86400 seconds in a day)
-    const dailyRewardPerNFT = Number(formatUnits(rewardRatePerNFT, 18)) * 86400;
+    const dailyRewardPerNFT = Number(formatUnits(BigInt(rewardRatePerNFT) * BigInt(86400), 18));
     
     // Apply multipliers based on number of staked NFTs (matching smart contract logic)
     let multiplier = 1.0;
@@ -429,7 +429,7 @@ export const useHypercatzStaking = () => {
     getCurrentMultiplier,
     
     // Contract data - Convert from per-second rate to per-day rate
-    rewardRatePerNFT: rewardRatePerNFT ? Number(formatUnits(rewardRatePerNFT, 18)) * 86400 : 0,
+    rewardRatePerNFT: rewardRatePerNFT ? Number(formatUnits(BigInt(rewardRatePerNFT) * BigInt(86400), 18)) : 0,
     
     // Transaction state
     hash,

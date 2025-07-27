@@ -26,7 +26,7 @@ import { NavItem } from '@/types';
 import { cn } from '@/utils/cn';
 import Button from '@/components/ui/Button';
 import HypePrice from '../ui/HypePrice';
-import HypeConnectButton from '../wallet/HypeConnectButton';
+import { EnhancedConnectButton } from '@/components/ui/EnhancedConnectButton';
 
 const Navigation: React.FC = () => {
   const pathname = usePathname();
@@ -292,7 +292,7 @@ const Navigation: React.FC = () => {
 
             {/* Wallet Connect */}
             <div className="connect-button-wrapper">
-              <HypeConnectButton />
+              <EnhancedConnectButton />
             </div>
           </div>
         </div>
@@ -332,12 +332,7 @@ const Navigation: React.FC = () => {
 
             {/* Wallet Connect - Compact */}
             <div className="connect-button-wrapper scale-90 origin-right">
-              <HypeConnectButton
-                accountStatus={{
-                  smallScreen: 'avatar',
-                  largeScreen: 'full'
-                }}
-              />
+              <EnhancedConnectButton />
             </div>
 
             {/* Mobile Menu Toggle - Compact */}

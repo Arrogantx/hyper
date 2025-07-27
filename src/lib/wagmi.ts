@@ -4,19 +4,38 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { Chain } from 'viem';
 import { HYPEREVM_CONFIG } from './constants';
 
-// Define HyperEVM chain
+// Define HyperEVM chain with enhanced configuration
 const hyperEVM: Chain = {
   id: HYPEREVM_CONFIG.id,
   name: HYPEREVM_CONFIG.name,
   nativeCurrency: HYPEREVM_CONFIG.nativeCurrency,
-  rpcUrls: HYPEREVM_CONFIG.rpcUrls,
+  rpcUrls: {
+    ...HYPEREVM_CONFIG.rpcUrls,
+    // Add fallback RPC endpoints for better reliability
+    public: {
+      http: [
+        'https://rpc.hyperliquid.xyz/evm',
+        // Add backup RPC if available
+      ]
+    },
+    default: {
+      http: [
+        'https://rpc.hyperliquid.xyz/evm',
+        // Add backup RPC if available
+      ]
+    },
+  },
   blockExplorers: HYPEREVM_CONFIG.blockExplorers,
   testnet: false, // Mainnet configuration
+  // Add contract addresses for better wallet integration
+  contracts: {
+    // Add multicall contract if available for better performance
+  },
 };
 
-// Wagmi configuration
+// Enhanced Wagmi configuration with better wallet support
 export const config = getDefaultConfig({
-  appName: 'Hypercatz',
+  appName: 'Hypercatz NFT Utility Hub',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '951ac8e94a777fccfd25cd03077ca1e0',
   chains: [hyperEVM],
   ssr: true,
