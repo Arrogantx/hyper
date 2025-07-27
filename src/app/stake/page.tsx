@@ -8,11 +8,12 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { StakingPoolSkeleton } from '@/components/ui/LoadingStates';
 import { useSuccessToast, useErrorToast } from '@/components/ui/Toast';
 import { HypePriceCard } from '@/components/ui/HypePrice';
+import { NFTImage } from '@/components/ui/NFTImage';
 import { useHypercatzStaking } from '@/hooks/useHypercatzStaking';
-import { 
-  parseStakingError, 
-  validateStakingOperation, 
-  formatStakingError 
+import {
+  parseStakingError,
+  validateStakingOperation,
+  formatStakingError
 } from '@/utils/stakingErrors';
 import {
   TrendingUp,
@@ -501,10 +502,14 @@ export default function StakePage() {
                     <div className="text-sm text-gray-300 mb-3">
                       Select NFTs to stake ({userNFTs.length} available)
                     </div>
-                    <div className="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                    <div className="grid grid-cols-4 gap-3 max-h-64 overflow-y-auto">
                       {userNFTs.map((nftId) => (
-                        <button
+                        <NFTImage
                           key={nftId}
+                          tokenId={nftId}
+                          size="md"
+                          variant="stake"
+                          selected={selectedNFTs.includes(nftId)}
                           onClick={() => {
                             if (selectedNFTs.includes(nftId)) {
                               setSelectedNFTs(selectedNFTs.filter(id => id !== nftId));
@@ -512,14 +517,8 @@ export default function StakePage() {
                               setSelectedNFTs([...selectedNFTs, nftId]);
                             }
                           }}
-                          className={`aspect-square rounded-lg text-sm font-medium transition-all ${
-                            selectedNFTs.includes(nftId)
-                              ? 'bg-hyperliquid-500 text-white scale-95'
-                              : 'bg-dark-700 text-gray-300 hover:bg-dark-600'
-                          }`}
-                        >
-                          #{nftId}
-                        </button>
+                          className="hover:shadow-lg"
+                        />
                       ))}
                     </div>
                   </div>
@@ -579,12 +578,16 @@ export default function StakePage() {
                     <div className="text-sm text-gray-300 mb-3">
                       Your staked NFTs ({getTotalStaked()} staked)
                     </div>
-                    <div className="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                    <div className="grid grid-cols-4 gap-3 max-h-64 overflow-y-auto">
                       {userStakingData.stakedTokenIds.map((tokenId) => {
                         const nftId = Number(tokenId);
                         return (
-                          <button
+                          <NFTImage
                             key={nftId}
+                            tokenId={nftId}
+                            size="md"
+                            variant="unstake"
+                            selected={selectedNFTs.includes(nftId)}
                             onClick={() => {
                               if (selectedNFTs.includes(nftId)) {
                                 setSelectedNFTs(selectedNFTs.filter(id => id !== nftId));
@@ -592,14 +595,8 @@ export default function StakePage() {
                                 setSelectedNFTs([...selectedNFTs, nftId]);
                               }
                             }}
-                            className={`aspect-square rounded-lg text-sm font-medium transition-all ${
-                              selectedNFTs.includes(nftId)
-                                ? 'bg-red-500 text-white scale-95'
-                                : 'bg-dark-700 text-gray-300 hover:bg-dark-600'
-                            }`}
-                          >
-                            #{nftId}
-                          </button>
+                            className="hover:shadow-lg"
+                          />
                         );
                       })}
                     </div>
