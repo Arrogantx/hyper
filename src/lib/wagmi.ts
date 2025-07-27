@@ -14,18 +14,24 @@ const hyperEVM: Chain = {
     // Fallback URLs for wallet integration (still needed for wallet chain addition)
     public: {
       http: [
-        'https://hyperliquid-mainnet.rpc.thirdweb.com',
+        'https://api.hyperliquid.xyz',
         'https://hyperliquid.drpc.org',
+        'https://hyperliquid.rpc.hypersync.xyz',
+        'https://hyperliquid-mainnet.rpc.thirdweb.com',
         'https://rpc.hyperliquid.xyz/evm',
         'https://hyperliquid-rpc.publicnode.com',
+        'https://rpc.hyperliquid.xyz',
       ]
     },
     default: {
       http: [
-        'https://hyperliquid-mainnet.rpc.thirdweb.com',
+        'https://api.hyperliquid.xyz',
         'https://hyperliquid.drpc.org',
+        'https://hyperliquid.rpc.hypersync.xyz',
+        'https://hyperliquid-mainnet.rpc.thirdweb.com',
         'https://rpc.hyperliquid.xyz/evm',
         'https://hyperliquid-rpc.publicnode.com',
+        'https://rpc.hyperliquid.xyz',
       ]
     },
   },

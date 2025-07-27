@@ -43,13 +43,13 @@ class RPCManager {
   private healthCheckTimer: NodeJS.Timeout | null = null;
 
   private config: RPCManagerConfig = {
-    maxRequestsPerSecond: 10, // Conservative rate limit
-    maxRetries: 3,
-    baseRetryDelay: 1000, // 1 second
-    maxRetryDelay: 10000, // 10 seconds
-    healthCheckInterval: 30000, // 30 seconds
-    requestTimeout: 15000, // 15 seconds
-    queueMaxSize: 100,
+    maxRequestsPerSecond: 5, // More conservative rate limit to avoid 429 errors
+    maxRetries: 4, // More retries for better reliability
+    baseRetryDelay: 2000, // 2 seconds - longer initial delay
+    maxRetryDelay: 15000, // 15 seconds max delay
+    healthCheckInterval: 45000, // 45 seconds - less frequent health checks
+    requestTimeout: 20000, // 20 seconds - longer timeout for unstaking
+    queueMaxSize: 150, // Larger queue for high traffic
   };
 
   constructor() {
@@ -60,17 +60,24 @@ class RPCManager {
   private initializeEndpoints(): void {
     // Initialize RPC endpoints with priority and CORS support info
     const rpcUrls = [
-      // High priority CORS-friendly endpoints
-      { url: 'https://hyperliquid-mainnet.rpc.thirdweb.com', priority: 1, corsSupported: true },
+      // Highest priority - Official HyperLiquid endpoints
+      { url: 'https://api.hyperliquid.xyz', priority: 1, corsSupported: true },
       { url: 'https://hyperliquid.drpc.org', priority: 2, corsSupported: true },
-      { url: 'https://evmrpc-eu.hyperpc.app/0d337df0a2484e27b7c896f503de4e71', priority: 3, corsSupported: true },
+      { url: 'https://hyperliquid.rpc.hypersync.xyz', priority: 3, corsSupported: true },
       
-      // Medium priority endpoints
-      { url: 'https://rpc.hyperliquid.xyz/evm', priority: 4, corsSupported: false },
+      // High priority CORS-friendly endpoints that are currently working
+      { url: 'https://hyperliquid-mainnet.rpc.thirdweb.com', priority: 4, corsSupported: true },
       
-      // Additional fallback endpoints
-      { url: 'https://hyperliquid-rpc.publicnode.com', priority: 5, corsSupported: true },
-      { url: 'https://hyperliquid.blockpi.network/v1/rpc/public', priority: 6, corsSupported: true },
+      // Official HyperLiquid RPC (may have rate limits but reliable)
+      { url: 'https://rpc.hyperliquid.xyz/evm', priority: 5, corsSupported: false },
+      
+      // Additional working endpoints
+      { url: 'https://hyperliquid-rpc.publicnode.com', priority: 6, corsSupported: true },
+      { url: 'https://rpc.hyperliquid.xyz', priority: 7, corsSupported: false },
+      
+      // Remove problematic endpoints that are returning 503/404
+      // { url: 'https://hyperliquid.blockpi.network/v1/rpc/public', priority: 6, corsSupported: true },
+      // { url: 'https://evmrpc-eu.hyperpc.app/0d337df0a2484e27b7c896f503de4e71', priority: 3, corsSupported: true },
     ];
 
     this.endpoints = rpcUrls.map(endpoint => ({

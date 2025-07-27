@@ -40,11 +40,13 @@ export function createRPCManagerTransport(): Transport {
 // Create a fallback transport with multiple RPC endpoints
 export function createEnhancedTransport(): Transport {
   const rpcUrls = [
-    'https://hyperliquid-mainnet.rpc.thirdweb.com',
+    'https://api.hyperliquid.xyz',
     'https://hyperliquid.drpc.org',
+    'https://hyperliquid.rpc.hypersync.xyz',
+    'https://hyperliquid-mainnet.rpc.thirdweb.com',
     'https://rpc.hyperliquid.xyz/evm',
     'https://hyperliquid-rpc.publicnode.com',
-    'https://hyperliquid.blockpi.network/v1/rpc/public',
+    'https://rpc.hyperliquid.xyz',
   ];
 
   // Create HTTP transports for each URL
