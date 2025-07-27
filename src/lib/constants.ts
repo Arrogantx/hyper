@@ -11,8 +11,28 @@ export const HYPEREVM_CONFIG = {
     symbol: 'HYPE',
   },
   rpcUrls: {
-    public: { http: ['https://rpc.hyperliquid.xyz/evm'] },
-    default: { http: ['https://rpc.hyperliquid.xyz/evm'] },
+    public: {
+      http: [
+        // Primary CORS-friendly endpoint
+        'https://api.hyperliquid.xyz/evm',
+        // Fallback endpoints
+        'https://rpc-hyperevm.hyperliquid.xyz',
+        'https://hyperevm-rpc.hyperliquid.xyz',
+        // Original endpoint as last resort (may have CORS issues)
+        'https://rpc.hyperliquid.xyz/evm'
+      ]
+    },
+    default: {
+      http: [
+        // Primary CORS-friendly endpoint
+        'https://api.hyperliquid.xyz/evm',
+        // Fallback endpoints
+        'https://rpc-hyperevm.hyperliquid.xyz',
+        'https://hyperevm-rpc.hyperliquid.xyz',
+        // Original endpoint as last resort (may have CORS issues)
+        'https://rpc.hyperliquid.xyz/evm'
+      ]
+    },
   },
   blockExplorers: {
     default: { name: 'HyperEVM Explorer', url: 'https://hyperscan.com' },

@@ -4,24 +4,33 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { Chain } from 'viem';
 import { HYPEREVM_CONFIG } from './constants';
 
-// Define HyperEVM chain with enhanced configuration
+// Define HyperEVM chain with enhanced configuration and CORS-friendly RPC endpoints
 const hyperEVM: Chain = {
   id: HYPEREVM_CONFIG.id,
   name: HYPEREVM_CONFIG.name,
   nativeCurrency: HYPEREVM_CONFIG.nativeCurrency,
   rpcUrls: {
-    ...HYPEREVM_CONFIG.rpcUrls,
-    // Add fallback RPC endpoints for better reliability
+    // Use CORS-friendly RPC endpoints to prevent browser blocking
     public: {
       http: [
+        // Primary CORS-friendly endpoint
+        'https://api.hyperliquid.xyz/evm',
+        // Fallback endpoints
+        'https://rpc-hyperevm.hyperliquid.xyz',
+        'https://hyperevm-rpc.hyperliquid.xyz',
+        // Original endpoint as last resort (may have CORS issues)
         'https://rpc.hyperliquid.xyz/evm',
-        // Add backup RPC if available
       ]
     },
     default: {
       http: [
+        // Primary CORS-friendly endpoint
+        'https://api.hyperliquid.xyz/evm',
+        // Fallback endpoints
+        'https://rpc-hyperevm.hyperliquid.xyz',
+        'https://hyperevm-rpc.hyperliquid.xyz',
+        // Original endpoint as last resort (may have CORS issues)
         'https://rpc.hyperliquid.xyz/evm',
-        // Add backup RPC if available
       ]
     },
   },
