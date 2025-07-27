@@ -286,12 +286,17 @@ export const useHypercatzStaking = () => {
         abi: HYPERCATZ_STAKING_ABI,
         functionName: 'unstake',
         args: [tokenIds.map(id => BigInt(id))],
+      }, {
+        onSuccess: () => {
+          // Clear selected NFTs after successful unstake
+          setSelectedNFTs([]);
+        }
       });
     } catch (error) {
       console.error('Unstaking failed:', error);
       throw error;
     }
-  }, [isConnected, contractsDeployed, writeContract]);
+  }, [isConnected, contractsDeployed, writeContract, setSelectedNFTs]);
 
   const claimRewards = useCallback(async () => {
     if (!isConnected) throw new Error('Wallet not connected');

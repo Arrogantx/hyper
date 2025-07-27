@@ -10,31 +10,7 @@ const hyperEVM: Chain = {
   id: HYPEREVM_CONFIG.id,
   name: HYPEREVM_CONFIG.name,
   nativeCurrency: HYPEREVM_CONFIG.nativeCurrency,
-  rpcUrls: {
-    // Fallback URLs for wallet integration (still needed for wallet chain addition)
-    public: {
-      http: [
-        'https://api.hyperliquid.xyz',
-        'https://hyperliquid.drpc.org',
-        'https://hyperliquid.rpc.hypersync.xyz',
-        'https://hyperliquid-mainnet.rpc.thirdweb.com',
-        'https://rpc.hyperliquid.xyz/evm',
-        'https://hyperliquid-rpc.publicnode.com',
-        'https://rpc.hyperliquid.xyz',
-      ]
-    },
-    default: {
-      http: [
-        'https://api.hyperliquid.xyz',
-        'https://hyperliquid.drpc.org',
-        'https://hyperliquid.rpc.hypersync.xyz',
-        'https://hyperliquid-mainnet.rpc.thirdweb.com',
-        'https://rpc.hyperliquid.xyz/evm',
-        'https://hyperliquid-rpc.publicnode.com',
-        'https://rpc.hyperliquid.xyz',
-      ]
-    },
-  },
+  rpcUrls: HYPEREVM_CONFIG.rpcUrls,
   blockExplorers: HYPEREVM_CONFIG.blockExplorers,
   testnet: false, // Mainnet configuration
   // Add contract addresses for better wallet integration
