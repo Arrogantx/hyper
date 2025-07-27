@@ -64,11 +64,9 @@ export function createEnhancedTransport(): Transport {
 
 // Hybrid transport that tries RPC manager first, then falls back to standard HTTP
 export function createHybridTransport(): Transport {
-  const rpcManagerTransport = createRPCManagerTransport();
   const fallbackTransport = createEnhancedTransport();
 
   return ({ chain, retryCount = 3, timeout = 10_000 }) => {
-    const rpcManager = rpcManagerTransport({ chain, retryCount, timeout });
     const fallback = fallbackTransport({ chain, retryCount, timeout });
 
     return {
@@ -78,7 +76,9 @@ export function createHybridTransport(): Transport {
         request: async ({ method, params }) => {
           try {
             // Try RPC manager first
-            return await rpcManager.request({ method, params });
+            const rpcManager = getRPCManager();
+            const result = await rpcManager.request(method, Array.isArray(params) ? params : []);
+            return result.result;
           } catch (error) {
             console.warn('RPC Manager failed, falling back to standard transport:', error);
             // Fall back to standard HTTP transport
@@ -92,7 +92,9 @@ export function createHybridTransport(): Transport {
       request: async ({ method, params }) => {
         try {
           // Try RPC manager first
-          return await rpcManager.request({ method, params });
+          const rpcManager = getRPCManager();
+          const result = await rpcManager.request(method, Array.isArray(params) ? params : []);
+          return result.result;
         } catch (error) {
           console.warn('RPC Manager failed, falling back to standard transport:', error);
           // Fall back to standard HTTP transport
