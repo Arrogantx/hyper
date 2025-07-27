@@ -25,10 +25,18 @@ export const metadata: Metadata = {
     siteName: "Hypercatz",
     images: [
       {
-        url: "/images/og-image.png",
+        url: "/images/pre-reveal.mp4",
         width: 1200,
         height: 630,
-        alt: "Hypercatz NFT Collection",
+        alt: "Hypercatz NFT Collection Pre-Reveal",
+      },
+    ],
+    videos: [
+      {
+        url: "/images/pre-reveal.mp4",
+        width: 1200,
+        height: 630,
+        type: "video/mp4",
       },
     ],
     locale: "en_US",
@@ -38,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hypercatz - Premier NFT Utility Hub",
     description: "The ultimate minting and utility hub for Hypercatz NFT collection on HyperEVM.",
-    images: ["/images/twitter-image.png"],
+    images: ["/images/pre-reveal.mp4"],
     creator: "@hypercatz",
   },
   robots: {
