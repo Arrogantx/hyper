@@ -122,7 +122,8 @@ const Navigation: React.FC = () => {
             isMobile && 'w-full justify-start',
             isCompact && 'py-2'
           )}
-          onClick={() => {
+          onClick={(e) => {
+            console.log('Navigation link clicked:', item.href, item.name);
             playClick();
             onClick?.();
             if (isMobile) setIsMobileMenuOpen(false);
