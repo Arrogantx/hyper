@@ -25,13 +25,22 @@ export function usePrimaryDomain(address?: Address) {
   const addresses = getCurrentNetworkAddresses();
 
   const resolveDomain = useCallback(async (addr: Address) => {
-    if (!isValidAddress(addr)) {
-      setError('Invalid address');
+    if (!addr || !isValidAddress(addr)) {
+      setPrimaryDomain(null);
+      setError(null);
       return;
     }
 
     if (!publicClient) {
-      setError('No public client available');
+      setPrimaryDomain(null);
+      setError(null);
+      return;
+    }
+
+    // Skip resolution if registry address is not available
+    if (!addresses.DOT_HYPE_REGISTRY || addresses.DOT_HYPE_REGISTRY === '0x0000000000000000000000000000000000000000') {
+      setPrimaryDomain(null);
+      setError(null);
       return;
     }
 
@@ -79,20 +88,24 @@ export function usePrimaryDomain(address?: Address) {
     } catch (err) {
       console.error('Error fetching primary domain:', err);
 
-      // Handle specific error cases
-      let errorMessage = 'Failed to resolve domain';
-      if (err instanceof Error) {
-        if (err.message.includes('execution reverted')) {
-          errorMessage = 'No primary domain set for this address';
-        } else if (err.message.includes('resolver not found')) {
-          errorMessage = 'No resolver configured for this address';
-        } else {
-          errorMessage = err.message;
-        }
-      }
-
-      setError(errorMessage);
+      // Silently handle resolver errors to prevent page crashes
+      // This is expected when no domain is set or resolver doesn't exist
       setPrimaryDomain(null);
+      
+      // Only set error for debugging, don't crash the UI
+      if (process.env.NODE_ENV === 'development') {
+        let errorMessage = 'Failed to resolve domain';
+        if (err instanceof Error) {
+          if (err.message.includes('execution reverted') || err.message.includes('resolver')) {
+            errorMessage = 'No primary domain set for this address';
+          } else {
+            errorMessage = err.message;
+          }
+        }
+        setError(errorMessage);
+      } else {
+        setError(null); // Don't show errors in production
+      }
     } finally {
       setIsLoading(false);
     }
