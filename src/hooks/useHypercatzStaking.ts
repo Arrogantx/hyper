@@ -121,21 +121,24 @@ export const useHypercatzStaking = () => {
 
   // Comprehensive refetch function to ensure data is up-to-date
   const refetchAllData = useCallback(async () => {
-    console.log('Refetching all staking data...');
+    console.log('Refetching all staking data sequentially...');
     try {
-      await Promise.all([
-        refetchStakedTokenIds(),
-        refetchClaimableRewards(),
-        refetchTotalEarned(),
-        refetchTotalClaimed(),
-        refetchUserNFTs(),
-        refetchApprovalStatus(),
-      ]);
+        // Essential data first, in order
+        await refetchStakedTokenIds();
+        await refetchUserNFTs(); // This depends on the latest staked token IDs
+
+        // Then, fetch other data
+        await Promise.all([
+            refetchClaimableRewards(),
+            refetchTotalEarned(),
+            refetchTotalClaimed(),
+            refetchApprovalStatus(),
+        ]);
       console.log('All data refetched successfully');
     } catch (error) {
       console.error('Error refetching data:', error);
     }
-  }, [refetchStakedTokenIds, refetchClaimableRewards, refetchTotalEarned, refetchTotalClaimed, refetchUserNFTs, refetchApprovalStatus]);
+  }, [refetchStakedTokenIds, refetchUserNFTs, refetchClaimableRewards, refetchTotalEarned, refetchTotalClaimed, refetchApprovalStatus]);
 
   // Calculate available NFTs (user's NFTs minus staked ones)
   const availableNFTs = userTokenIds.filter(tokenId => {
