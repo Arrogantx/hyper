@@ -58,74 +58,16 @@ export function HypeConnectButton({
             })}
             className={className}
           >
-            {(() => {
-              if (!connected) {
-                return (
-                  <button
-                    onClick={openConnectModal}
-                    type="button"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    {label}
-                  </button>
-                );
-              }
-
-              if (chain.unsupported) {
-                return (
-                  <button
-                    onClick={openChainModal}
-                    type="button"
-                    className="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
-                  >
-                    Wrong network
-                  </button>
-                );
-              }
-
-              return (
-                <div className="flex items-center gap-2">
-                  {chainStatus !== 'none' && (
-                    <button
-                      onClick={openChainModal}
-                      style={{ display: 'flex', alignItems: 'center' }}
-                      type="button"
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
-                    >
-                      {chain.hasIcon && (
-                        <div
-                          style={{
-                            background: chain.iconBackground,
-                            width: 20,
-                            height: 20,
-                            borderRadius: 999,
-                            overflow: 'hidden',
-                            marginRight: 8,
-                          }}
-                        >
-                          {chain.iconUrl && (
-                            <Image
-                              alt={chain.name ?? 'Chain icon'}
-                              src={chain.iconUrl}
-                              width={20}
-                              height={20}
-                            />
-                          )}
-                        </div>
-                      )}
-                      {chainStatus === 'full' || chainStatus === 'name' ? chain.name : null}
-                    </button>
-                  )}
-
-                  <HypeAccountButton
-                    account={account}
-                    showBalance={showBalance}
-                    accountStatus={accountStatus}
-                    onClick={openAccountModal}
-                  />
-                </div>
-              );
-            })()}
+            <button
+              onClick={() => {
+                console.log('Attempting to open account modal');
+                openAccountModal();
+              }}
+              type="button"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Test Wallet Button
+            </button>
           </div>
         );
       }}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzNFT';
 import { readContract } from '@wagmi/core';
-import { config } from '@/lib/wagmi';
+import { config } from '@/config/reown-appkit';
 
 export interface UseUserNFTsReturn {
   userTokenIds: number[];

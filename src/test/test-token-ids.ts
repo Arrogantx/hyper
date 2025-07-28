@@ -1,6 +1,6 @@
 // Test script to verify token ID fetching logic
 import { readContract } from '@wagmi/core';
-import { config } from '@/lib/wagmi';
+import { config } from '@/config/reown-appkit';
 import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzNFT';
 
 async function testTokenIdFetching() {

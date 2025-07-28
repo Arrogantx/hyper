@@ -50,7 +50,7 @@ export function useNFTApproval(): UseNFTApprovalReturn {
     
     try {
       const { readContract } = await import('@wagmi/core');
-      const { config } = await import('@/lib/wagmi');
+      const { config } = await import('@/config/reown-appkit');
       
       const approved = await readContract(config, {
         address: HYPERCATZ_NFT_ADDRESS,

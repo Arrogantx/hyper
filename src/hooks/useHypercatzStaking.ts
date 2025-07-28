@@ -15,7 +15,7 @@ import { HYPERCATZ_NFT_ADDRESS, HYPERCATZ_NFT_ABI } from '@/contracts/HypercatzN
 import { HYPER_POINTS_ABI } from '@/contracts/abis';
 import { getCurrentNetworkAddresses } from '@/contracts/addresses';
 import { CONTRACT_ADDRESSES } from '@/lib/constants';
-import { config } from '@/lib/wagmi';
+import { config } from '@/config/reown-appkit';
 import { useUserNFTs } from './useUserNFTs';
 import { useNFTApproval } from './useNFTApproval';
 
