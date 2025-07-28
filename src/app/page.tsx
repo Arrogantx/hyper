@@ -19,13 +19,12 @@ import {
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useSoundEngine } from '@/utils/sound';
-import { useHypercatzContract } from '@/hooks/useHypercatzContract';
+import NFTCarousel from '@/components/ui/NFTCarousel';
 
 const HomePage: React.FC = () => {
   const { scrollY } = useScroll();
   const { playLightning, playClick } = useSoundEngine();
   const [mounted, setMounted] = useState(false);
-  const { contractInfo } = useHypercatzContract();
 
   // Parallax effects
   const y1 = useTransform(scrollY, [0, 300], [0, -50]);
@@ -87,16 +86,11 @@ const HomePage: React.FC = () => {
     },
   ];
 
-  // Live stats from contract
-  const totalSupply = contractInfo ? Number(contractInfo.maxSupply) : 4444;
-  const totalMinted = contractInfo ? Number(contractInfo.totalMinted) : 0;
-  const mintProgress = totalSupply > 0 ? ((totalMinted / totalSupply) * 100).toFixed(1) : '0.0';
-  
-  const stats = [
-    { label: 'Total Supply', value: totalSupply.toLocaleString(), suffix: '', icon: Sparkles },
-    { label: 'Minted', value: totalMinted.toLocaleString(), suffix: '', icon: Users },
-    { label: 'Progress', value: mintProgress, suffix: '%', icon: TrendingUp },
-    { label: 'Staking APY', value: '125', suffix: '%', icon: Shield },
+  const nftImageFilenames = [
+    '3748.png', '3817.png', '3838.png', '3862.png', '3958.png',
+    '3992.png', '4012.png', '4043.png', '4076.png', '4113.png',
+    '4118.png', '4294.png', '4308.png', '4313.png', '4344.png',
+    '4413.png', '4415.png', '4428.png'
   ];
 
   if (!mounted) {
@@ -188,31 +182,13 @@ const HomePage: React.FC = () => {
             </Button>
           </motion.div>
 
-          {/* Live Stats */}
+          {/* NFT Carousel */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
           >
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                className="stat-card group hover:scale-105 transition-transform"
-              >
-                <div className="flex items-center justify-center mb-3">
-                  <stat.icon className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
-                </div>
-                <div className="stat-value">
-                  {stat.value}
-                  <span className="text-lg">{stat.suffix}</span>
-                </div>
-                <div className="stat-label">{stat.label}</div>
-              </motion.div>
-            ))}
+            <NFTCarousel imageFilenames={nftImageFilenames} />
           </motion.div>
         </motion.div>
 
