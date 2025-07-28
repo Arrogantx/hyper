@@ -119,33 +119,21 @@ export const useHypercatzStaking = () => {
     },
   });
 
-  // Comprehensive refetch function with timeout and error recovery
+  // Comprehensive refetch function to ensure data is up-to-date
   const refetchAllData = useCallback(async () => {
     console.log('Refetching all staking data...');
     try {
-      // Add timeout to prevent hanging
-      const refetchPromises = [
+      await Promise.all([
         refetchStakedTokenIds(),
         refetchClaimableRewards(),
         refetchTotalEarned(),
         refetchTotalClaimed(),
-        refetchUserNFTs(), // Refetch user NFTs
-        refetchApprovalStatus(), // Refetch approval status
-      ];
-
-      // Race against timeout to prevent hanging
-      await Promise.race([
-        Promise.all(refetchPromises),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Refetch timeout')), 10000)
-        )
+        refetchUserNFTs(),
+        refetchApprovalStatus(),
       ]);
-      
       console.log('All data refetched successfully');
     } catch (error) {
       console.error('Error refetching data:', error);
-      // Don't throw the error to prevent UI crashes
-      // The individual hooks will handle their own error states
     }
   }, [refetchStakedTokenIds, refetchClaimableRewards, refetchTotalEarned, refetchTotalClaimed, refetchUserNFTs, refetchApprovalStatus]);
 

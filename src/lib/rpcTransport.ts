@@ -37,23 +37,18 @@ export function createRPCManagerTransport(): Transport {
   });
 }
 
+import { HYPEREVM_CONFIG } from './constants';
+
 // Create a fallback transport with multiple RPC endpoints
 export function createEnhancedTransport(): Transport {
-  const rpcUrls = [
-    'https://api.hyperliquid.xyz',
-    'https://hyperliquid.drpc.org',
-    'https://hyperliquid.rpc.hypersync.xyz',
-    'https://hyperliquid-mainnet.rpc.thirdweb.com',
-    'https://rpc.hyperliquid.xyz/evm',
-    'https://hyperliquid-rpc.publicnode.com',
-    'https://rpc.hyperliquid.xyz',
-  ];
+  // Use the official RPC URLs from the constants file
+  const rpcUrls = HYPEREVM_CONFIG.rpcUrls.default.http;
 
   // Create HTTP transports for each URL
   const transports = rpcUrls.map(url => http(url, {
-    timeout: 15_000,
-    retryCount: 2,
-    retryDelay: 1000,
+    timeout: 15_000, // 15-second timeout per request
+    retryCount: 3,   // Retry up to 3 times
+    retryDelay: 500, // 500ms delay between retries
   }));
 
   // Use fallback transport to rotate between endpoints
