@@ -1,4 +1,5 @@
 import { HYPEREVM_CONFIG } from '@/lib/constants';
+import { getEthereumProvider } from './getEthereumProvider';
 
 // Wallet connection utilities for HyperEVM chain
 export interface WalletConnectionError {
@@ -19,13 +20,14 @@ export const WALLET_ERROR_CODES = {
 
 // Add HyperEVM chain to wallet (MetaMask, etc.)
 export async function addHyperEVMChain(): Promise<boolean> {
-  if (typeof window === 'undefined' || !window.ethereum) {
-    throw new Error('No wallet detected');
-  }
+    const provider = await getEthereumProvider();
+    if (!provider) {
+        throw new Error('No wallet detected');
+    }
 
   try {
     // First try to switch to the chain
-    await window.ethereum.request({
+    await provider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: `0x${HYPEREVM_CONFIG.id.toString(16)}` }],
     });
@@ -34,7 +36,7 @@ export async function addHyperEVMChain(): Promise<boolean> {
     // If chain doesn't exist, add it
     if (switchError.code === 4902) {
       try {
-        await window.ethereum.request({
+        await provider.request({
           method: 'wallet_addEthereumChain',
           params: [
             {
@@ -60,12 +62,13 @@ export async function addHyperEVMChain(): Promise<boolean> {
 
 // Check if wallet supports HyperEVM chain
 export async function checkChainSupport(): Promise<boolean> {
-  if (typeof window === 'undefined' || !window.ethereum) {
-    return false;
-  }
+    const provider = await getEthereumProvider();
+    if (!provider) {
+        return false;
+    }
 
   try {
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const chainId = await provider.request({ method: 'eth_chainId' });
     return chainId === `0x${HYPEREVM_CONFIG.id.toString(16)}`;
   } catch (error) {
     console.error('Failed to check chain support:', error);
@@ -112,7 +115,7 @@ export async function connectWalletWithDiagnostics(): Promise<{
   };
 }> {
   const diagnostics = {
-    walletDetected: typeof window !== 'undefined' && !!window.ethereum,
+    walletDetected: !!(await getEthereumProvider()),
     chainSupported: false,
     rpcWorking: false,
   };

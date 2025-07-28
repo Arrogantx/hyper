@@ -287,6 +287,15 @@ export default function CommunityPage() {
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                { isConnected && !user ? (
+                    Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="stat-card animate-pulse">
+                            <div className="h-6 bg-dark-700 rounded-md w-1/2 mb-2"></div>
+                            <div className="h-8 bg-dark-700 rounded-md w-3/4"></div>
+                        </div>
+                    ))
+                ) : (
+                <>
                 <div className="stat-card">
                   <div className="flex items-center space-x-1 sm:space-x-2 mb-2">
                     <div className="p-1 bg-hyperliquid-500/10 rounded">
@@ -294,7 +303,7 @@ export default function CommunityPage() {
                     </div>
                     <span className="text-hyperliquid-400 font-medium text-xs sm:text-sm">Total</span>
                   </div>
-                  <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.totalReferrals || 0}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white">{(referralStats?.totalReferrals || 0).toLocaleString()}</p>
                 </div>
 
                 <div className="stat-card">
@@ -304,7 +313,7 @@ export default function CommunityPage() {
                     </div>
                     <span className="text-blue-400 font-medium text-xs sm:text-sm">Active</span>
                   </div>
-                  <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.activeReferrals || 0}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white">{(referralStats?.activeReferrals || 0).toLocaleString()}</p>
                 </div>
 
                 <div className="stat-card">
@@ -314,7 +323,7 @@ export default function CommunityPage() {
                     </div>
                     <span className="text-yellow-400 font-medium text-xs sm:text-sm">Points</span>
                   </div>
-                  <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.totalEarned.toLocaleString() || '0'}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white">{(referralStats?.totalEarned || 0).toLocaleString()}</p>
                 </div>
 
                 <div className="stat-card">
@@ -326,6 +335,8 @@ export default function CommunityPage() {
                   </div>
                   <p className="text-xl sm:text-2xl font-bold text-white">{referralStats?.currentTier || 'Bronze'}</p>
                 </div>
+                </>
+                )}
               </div>
             </div>
 
