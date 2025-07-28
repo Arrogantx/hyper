@@ -62,7 +62,7 @@ export function useUserNFTs(): UseUserNFTsReturn {
 
         const resolvedTokenIds = await Promise.all(tokenPromises);
         const sortedTokenIds = resolvedTokenIds.map(Number).sort((a, b) => a - b);
-        
+        console.info('[useUserNFTs] Loaded real user token IDs:', sortedTokenIds);
         setUserTokenIds(sortedTokenIds);
       } catch (err) {
         console.error('Error fetching user token IDs with tokenOfOwnerByIndex:', err);
@@ -70,6 +70,7 @@ export function useUserNFTs(): UseUserNFTsReturn {
         // but for now, we'll just set the error state.
         setError(err as Error);
         setUserTokenIds([]);
+        console.warn('[useUserNFTs] Using fallback: no user token IDs due to error.');
       } finally {
         setIsLoading(false);
       }

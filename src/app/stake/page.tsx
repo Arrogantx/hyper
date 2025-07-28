@@ -283,7 +283,7 @@ export default function StakePage() {
               <div className="flex items-center justify-center mb-3">
                 <TrendingUp className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="stat-value">{getTotalStaked()}</div>
+              <div className="stat-value">{getTotalStaked() > 0 ? getTotalStaked() : '-'}</div>
               <div className="stat-label">NFTs Staked</div>
             </div>
 
@@ -291,7 +291,7 @@ export default function StakePage() {
               <div className="flex items-center justify-center mb-3">
                 <Coins className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="stat-value">{getTotalEarnedAmount().toFixed(2)}</div>
+              <div className="stat-value">{getTotalEarnedAmount() > 0 ? getTotalEarnedAmount().toFixed(2) : '-'}</div>
               <div className="stat-label">Total Earned</div>
             </div>
 
@@ -299,7 +299,7 @@ export default function StakePage() {
               <div className="flex items-center justify-center mb-3">
                 <Target className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="stat-value">{getClaimableAmount().toFixed(2)}</div>
+              <div className="stat-value">{getClaimableAmount() > 0 ? getClaimableAmount().toFixed(2) : '-'}</div>
               <div className="stat-label">Claimable Rewards</div>
             </div>
 
@@ -307,7 +307,7 @@ export default function StakePage() {
               <div className="flex items-center justify-center mb-3">
                 <Clock className="w-6 h-6 text-hyperliquid-500 group-hover:text-hyperliquid-400 transition-colors" />
               </div>
-              <div className="stat-value">{getEstimatedDailyRewards().toFixed(2)}</div>
+              <div className="stat-value">{getEstimatedDailyRewards() > 0 ? getEstimatedDailyRewards().toFixed(2) : '-'}</div>
               <div className="stat-label">Daily Rewards</div>
             </div>
           </motion.div>
@@ -324,7 +324,7 @@ export default function StakePage() {
                 <Star className="w-5 h-5 text-hyperliquid-500" />
                 Available NFTs
               </h3>
-              <div className="text-2xl font-bold text-hyperliquid-400 mb-2">{userNFTs.length}</div>
+              <div className="text-2xl font-bold text-hyperliquid-400 mb-2">{userNFTs.length > 0 ? userNFTs.length : '-'}</div>
               <div className="text-sm text-gray-400">Ready to stake</div>
             </div>
 
@@ -333,7 +333,7 @@ export default function StakePage() {
                 <Coins className="w-5 h-5 text-hyperliquid-500" />
                 HyperPoints Balance
               </h3>
-              <div className="text-2xl font-bold text-accent-yellow mb-2">{hyperPointsBalance.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-accent-yellow mb-2">{hyperPointsBalance > 0 ? hyperPointsBalance.toFixed(2) : '-'}</div>
               <div className="text-sm text-gray-400">Current balance</div>
             </div>
 
@@ -342,7 +342,7 @@ export default function StakePage() {
                 <Zap className="w-5 h-5 text-hyperliquid-500" />
                 Reward Rate
               </h3>
-              <div className="text-2xl font-bold text-accent-green mb-2">{rewardRatePerNFT.toFixed(4)}</div>
+              <div className="text-2xl font-bold text-accent-green mb-2">{rewardRatePerNFT > 0 ? rewardRatePerNFT.toFixed(4) : '-'}</div>
               <div className="text-sm text-gray-400">HP per NFT per day</div>
             </div>
           </motion.div>
@@ -606,7 +606,7 @@ export default function StakePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-hyperliquid-400 mb-2">
-                  {rewardRatePerNFT.toFixed(4)}
+                  {rewardRatePerNFT > 0 ? rewardRatePerNFT.toFixed(4) : '-'}
                 </div>
                 <div className="text-sm text-gray-400">HP per NFT per day</div>
               </div>
@@ -620,7 +620,7 @@ export default function StakePage() {
               
               <div className="text-center">
                 <div className="text-2xl font-bold text-accent-green mb-2">
-                  {getAPY().toFixed(1)}%
+                  {getAPY() > 0 ? getAPY().toFixed(1) + '%' : '-'}
                 </div>
                 <div className="text-sm text-gray-400">Estimated APY</div>
               </div>

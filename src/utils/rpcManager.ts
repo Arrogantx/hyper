@@ -174,12 +174,14 @@ class RPCManager {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        console.error(`[RPCManager] HTTP error from ${url}: ${response.status} ${response.statusText}`);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
       
       if (data.error) {
+        console.error(`[RPCManager] RPC error from ${url}:`, data.error);
         throw new Error(`RPC Error: ${data.error.message} (${data.error.code})`);
       }
 
@@ -188,9 +190,11 @@ class RPCManager {
       clearTimeout(timeoutId);
       
       if (error.name === 'AbortError') {
+        console.error(`[RPCManager] Request timeout for ${url} [${method}]`);
         throw new Error('Request timeout');
       }
       
+      console.error(`[RPCManager] Error in makeDirectRequest to ${url} [${method}]:`, error);
       throw error;
     }
   }
@@ -263,6 +267,7 @@ class RPCManager {
       return result;
     } catch (error: any) {
       endpoint.errorCount++;
+      console.error(`[RPCManager] Error in executeRequest for endpoint ${endpoint.url}:`, error);
       
       // Mark endpoint as unhealthy if too many errors
       if (endpoint.errorCount > 5) {

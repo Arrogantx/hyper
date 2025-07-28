@@ -161,24 +161,33 @@ export const useHypercatzContract = () => {
 
   // Contract info object with fallback data
   const hasContractData = maxSupply !== undefined && totalSupply !== undefined && totalMinted !== undefined && currentPhase !== undefined && maxPerWalletGuaranteed !== undefined && maxPerWalletWhitelist !== undefined && maxPerWalletPublic !== undefined;
-  const contractInfo: ContractInfo = hasContractData ? {
-    maxSupply: maxSupply as bigint,
-    totalSupply: totalSupply as bigint,
-    totalMinted: totalMinted as bigint,
-    currentPhase: currentPhase as HypercatzPhase,
-    maxPerWalletGuaranteed: maxPerWalletGuaranteed as bigint,
-    maxPerWalletWhitelist: maxPerWalletWhitelist as bigint,
-    maxPerWalletPublic: maxPerWalletPublic as bigint,
-  } : {
-    // Fallback data when RPC calls fail or timeout
-    maxSupply: BigInt(4444),
-    totalSupply: BigInt(1234),
-    totalMinted: BigInt(1234),
-    currentPhase: HypercatzPhase.PUBLIC,
-    maxPerWalletGuaranteed: BigInt(1),
-    maxPerWalletWhitelist: BigInt(3),
-    maxPerWalletPublic: BigInt(5),
-  };
+  const contractInfo: ContractInfo = hasContractData ? (() => {
+    console.info('[useHypercatzContract] Loaded real contract data:', {
+      maxSupply, totalSupply, totalMinted, currentPhase, maxPerWalletGuaranteed, maxPerWalletWhitelist, maxPerWalletPublic
+    });
+    return {
+      maxSupply: maxSupply as bigint,
+      totalSupply: totalSupply as bigint,
+      totalMinted: totalMinted as bigint,
+      currentPhase: currentPhase as HypercatzPhase,
+      maxPerWalletGuaranteed: maxPerWalletGuaranteed as bigint,
+      maxPerWalletWhitelist: maxPerWalletWhitelist as bigint,
+      maxPerWalletPublic: maxPerWalletPublic as bigint,
+    };
+  })() : (() => {
+    console.warn('[useHypercatzContract] Using fallback contract data due to missing/failed RPC calls.', {
+      maxSupply, totalSupply, totalMinted, currentPhase, maxPerWalletGuaranteed, maxPerWalletWhitelist, maxPerWalletPublic
+    });
+    return {
+      maxSupply: BigInt(4444),
+      totalSupply: BigInt(1234),
+      totalMinted: BigInt(1234),
+      currentPhase: HypercatzPhase.PUBLIC,
+      maxPerWalletGuaranteed: BigInt(1),
+      maxPerWalletWhitelist: BigInt(3),
+      maxPerWalletPublic: BigInt(5),
+    };
+  })();
 
   // User mint info object - only provide data when we have real contract data
   const userMintInfo: UserMintInfo | null = isConnected && userPhaseAccess !== undefined && mintedInGuaranteed !== undefined && mintedInWhitelist !== undefined && mintedInPublic !== undefined && userBalance !== undefined ? {

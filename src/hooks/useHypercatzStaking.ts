@@ -164,12 +164,28 @@ export const useHypercatzStaking = () => {
   };
 
   // User staking data
-  const userStakingData: UserStakingData = {
-    stakedTokenIds: stakedTokenIds ? [...stakedTokenIds] : [],
-    claimableRewards: claimableRewards || BigInt(0),
-    totalEarned: totalEarned || BigInt(0),
-    totalClaimed: totalClaimed || BigInt(0),
-  };
+  const userStakingData: UserStakingData = (() => {
+    if (
+      stakedTokenIds === undefined ||
+      claimableRewards === undefined ||
+      totalEarned === undefined ||
+      totalClaimed === undefined
+    ) {
+      console.warn('[useHypercatzStaking] Using fallback staking data due to missing/failed RPC calls.', {
+        stakedTokenIds, claimableRewards, totalEarned, totalClaimed
+      });
+    } else {
+      console.info('[useHypercatzStaking] Loaded real staking data:', {
+        stakedTokenIds, claimableRewards, totalEarned, totalClaimed
+      });
+    }
+    return {
+      stakedTokenIds: stakedTokenIds ? [...stakedTokenIds] : [],
+      claimableRewards: claimableRewards || BigInt(0),
+      totalEarned: totalEarned || BigInt(0),
+      totalClaimed: totalClaimed || BigInt(0),
+    };
+  })();
 
   // Staking functions
   const stakeNFTs = useCallback(async (tokenIds: number[]) => {

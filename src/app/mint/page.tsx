@@ -166,15 +166,15 @@ const MintPage: React.FC = () => {
   }
 
   // Contract data with fallbacks
-  const totalSupply = contractInfo ? Number(contractInfo.totalSupply) : 0;
-  const maxSupply = contractInfo ? Number(contractInfo.maxSupply) : 10000;
-  const totalMinted = contractInfo ? Number(contractInfo.totalMinted) : 0;
+  const totalSupply = contractInfo ? Number(contractInfo.totalSupply) : null;
+  const maxSupply = contractInfo ? Number(contractInfo.maxSupply) : null;
+  const totalMinted = contractInfo ? Number(contractInfo.totalMinted) : null;
   const currentPhase = contractInfo ? contractInfo.currentPhase : HypercatzPhase.PUBLIC;
   const currentPhaseStr = contractInfo ? getPhaseString(currentPhase) : 'PUBLIC';
-  const userMinted = userMintInfo ? Number(getUserMintedInCurrentPhase()) : 0;
-  const maxMintForPhase = contractInfo ? Number(getMaxMintForCurrentPhase()) : 5;
-  const remainingMints = isConnected ? Number(getRemainingMintsForUser()) : 0;
-  const mintProgress = maxSupply > 0 ? (totalMinted / maxSupply) * 100 : 0;
+  const userMinted = userMintInfo ? Number(getUserMintedInCurrentPhase()) : null;
+  const maxMintForPhase = contractInfo ? Number(getMaxMintForCurrentPhase()) : null;
+  const remainingMints = isConnected ? Number(getRemainingMintsForUser()) : null;
+  const mintProgress = (maxSupply && totalMinted && maxSupply > 0) ? (totalMinted / maxSupply) * 100 : null;
 
   // Get phase access status
   const phaseAccessStatus = getPhaseAccessStatus();
@@ -254,7 +254,7 @@ const MintPage: React.FC = () => {
                   <div>
                     <div className="flex justify-between items-center mb-3">
                       <span className="text-gray-300 font-medium">Minting Progress</span>
-                      <span className="font-bold text-hyperliquid-400">{mintProgress.toFixed(1)}%</span>
+                      <span className="font-bold text-hyperliquid-400">{mintProgress !== null ? mintProgress.toFixed(1) + '%' : '-'}</span>
                     </div>
                     
                     <div className="w-full bg-dark-800 rounded-full h-3 overflow-hidden">
@@ -267,8 +267,8 @@ const MintPage: React.FC = () => {
                     </div>
                     
                     <div className="flex justify-between text-sm text-gray-400 mt-2">
-                      <span>{totalMinted.toLocaleString()} Minted</span>
-                      <span>{(maxSupply - totalMinted).toLocaleString()} Remaining</span>
+                      <span>{totalMinted !== null ? totalMinted.toLocaleString() + ' Minted' : '- Minted'}</span>
+                      <span>{(maxSupply !== null && totalMinted !== null) ? (maxSupply - totalMinted).toLocaleString() + ' Remaining' : '- Remaining'}</span>
                     </div>
                   </div>
 
@@ -278,7 +278,7 @@ const MintPage: React.FC = () => {
                       <div className="flex items-center justify-center mb-2">
                         <Coins className="w-5 h-5 text-hyperliquid-500" />
                       </div>
-                      <div className="stat-value">{totalMinted.toLocaleString()}</div>
+                      <div className="stat-value">{totalMinted !== null ? totalMinted.toLocaleString() : '-'}</div>
                       <div className="stat-label">Total Minted</div>
                     </div>
                     
@@ -286,7 +286,7 @@ const MintPage: React.FC = () => {
                       <div className="flex items-center justify-center mb-2">
                         <Users className="w-5 h-5 text-hyperliquid-500" />
                       </div>
-                      <div className="stat-value">{maxSupply.toLocaleString()}</div>
+                      <div className="stat-value">{maxSupply !== null ? maxSupply.toLocaleString() : '-'}</div>
                       <div className="stat-label">Max Supply</div>
                     </div>
                     
@@ -294,7 +294,7 @@ const MintPage: React.FC = () => {
                       <div className="flex items-center justify-center mb-2">
                         <TrendingUp className="w-5 h-5 text-hyperliquid-500" />
                       </div>
-                      <div className="stat-value">{currentPhaseStr}</div>
+                      <div className="stat-value">{currentPhaseStr || '-'}</div>
                       <div className="stat-label">Current Phase</div>
                     </div>
                     
@@ -302,7 +302,7 @@ const MintPage: React.FC = () => {
                       <div className="flex items-center justify-center mb-2">
                         <Star className="w-5 h-5 text-hyperliquid-500" />
                       </div>
-                      <div className="stat-value">{maxMintForPhase}</div>
+                      <div className="stat-value">{maxMintForPhase !== null ? maxMintForPhase : '-'}</div>
                       <div className="stat-label">Max Per Wallet</div>
                     </div>
                   </div>
@@ -421,7 +421,9 @@ const MintPage: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <div className="text-gray-400 text-sm mb-1">Your Minted</div>
-                    <div className="font-bold text-xl text-white">{userMinted} / {maxMintForPhase}</div>
+                    <div className="font-bold text-xl text-white">
+                      {userMinted !== null ? userMinted : '-'} / {maxMintForPhase !== null ? maxMintForPhase : '-'}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -461,7 +463,7 @@ const MintPage: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Remaining Mints</span>
-                        <span className="font-bold text-hyperliquid-400">{remainingMints}</span>
+                        <span className="font-bold text-hyperliquid-400">{remainingMints !== null ? remainingMints : '-'}</span>
                       </div>
                     </div>
                   </div>
