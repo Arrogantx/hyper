@@ -4,6 +4,7 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true,
   },
+distDir: '.next',
   typescript: {
     ignoreBuildErrors: true,
   },
