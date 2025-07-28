@@ -18,7 +18,6 @@ const MintPage: React.FC = () => {
   const successToast = useSuccessToast();
   const errorToast = useErrorToast();
   
-  const [mintAmount, setMintAmount] = useState(1);
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,11 +46,10 @@ const MintPage: React.FC = () => {
       playMint();
       successToast(
         'Mint Successful!',
-        `Successfully minted ${mintAmount} Hypercatz NFT${mintAmount > 1 ? 's' : ''}`
+        `Successfully minted 1 Hypercatz NFT`
       );
-      setMintAmount(1);
     }
-  }, [isConfirmed, hash, mintAmount, playMint, successToast]);
+  }, [isConfirmed, hash, playMint, successToast]);
 
   // Handle contract errors
   useEffect(() => {
@@ -67,13 +65,17 @@ const MintPage: React.FC = () => {
         errorToast('Access Denied', 'You do not have access to mint in the current phase.');
         return;
     }
+    if (!canUserMintInCurrentPhase()) {
+        errorToast('Access Denied', 'You do not have access to mint in the current phase.');
+        return;
+    }
     const remainingMints = getRemainingMintsForUser();
-    if (BigInt(mintAmount) > remainingMints) {
-        errorToast('Mint Limit Exceeded', `You can only mint ${remainingMints.toString()} more NFTs.`);
+    if (remainingMints === BigInt(0)) {
+        errorToast('Mint Limit Exceeded', 'You have no more mints available.');
         return;
     }
     playClick();
-    await mint(mintAmount);
+    await mint(1); // Hardcode mint amount to 1
   };
 
   if (!mounted) {
@@ -136,8 +138,6 @@ const MintPage: React.FC = () => {
             contractInfo={contractInfo}
             userMintInfo={userMintInfo}
             balance={balance}
-            mintAmount={mintAmount}
-            setMintAmount={setMintAmount}
             handleMint={handleMint}
             isConnecting={isConnecting}
             isConnected={isConnected}

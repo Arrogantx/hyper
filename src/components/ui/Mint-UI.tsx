@@ -24,8 +24,6 @@ interface MintUIProps {
   contractInfo: ReturnType<typeof useHypercatzContract>['contractInfo'];
   userMintInfo: ReturnType<typeof useHypercatzContract>['userMintInfo'];
   balance: { formatted: string; symbol: string | undefined; } | undefined;
-  mintAmount: number;
-  setMintAmount: React.Dispatch<React.SetStateAction<number>>;
   handleMint: () => Promise<void>;
   isConnecting: boolean;
   isConnected: boolean;
@@ -39,8 +37,6 @@ export const MintUI: FC<MintUIProps> = ({
   contractInfo,
   userMintInfo,
   balance,
-  mintAmount,
-  setMintAmount,
   handleMint,
   isConnecting,
   isConnected,
@@ -59,11 +55,6 @@ export const MintUI: FC<MintUIProps> = ({
 
   const maxMintForPhase = contractInfo ? Number(getMaxMintForCurrentPhase()) : 5;
   const remainingMintsForUser = isConnected ? Number(getRemainingMintsForUser()) : maxMintForPhase;
-
-  const handleMintAmountChange = (delta: number) => {
-    const newAmount = Math.max(1, Math.min(remainingMintsForUser, mintAmount + delta));
-    setMintAmount(newAmount);
-  };
 
   const phaseAccessStatus = getPhaseAccessStatus();
   const currentPhase = contractInfo?.currentPhase ?? HypercatzPhase.CLOSED;
@@ -171,36 +162,6 @@ export const MintUI: FC<MintUIProps> = ({
           </div>
 
 
-      {/* Mint Controls */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-300 mb-4 text-center">
-          Select Quantity (Max: {remainingMintsForUser})
-        </label>
-        <div className="flex items-center justify-center gap-6">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => handleMintAmountChange(-1)}
-            disabled={mintAmount <= 1 || isPending || isConfirming}
-            className="w-14 h-14 p-0"
-          >
-            <Minus className="h-5 w-5" />
-          </Button>
-          <div className="text-4xl font-bold w-20 text-center text-hyperliquid-400">
-            {mintAmount}
-          </div>
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => handleMintAmountChange(1)}
-            disabled={mintAmount >= remainingMintsForUser || isPending || isConfirming}
-            className="w-14 h-14 p-0"
-          >
-            <Plus className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
-
       {/* Mint Button */}
       <Button
         size="lg"
@@ -218,7 +179,7 @@ export const MintUI: FC<MintUIProps> = ({
         ) : !phaseAccessStatus.hasAccess ? (
             <><AlertCircle className="h-6 w-6 mr-3" />{`Access Denied`}</>
         ) : (
-          <><Zap className="h-6 w-6 mr-3 group-hover:animate-pulse" />Mint {mintAmount} NFT{mintAmount > 1 ? 's' : ''}</>
+          <><Zap className="h-6 w-6 mr-3 group-hover:animate-pulse" />Mint 1 NFT</>
         )}
       </Button>
 

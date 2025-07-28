@@ -1,0 +1,10 @@
+import { CustomConnectButton } from './CustomConnectButton';
+import { useChainId } from 'wagmi';
+
+function App() {
+  return (
+    <div>
+      <CustomConnectButton />
+    </div>
+  );
+}

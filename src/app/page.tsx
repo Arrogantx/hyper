@@ -20,6 +20,7 @@ import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useSoundEngine } from '@/utils/sound';
 import NFTCarousel from '@/components/ui/NFTCarousel';
+import { CustomConnectButton } from '@/components/temp/TestConnectButton';
 
 const HomePage: React.FC = () => {
   const { scrollY } = useScroll();
@@ -167,19 +168,7 @@ const HomePage: React.FC = () => {
                 Check Whitelist
               </Button>
             </Link>
-
-            <Button
-              variant="outline"
-              size="lg"
-              className="min-w-[200px]"
-              onClick={() => {
-                playClick();
-                // Add trailer/demo functionality
-              }}
-            >
-              <Play className="h-5 w-5 mr-2" />
-              Watch Demo
-            </Button>
+            <CustomConnectButton />
           </motion.div>
 
           {/* NFT Carousel */}

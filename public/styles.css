@@ -1,0 +1,258 @@
+/* CSS Styles for Components */
+
+/* Connect Button Styles */
+.connect-button {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.connect-button:hover {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wrong-network-button {
+  background: #ef4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.wrong-network-button:hover {
+  background: #dc2626;
+}
+
+.connected-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chain-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(156, 163, 175, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.chain-button:hover {
+  background: rgba(156, 163, 175, 0.2);
+}
+
+.chain-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.account-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #d1d5db;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.account-button:hover {
+  background: #f9fafb;
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Address Input Styles */
+.address-input-container {
+  width: 100%;
+}
+
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.address-input {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.address-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.address-input.loading {
+  border-color: #3b82f6;
+}
+
+.address-input.valid {
+  border-color: #10b981;
+}
+
+.address-input.error {
+  border-color: #ef4444;
+}
+
+.input-status-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+.status-message {
+  margin-top: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-message.loading {
+  color: #3b82f6;
+}
+
+.status-message.success {
+  color: #10b981;
+}
+
+.status-message.error {
+  color: #ef4444;
+}
+
+.resolution-display {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.resolution-display.domain {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.resolution-display.address {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.resolution-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-thumbnail {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.resolution-value {
+  font-family: monospace;
+  word-break: break-all;
+  color: #1f2937;
+  flex: 1;
+}
+
+.help-text {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Dark mode styles */
+:global(.dark) .chain-button {
+  background: rgba(75, 85, 99, 0.5);
+  color: #f3f4f6;
+}
+
+:global(.dark) .account-button {
+  background: #1f2937;
+  border-color: #374151;
+  color: white;
+}
+
+:global(.dark) .account-button:hover {
+  background: #111827;
+}
+
+:global(.dark) .address-input {
+  background: #1f2937;
+  border-color: #374151;
+  color: white;
+}
+
+:global(.dark) .input-label {
+  color: #d1d5db;
+}
+
+:global(.dark) .help-text {
+  color: #9ca3af;
+}
+
+:global(.dark) .resolution-value {
+  color: #f3f4f6;
+}
