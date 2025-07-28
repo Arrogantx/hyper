@@ -256,12 +256,18 @@ export const useHypercatzStaking = () => {
         abi: HYPERCATZ_STAKING_ABI,
         functionName: 'stake',
         args: [tokenIdsBigInt],
+      }, {
+        onSuccess: () => {
+          console.log('Stake transaction successful, refetching all data...');
+          refetchAllData();
+          setSelectedNFTs([]);
+        }
       });
     } catch (error) {
       console.error('Staking failed:', error);
       throw error;
     }
-  }, [isConnected, contractsDeployed, writeContract, availableNFTs, isApprovedForAll]);
+  }, [isConnected, contractsDeployed, writeContract, availableNFTs, isApprovedForAll, refetchAllData, setSelectedNFTs]);
 
   const unstakeNFTs = useCallback(async (tokenIds: number[]) => {
     if (!isConnected) throw new Error('Wallet not connected');
@@ -276,7 +282,8 @@ export const useHypercatzStaking = () => {
         args: [tokenIds.map(id => BigInt(id))],
       }, {
         onSuccess: () => {
-          // Clear selected NFTs after successful unstake
+          console.log('Unstake transaction successful, refetching all data...');
+          refetchAllData();
           setSelectedNFTs([]);
         }
       });
@@ -284,7 +291,7 @@ export const useHypercatzStaking = () => {
       console.error('Unstaking failed:', error);
       throw error;
     }
-  }, [isConnected, contractsDeployed, writeContract, setSelectedNFTs]);
+  }, [isConnected, contractsDeployed, writeContract, refetchAllData, setSelectedNFTs]);
 
   const claimRewards = useCallback(async () => {
     if (!isConnected) throw new Error('Wallet not connected');
@@ -295,12 +302,17 @@ export const useHypercatzStaking = () => {
         address: HYPERCATZ_STAKING_ADDRESS,
         abi: HYPERCATZ_STAKING_ABI,
         functionName: 'claim',
+      }, {
+        onSuccess: () => {
+          console.log('Claim transaction successful, refetching all data...');
+          refetchAllData();
+        }
       });
     } catch (error) {
       console.error('Claim failed:', error);
       throw error;
     }
-  }, [isConnected, contractsDeployed, writeContract]);
+  }, [isConnected, contractsDeployed, writeContract, refetchAllData]);
 
   // Helper functions
   const canStake = (): boolean => {

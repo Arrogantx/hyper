@@ -74,8 +74,6 @@ export default function StakePage() {
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
-  const [lastProcessedHash, setLastProcessedHash] = useState<string | null>(null);
-  const [lastProcessedApprovalHash, setLastProcessedApprovalHash] = useState<string | null>(null);
   
   const successToast = useSuccessToast();
   const errorToast = useErrorToast();
@@ -199,36 +197,8 @@ export default function StakePage() {
     }
   };
 
-  // Handle transaction success - prevent duplicate notifications
-  useEffect(() => {
-    if (isConfirmed && hash && hash !== lastProcessedHash) {
-      setLastProcessedHash(hash);
-      
-      if (isStaking) {
-        successToast('Transaction Successful!', `NFTs ${selectedNFTs.length > 1 ? 'were' : 'was'} successfully staked`);
-        setSelectedNFTs([]);
-        setIsStaking(false);
-        // Refetch all data to update the UI immediately
-        refetchAllData();
-      } else if (isClaiming) {
-        successToast('Rewards Claimed!', 'Your rewards have been successfully claimed');
-        setIsClaiming(false);
-        // Refetch all data to update the UI immediately
-        refetchAllData();
-      }
-    }
-  }, [isConfirmed, hash, lastProcessedHash, isStaking, isClaiming, selectedNFTs.length, successToast, refetchAllData]);
-
-  // Handle approval transaction success
-  useEffect(() => {
-    if (isApprovalConfirmed && approvalHash && approvalHash !== lastProcessedApprovalHash) {
-      setLastProcessedApprovalHash(approvalHash);
-      successToast('Approval Successful!', 'Your NFTs are now approved for staking');
-      setIsApproving(false);
-      // Refetch approval status to update the UI immediately
-      refetchApprovalStatus();
-    }
-  }, [isApprovalConfirmed, approvalHash, lastProcessedApprovalHash, successToast, refetchApprovalStatus]);
+  // Note: Transaction success is now handled via onSuccess callbacks in the useHypercatzStaking hook
+  // This ensures more reliable UI updates.
 
   // Show loading skeleton while data is loading
   if (isLoading) {

@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useChainId } from 'wagmi';
-import { 
-  connectWalletWithDiagnostics, 
-  WALLET_ERROR_CODES, 
+import { useWalletDisplay } from '@/hooks/useHypeDomain';
+import {
+  connectWalletWithDiagnostics,
+  WALLET_ERROR_CODES,
   WALLET_INSTRUCTIONS,
-  type WalletConnectionError 
+  type WalletConnectionError
 } from '@/utils/walletConnection';
 import { HYPEREVM_CHAIN_ID } from '@/lib/constants';
 import { AlertCircle, CheckCircle, Loader2, Wifi, WifiOff } from 'lucide-react';
@@ -19,7 +20,8 @@ interface ConnectionDiagnostics {
 }
 
 export function EnhancedConnectButton() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { displayName, avatar, isLoading: isDisplayLoading } = useWalletDisplay(address);
   const chainId = useChainId();
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<WalletConnectionError | null>(null);
@@ -247,7 +249,7 @@ export function EnhancedConnectButton() {
                         <div className="w-2 h-2 bg-white rounded-full"></div>
                       </div>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {account?.displayName || `${account?.address.slice(0, 6)}...${account?.address.slice(-4)}`}
+                        {isDisplayLoading ? 'Loading...' : displayName}
                       </span>
                     </button>
                   </div>
