@@ -46,6 +46,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Generate a unique referral code for the new user
+    function generateReferralCode(address: string) {
+      // Use a short hash of the address for uniqueness and readability
+      return address.slice(2, 8) + Math.random().toString(36).substring(2, 6);
+    }
+    const referral_code = generateReferralCode(walletAddress);
+
     // Create the new user
     const { data: newUser, error: newUserError } = await supabase
       .from('users')
@@ -53,6 +60,7 @@ export async function POST(req: NextRequest) {
         wallet_address: walletAddress,
         hype_domain: hypeDomain,
         referred_by: referred_by,
+        referral_code: referral_code,
       })
       .select()
       .single();

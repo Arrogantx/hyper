@@ -1,5 +1,5 @@
 // CoinGecko API utilities for HYPE token price data
-const COINGECKO_API_KEY = 'CG-d4JmkUYvCBLGQnkqnQWbwa8e';
+const COINGECKO_API_KEY = 'CG-k2FbjH5giWo47GR4m9BcYJE3';
 const COINGECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
 const HYPE_TOKEN_ID = 'hyperliquid';
 

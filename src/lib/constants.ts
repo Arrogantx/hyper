@@ -14,15 +14,15 @@ export const HYPEREVM_CONFIG = {
     public: {
       http: [
         'https://rpc.hyperliquid.xyz/evm',
-        'https://rpc.hyperlend.finance',
-        'https://hyperliquid.drpc.org'
+        // 'https://rpc.hyperlend.finance',
+        // 'https://hyperliquid.drpc.org'
       ]
     },
     default: {
       http: [
         'https://rpc.hyperliquid.xyz/evm',
-        'https://rpc.hyperlend.finance',
-        'https://hyperliquid.drpc.org'
+        // 'https://rpc.hyperlend.finance',
+        // 'https://hyperliquid.drpc.org'
       ]
     },
   },

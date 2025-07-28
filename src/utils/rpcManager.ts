@@ -59,12 +59,13 @@ class RPCManager {
 
   private initializeEndpoints(): void {
     // Initialize RPC endpoints with priority and CORS support info
+    // Only use the working endpoint. Others are commented out due to persistent errors.
     const rpcUrls = [
       { url: 'https://rpc.hyperliquid.xyz/evm', priority: 1, corsSupported: true },
-      { url: 'https://rpc.hyperlend.finance', priority: 2, corsSupported: true },
-      { url: 'https://hyperliquid.drpc.org', priority: 3, corsSupported: true },
-      { url: 'https://hyperliquid-mainnet.rpc.thirdweb.com', priority: 4, corsSupported: true },
-      { url: 'https://api.hyperliquid.xyz/evm', priority: 5, corsSupported: true },
+      // { url: 'https://rpc.hyperlend.finance', priority: 2, corsSupported: true },
+      // { url: 'https://hyperliquid.drpc.org', priority: 3, corsSupported: true },
+      // { url: 'https://hyperliquid-mainnet.rpc.thirdweb.com', priority: 4, corsSupported: true },
+      // { url: 'https://api.hyperliquid.xyz/evm', priority: 5, corsSupported: true },
     ];
 
     this.endpoints = rpcUrls.map(endpoint => ({
