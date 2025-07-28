@@ -63,6 +63,8 @@ class RPCManager {
       { url: 'https://rpc.hyperliquid.xyz/evm', priority: 1, corsSupported: true },
       { url: 'https://rpc.hyperlend.finance', priority: 2, corsSupported: true },
       { url: 'https://hyperliquid.drpc.org', priority: 3, corsSupported: true },
+      { url: 'https://hyperliquid-mainnet.rpc.thirdweb.com', priority: 4, corsSupported: true },
+      { url: 'https://api.hyperliquid.xyz/evm', priority: 5, corsSupported: true },
     ];
 
     this.endpoints = rpcUrls.map(endpoint => ({

@@ -1,3 +1,6 @@
+// Import viem utilities at the top of the file
+import { keccak256, toBytes, concat } from 'viem';
+
 // .hype Registry Contract ABI
 export const DOT_HYPE_REGISTRY_ABI = [
   {
@@ -355,9 +358,6 @@ export const HYPE_DOMAIN_SUFFIX = '.hype';
  */
 export function namehash(name: string): `0x${string}` {
   if (!name) return '0x0000000000000000000000000000000000000000000000000000000000000000';
-  
-  // Import keccak256 and related functions from viem
-  const { keccak256, toBytes, concat } = require('viem');
   
   let node = '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`;
   
