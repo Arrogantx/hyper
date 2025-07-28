@@ -50,7 +50,7 @@ export function usePrimaryDomain(address?: Address) {
     try {
       // Step 1: Create reverse lookup node for the address
       // For reverse lookups, we use addr.reverse format
-      const reverseNode = namehash(`${addr.toLowerCase().slice(2)}.addr.reverse`);
+      const reverseNode = await namehash(`${addr.toLowerCase().slice(2)}.addr.reverse`);
 
       // Step 2: Get the resolver for this reverse node from the registry
       const resolverAddress = await publicClient.readContract({
@@ -157,7 +157,7 @@ export function useAddressFromDomain(domain?: string) {
 
     try {
       // Step 1: Convert domain name to node hash
-      const node = namehash(domainName);
+      const node = await namehash(domainName);
 
       // Step 2: Get the resolver for this domain from the registry
       const resolverAddress = await publicClient.readContract({
@@ -245,7 +245,7 @@ export function useUserAvatar(address?: Address) {
 
       if (domain && isValidHypeDomain(domain)) {
         // Step 1: Convert domain name to node hash
-        const node = namehash(domain);
+        const node = await namehash(domain);
 
         // Step 2: Get the resolver for this domain from the registry
         const resolverAddress = await publicClient.readContract({
@@ -338,7 +338,7 @@ export function useDomainAvailability(domain?: string) {
 
     try {
       // Step 1: Convert domain name to node hash
-      const node = namehash(domainName);
+      const node = await namehash(domainName);
 
       // Step 2: Check if record exists in registry
       const recordExists = await publicClient.readContract({

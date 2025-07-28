@@ -353,11 +353,11 @@ export const HYPE_DOMAIN_SUFFIX = '.hype';
  * Convert a domain name to its corresponding node hash
  * This follows the ENS namehash algorithm
  */
-export function namehash(name: string): `0x${string}` {
+export async function namehash(name: string): Promise<`0x${string}`> {
   if (!name) return '0x0000000000000000000000000000000000000000000000000000000000000000';
   
   // Import keccak256 and related functions from viem
-  const { keccak256, toBytes, concat } = require('viem');
+  const { keccak256, toBytes, concat } = await import('viem');
   
   let node = '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`;
   
