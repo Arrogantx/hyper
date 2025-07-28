@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useAccount } from 'wagmi';
 import { motion } from 'framer-motion';
 import {
   UsersIcon,
@@ -18,6 +19,17 @@ import Button from '@/components/ui/Button';
 import { LoadingButton } from '@/components/ui/LoadingStates';
 import { ErrorDisplay } from '@/components/ui/ErrorBoundary';
 import { useSuccessToast, useErrorToast } from '@/components/ui/Toast';
+import { LeaderboardRow } from '@/components/ui/LeaderboardRow';
+import { Address } from 'viem';
+
+interface User {
+  id: string;
+  wallet_address: Address;
+  hype_domain?: string;
+  referral_code: string;
+  referral_count: number;
+  total_points: number;
+}
 
 interface ReferralStats {
   totalReferrals: number;
@@ -33,6 +45,7 @@ interface LeaderboardEntry {
   referrals: number;
   earnings: number;
   tier: string;
+  wallet_address: Address;
 }
 
 const mockReferralStats: ReferralStats = {
@@ -62,26 +75,83 @@ const tierIcons = {
 };
 
 export default function CommunityPage() {
-  const [referralCode] = useState('HYPER-CAT-2024');
+  const { address, isConnected } = useAccount();
+  const [user, setUser] = useState<User | null>(null);
   const [copied, setCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'leaderboard' | 'rewards'>('overview');
   const [error, setError] = useState<string | null>(null);
-  const [referralStats, setReferralStats] = useState<ReferralStats | null>(mockReferralStats);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(mockLeaderboard);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [isRefreshingStats, setIsRefreshingStats] = useState(false);
 
   const showSuccessToast = useSuccessToast();
   const showErrorToast = useErrorToast();
 
+  const fetchLeaderboard = useCallback(async () => {
+    try {
+      const response = await fetch('/api/leaderboard');
+      if (!response.ok) throw new Error('Failed to fetch leaderboard');
+      const data = await response.json();
+      const formattedLeaderboard: LeaderboardEntry[] = data.map((entry: any) => ({
+        rank: entry.rank,
+        username: entry.hype_domain || entry.username || `${entry.wallet_address.slice(0, 6)}...${entry.wallet_address.slice(-4)}`,
+        referrals: entry.referral_count,
+        earnings: entry.total_points,
+        tier: entry.tier,
+        wallet_address: entry.wallet_address,
+      }));
+      setLeaderboard(formattedLeaderboard);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not load leaderboard');
+      showErrorToast(err instanceof Error ? err.message : 'Could not load leaderboard');
+    }
+  }, [showErrorToast]);
+
+  const fetchUser = useCallback(async (walletAddress: Address) => {
+    try {
+      const response = await fetch('/api/create-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ walletAddress }),
+      });
+      if (!response.ok) throw new Error('Failed to fetch user data');
+      const data = await response.json();
+      setUser(data.user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not load user data');
+      showErrorToast(err instanceof Error ? err.message : 'Could not load user data');
+    }
+  }, [showErrorToast]);
+
+  useEffect(() => {
+    if (isConnected && address) {
+      fetchUser(address);
+    } else {
+      setUser(null);
+    }
+    if (selectedTab === 'leaderboard') {
+      fetchLeaderboard();
+    }
+  }, [address, isConnected, fetchUser, selectedTab, fetchLeaderboard]);
+
+  const referralStats = user ? {
+    totalReferrals: user.referral_count,
+    activeReferrals: 0, // Placeholder
+    totalEarned: user.total_points,
+    currentTier: 'Bronze', // Placeholder
+    nextTierProgress: 0, // Placeholder
+  } : null;
+
   const copyReferralCode = async () => {
+    if (!user) {
+      showErrorToast('Please connect your wallet first.');
+      return;
+    }
     try {
       setIsGeneratingLink(true);
-      
-      // Simulate link generation delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      await navigator.clipboard.writeText(`https://hypercatz.com/mint?ref=${referralCode}`);
+      await navigator.clipboard.writeText(`https://hypercatz.com/r?ref=${user.referral_code}`);
       setCopied(true);
       showSuccessToast('Referral link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
@@ -90,32 +160,6 @@ export default function CommunityPage() {
       showErrorToast('Failed to copy referral link. Please try again.');
     } finally {
       setIsGeneratingLink(false);
-    }
-  };
-
-  const refreshStats = async () => {
-    try {
-      setIsRefreshingStats(true);
-      
-      // Reduced API call delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 600));
-      
-      // Removed error simulation for production
-      
-      // Simulate updated stats
-      const updatedStats = {
-        ...mockReferralStats,
-        totalReferrals: mockReferralStats.totalReferrals + Math.floor(Math.random() * 3),
-        totalEarned: mockReferralStats.totalEarned + Math.floor(Math.random() * 500),
-      };
-      
-      setReferralStats(updatedStats);
-      showSuccessToast('Stats refreshed successfully!');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh stats';
-      showErrorToast(errorMessage);
-    } finally {
-      setIsRefreshingStats(false);
     }
   };
 
@@ -212,13 +256,6 @@ export default function CommunityPage() {
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">Your Referral Code</h2>
                 </div>
-                <LoadingButton
-                  onClick={refreshStats}
-                  isLoading={isRefreshingStats}
-                  className="btn-secondary text-sm px-3 py-1.5"
-                >
-                  Refresh Stats
-                </LoadingButton>
               </div>
               
               <div className="glass rounded-xl p-3 sm:p-4 mb-4">
@@ -226,7 +263,7 @@ export default function CommunityPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-dark-400 text-sm mb-1 font-medium">Referral Link</p>
                     <p className="text-hyperliquid-400 font-mono text-sm sm:text-lg truncate">
-                      https://hypercatz.com/mint?ref={referralCode}
+                      {user ? `https://hypercatz.com/r?ref=${user.referral_code}` : 'Connect wallet to get your link'}
                     </p>
                   </div>
                   <LoadingButton
@@ -398,50 +435,9 @@ export default function CommunityPage() {
 
             <div className="space-y-2 sm:space-y-3">
               {leaderboard.length > 0 ? (
-                leaderboard.map((entry, index) => {
-                  const TierIcon = tierIcons[entry.tier as keyof typeof tierIcons];
-                  const tierGradient = tierColors[entry.tier as keyof typeof tierColors];
-                  
-                  return (
-                    <motion.div
-                      key={entry.rank}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all hover:scale-105 group ${
-                        entry.rank <= 3
-                          ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30 shadow-lg shadow-yellow-500/20'
-                          : 'bg-dark-800/50 border-dark-600 hover:border-dark-500 hover:bg-dark-700/50'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
-                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0 shadow-lg ${
-                          entry.rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black' :
-                          entry.rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-500 text-black' :
-                          entry.rank === 3 ? 'bg-gradient-to-r from-amber-600 to-amber-800 text-white' :
-                          'bg-dark-700 text-dark-300'
-                        }`}>
-                          {entry.rank}
-                        </div>
-                        
-                        <div className="min-w-0 flex-1">
-                          <p className="font-bold text-white text-sm sm:text-base truncate group-hover:text-hyperliquid-400 transition-colors">{entry.username}</p>
-                          <div className="flex items-center space-x-2">
-                            <div className={`flex items-center space-x-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-gradient-to-r ${tierGradient} shadow-lg`}>
-                              <TierIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
-                              <span className="text-xs font-bold text-white">{entry.tier}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right flex-shrink-0">
-                        <p className="font-bold text-white text-sm sm:text-base">{entry.referrals}</p>
-                        <p className="text-xs sm:text-sm text-dark-400">{entry.earnings.toLocaleString()}</p>
-                      </div>
-                    </motion.div>
-                  );
-                })
+                leaderboard.map((entry, index) => (
+                  <LeaderboardRow key={entry.rank} entry={entry} index={index} />
+                ))
               ) : (
                 <div className="text-center py-8 sm:py-12">
                   <TrophyIcon className="h-12 w-12 sm:h-16 sm:w-16 text-dark-600 mx-auto mb-4" />

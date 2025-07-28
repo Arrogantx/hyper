@@ -41,6 +41,18 @@ CREATE TABLE IF NOT EXISTS nfts (
     UNIQUE(token_id, contract_address)
 );
 
+-- Add columns to users table if they don't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_attribute WHERE attrelid = 'users'::regclass AND attname = 'referral_count') THEN
+        ALTER TABLE users ADD COLUMN referral_count INTEGER DEFAULT 0;
+    END IF;
+    IF NOT EXISTS (SELECT FROM pg_attribute WHERE attrelid = 'users'::regclass AND attname = 'hype_domain') THEN
+        ALTER TABLE users ADD COLUMN hype_domain TEXT;
+    END IF;
+END
+$$;
+
 -- Staking table for tracking staked assets
 CREATE TABLE IF NOT EXISTS staking (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -172,6 +184,7 @@ CREATE INDEX IF NOT EXISTS idx_whitelist_wallet_address ON whitelist(wallet_addr
 CREATE INDEX IF NOT EXISTS idx_activity_log_user_id ON activity_log(user_id);
 
 -- Create updated_at trigger function
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -181,10 +194,36 @@ END;
 $$ language 'plpgsql';
 
 -- Create triggers for updated_at columns
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_nfts_updated_at ON nfts;
 CREATE TRIGGER update_nfts_updated_at BEFORE UPDATE ON nfts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_reward_items_updated_at ON reward_items;
 CREATE TRIGGER update_reward_items_updated_at BEFORE UPDATE ON reward_items FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_admin_settings_updated_at ON admin_settings;
 CREATE TRIGGER update_admin_settings_updated_at BEFORE UPDATE ON admin_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Function to update referral count on new referral
+DROP FUNCTION IF EXISTS update_referral_count() CASCADE;
+CREATE OR REPLACE FUNCTION update_referral_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE users
+    SET referral_count = referral_count + 1
+    WHERE id = NEW.referrer_id;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Trigger to execute the function
+DROP TRIGGER IF EXISTS on_new_referral ON referrals;
+CREATE TRIGGER on_new_referral
+AFTER INSERT ON referrals
+FOR EACH ROW
+EXECUTE FUNCTION update_referral_count();
 
 -- Row Level Security (RLS) policies
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -197,37 +236,62 @@ ALTER TABLE reward_purchases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
 
 -- Users can read their own data
+DROP POLICY IF EXISTS "Users can view own profile" ON users;
 CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid()::text = id::text);
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
 CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid()::text = id::text);
 
 -- Users can view their own NFTs
+DROP POLICY IF EXISTS "Users can view own NFTs" ON nfts;
 CREATE POLICY "Users can view own NFTs" ON nfts FOR SELECT USING (auth.uid()::text = owner_id::text);
 
 -- Users can view their own staking data
+DROP POLICY IF EXISTS "Users can view own staking" ON staking;
 CREATE POLICY "Users can view own staking" ON staking FOR SELECT USING (auth.uid()::text = user_id::text);
 
 -- Users can view their own point transactions
+DROP POLICY IF EXISTS "Users can view own points" ON point_transactions;
 CREATE POLICY "Users can view own points" ON point_transactions FOR SELECT USING (auth.uid()::text = user_id::text);
 
 -- Users can view games they're involved in
+DROP POLICY IF EXISTS "Users can view own games" ON games;
 CREATE POLICY "Users can view own games" ON games FOR SELECT USING (
     auth.uid()::text = creator_id::text OR auth.uid()::text = opponent_id::text
 );
 
 -- Users can view their own referrals
+DROP POLICY IF EXISTS "Users can view own referrals" ON referrals;
 CREATE POLICY "Users can view own referrals" ON referrals FOR SELECT USING (
     auth.uid()::text = referrer_id::text OR auth.uid()::text = referred_id::text
 );
 
 -- Users can view their own purchases
+DROP POLICY IF EXISTS "Users can view own purchases" ON reward_purchases;
 CREATE POLICY "Users can view own purchases" ON reward_purchases FOR SELECT USING (auth.uid()::text = user_id::text);
 
 -- Users can view their own activity
+DROP POLICY IF EXISTS "Users can view own activity" ON activity_log;
 CREATE POLICY "Users can view own activity" ON activity_log FOR SELECT USING (auth.uid()::text = user_id::text);
 
 -- Public read access for reward items and whitelist
+DROP POLICY IF EXISTS "Public can view reward items" ON reward_items;
 CREATE POLICY "Public can view reward items" ON reward_items FOR SELECT USING (is_active = true);
+DROP POLICY IF EXISTS "Public can check whitelist" ON whitelist;
 CREATE POLICY "Public can check whitelist" ON whitelist FOR SELECT USING (true);
+
+-- Leaderboard view for ranking users
+CREATE OR REPLACE VIEW leaderboard AS
+    SELECT ROW_NUMBER() OVER (ORDER BY u.total_points DESC, u.created_at ASC) AS rank,
+    u.id,
+    u.wallet_address,
+    u.hype_domain,
+    u.username,
+    u.total_points,
+    u.referral_count,
+    u.tier
+   FROM users u
+  WHERE u.is_banned = false
+  ORDER BY u.total_points DESC, u.created_at;
 
 -- Insert default admin settings
 INSERT INTO admin_settings (setting_key, setting_value, description) VALUES
