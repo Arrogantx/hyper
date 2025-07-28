@@ -70,7 +70,7 @@ export function usePrimaryDomain(address?: Address) {
       const domainName = await publicClient.readContract({
         address: resolverAddress as Address,
         abi: DOT_HYPE_RESOLVER_ABI,
-        functionName: 'name',
+        functionName: 'getName',
         args: [reverseNode],
       });
 

@@ -15,6 +15,7 @@ interface ButtonProps {
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit' | 'reset';
+  id?: string; // Add id prop
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -30,6 +31,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   onClick,
   type = 'button',
+  id, // Destructure id prop
 }) => {
   const baseClasses = cn(
     'inline-flex items-center justify-center font-medium transition-all duration-200',
@@ -124,6 +126,7 @@ const Button: React.FC<ButtonProps> = ({
   if (animate) {
     return (
       <motion.button
+        id={id} // Pass id to the button
         className={buttonClasses}
         disabled={disabled || isLoading}
         onClick={onClick}
@@ -139,6 +142,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      id={id} // Pass id to the button
       className={buttonClasses}
       disabled={disabled || isLoading}
       onClick={onClick}

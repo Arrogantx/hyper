@@ -229,12 +229,12 @@ export const DOT_HYPE_RESOLVER_ABI = [
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "node",
-        "type": "bytes32"
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
       }
     ],
-    "name": "name",
+    "name": "getName",
     "outputs": [
       {
         "internalType": "string",
@@ -343,6 +343,30 @@ export const DOT_HYPE_RESOLVER_ABI = [
         "name": "",
         "type": "bool"
       }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+        {
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+        },
+        {
+            "internalType": "string",
+            "name": "key",
+            "type": "string"
+        }
+    ],
+    "name": "getValue",
+    "outputs": [
+        {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+        }
     ],
     "stateMutability": "view",
     "type": "function"

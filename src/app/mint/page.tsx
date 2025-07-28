@@ -10,6 +10,7 @@ import { ProvenanceDisplay } from '@/components/ui/ProvenanceDisplay';
 import { useSoundEngine } from '@/utils/sound';
 import { useHypercatzContract } from '@/hooks/useHypercatzContract';
 import { MintUI } from '@/components/ui/Mint-UI';
+import { Countdown } from '@/components/ui/Countdown';
 
 const MintPage: React.FC = () => {
   const { address, isConnected, isConnecting } = useAccount();
@@ -99,9 +100,8 @@ const MintPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-hyperliquid-500/30 mb-6">
-            <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-hyperliquid-400">Exclusive NFT Collection</span>
+          <div className="mb-6">
+            <Countdown targetDate="2025-07-28T20:00:00Z" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-4 hyperliquid-gradient-text">
             MINT HYPERCATZ

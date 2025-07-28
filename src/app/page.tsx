@@ -104,93 +104,79 @@ const HomePage: React.FC = () => {
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6">
-        <motion.div
-          style={{ y: y1, opacity }}
-          className="text-center z-10 max-w-5xl mx-auto"
-        >
-          {/* Hero Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-hyperliquid-500/30 mb-8"
-          >
-            <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-hyperliquid-400">Live on HyperEVM</span>
-          </motion.div>
-
-          {/* Hero Title */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-8"
-          >
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
-              <span className="hyperliquid-gradient-text">HYPERCATZ</span>
-            </h1>
-            <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              The premier NFT collection and utility ecosystem on{' '}
-              <span className="text-hyperliquid-400 font-semibold">Hyperliquid</span>
-            </p>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Mint exclusive NFTs, stake for rewards, play games, and join a thriving community of collectors and traders.
-            </p>
-          </motion.div>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
-          >
-            <Link href="/mint">
-              <Button
-                size="lg"
-                className="group min-w-[200px]"
-                onClick={() => {
-                  playClick();
-                  playLightning();
-                }}
-              >
-                <Zap className="h-5 w-5 mr-2 group-hover:animate-pulse" />
-                Start Minting
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            
-            <Link href="/whitelist">
-              <Button variant="secondary" size="lg" className="min-w-[200px]">
-                <Star className="h-5 w-5 mr-2" />
-                Check Whitelist
-              </Button>
-            </Link>
-
-            <Button
-              variant="outline"
-              size="lg"
-              className="min-w-[200px]"
-              onClick={() => {
-                playClick();
-                // Add trailer/demo functionality
-              }}
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24">
+        {/* All content now in a single column flow */}
+        <div className="text-center z-10 max-w-5xl mx-auto">
+            {/* Hero Badge */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-hyperliquid-500/30 mb-8"
             >
-              <Play className="h-5 w-5 mr-2" />
-              Watch Demo
-            </Button>
-          </motion.div>
+                <div className="w-2 h-2 bg-hyperliquid-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-hyperliquid-400">Live on HyperEVM</span>
+            </motion.div>
 
-          {/* NFT Carousel */}
-          <motion.div
+            {/* Hero Title */}
+            <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="mb-8"
+            >
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+                    <span className="hyperliquid-gradient-text">HYPERCATZ</span>
+                </h1>
+                <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    The premier NFT collection and utility ecosystem on{' '}
+                    <span className="text-hyperliquid-400 font-semibold">Hyperliquid</span>
+                </p>
+                <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+                    Mint exclusive NFTs, stake for rewards, play games, and join a thriving community of collectors and traders.
+                </p>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+                <Link href="/mint">
+                    <Button
+                        size="lg"
+                        className="group min-w-[200px]"
+                        onClick={() => {
+                            playClick();
+                            playLightning();
+                        }}
+                    >
+                        <Zap className="h-5 w-5 mr-2 group-hover:animate-pulse" />
+                        Start Minting
+                        <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                </Link>
+                <Link href="/whitelist">
+                    <Button variant="secondary" size="lg" className="min-w-[200px]">
+                        <Star className="h-5 w-5 mr-2" />
+                        Check Whitelist
+                    </Button>
+                </Link>
+            </motion.div>
+        </div>
+        
+        {/* NFT Carousel - Now has its own space below the CTA buttons */}
+        <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-          >
+            className="w-full max-w-5xl mx-auto pt-24" // Added ample top padding
+        >
             <NFTCarousel imageFilenames={nftImageFilenames} />
-          </motion.div>
         </motion.div>
+        
 
         {/* Animated Background Elements */}
         <motion.div

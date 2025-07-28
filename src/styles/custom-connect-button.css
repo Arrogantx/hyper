@@ -1,0 +1,57 @@
+/* Hype Themed Connect Button Styles */
+.connect-button {
+    background: rgba(22, 163, 74, 0.8); /* Stronger green */
+    color: white;
+    padding: 8px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    border: 1px solid rgba(52, 211, 153, 0.9);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+}
+.connect-button:hover {
+    background: rgba(22, 163, 74, 1);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+}
+
+.account-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(31, 41, 55, 0.5); /* Deeper glass dark */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(52, 211, 153, 0.5); /* Brighter border */
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.account-button:hover {
+    background: rgba(31, 41, 55, 0.7);
+    border-color: #34d399;
+}
+.account-button .text-sm {
+    color: #34d399; /* Glowing green text */
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+}
+
+/* Fallback for account-info as it was removed */
+.account-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(52, 211, 153, 0.3);
+  border-top: 2px solid #34d399;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

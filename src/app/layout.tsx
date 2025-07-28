@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Providers from '@/components/layout/Providers';
+import { headers } from 'next/headers';
+import ContextProvider from '@/context/ContextProvider';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,18 +26,10 @@ export const metadata: Metadata = {
     siteName: "Hypercatz",
     images: [
       {
-        url: "/images/pre-reveal.mp4",
-        width: 1200,
-        height: 630,
-        alt: "Hypercatz NFT Collection Pre-Reveal",
-      },
-    ],
-    videos: [
-      {
-        url: "/images/pre-reveal.mp4",
-        width: 1200,
-        height: 630,
-        type: "video/mp4",
+        url: "/hypercatz-logo.png",
+        width: 512,
+        height: 512,
+        alt: "Hypercatz Logo",
       },
     ],
     locale: "en_US",
@@ -46,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hypercatz - Premier NFT Utility Hub",
     description: "The ultimate minting and utility hub for Hypercatz NFT collection on HyperEVM.",
-    images: ["/images/pre-reveal.mp4"],
+    images: ["/hypercatz-logo.png"],
     creator: "@hypercatz",
   },
   robots: {
@@ -65,24 +58,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Retrieve cookies from request headers on the server to support SSR
+  const headersObj = await headers();
+  const cookies = headersObj.get('cookie');
+
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/hypercatz-logo.png" />
+        <link rel="apple-touch-icon" href="/hypercatz-logo.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#00ffff" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
       <body className={inter.className}>
-        <Providers>
+        <ContextProvider cookies={cookies}>
           {children}
-        </Providers>
+        </ContextProvider>
       </body>
     </html>
   );
