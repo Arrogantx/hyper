@@ -112,3 +112,6 @@ verify-build.js
 
 # Trace files (Next.js build artifacts that cause permission issues)
 trace
+
+# Local environment variables
+.env.local

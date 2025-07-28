@@ -2,12 +2,8 @@
 const nextConfig = {
   images: {
     domains: ['localhost'],
-    unoptimized: true, // Required for static export
+    unoptimized: true,
   },
-  output: 'export', // Enable static export for Netlify
-  trailingSlash: true, // Add trailing slashes for better compatibility
-  distDir: 'build', // Output directory for static export
-  // Disable server-side features for static export
   typescript: {
     ignoreBuildErrors: true,
   },
